@@ -6,16 +6,44 @@ Hands-on practice material for the Certified Kubernetes Administrator (CKA) exam
 
 The CKA exam is performance-based rather than multiple-choice. It gives the candidate a live Kubernetes cluster and a set of tasks to complete within two hours, with kubernetes.io/docs as the only permitted reference. Passing requires fluency with kubectl at the keyboard, not just conceptual understanding. The exercises in this repository are built to develop that fluency through repetition on a local kind cluster, with a focus on the kinds of tasks the exam actually tests (constructing pods and controllers, diagnosing failures from events and logs, configuring scheduling and resources, and recovering from broken configurations under time pressure).
 
-All content assumes a kind cluster running rootless containerd via nerdctl. A single-node cluster is sufficient for most topics, but assignments covering scheduling and controllers require a multi-node cluster (1 control-plane plus 3 workers). Setup instructions for the multi-node cluster live in the first assignment that needs them.
+All content assumes a kind cluster running rootless containerd via nerdctl. A single-node cluster is sufficient for most topics, but assignments covering scheduling, controllers, networking, and troubleshooting require a multi-node cluster (1 control-plane plus 3 workers). Setup instructions for the multi-node cluster live in the first assignment that needs them.
 
-## Repository layout
+## CKA Exam Coverage
+
+The assignments in this repository are organized to cover all five CKA exam domains. The `cka-homework-plan.md` file at the repo root contains the full competency coverage matrix, generation sequence, and status tracking. The summary below shows which exercise directories map to each domain.
+
+| Domain | Weight | Exercise Directories |
+|---|---|---|
+| Cluster Architecture, Installation & Configuration | 25% | rbac, cluster-lifecycle, helm, kustomize, crds-and-operators |
+| Workloads & Scheduling | 15% | pods (assignments 1-7) |
+| Services & Networking | 20% | services, ingress-and-gateway-api, coredns, network-policies |
+| Storage | 10% | storage |
+| Troubleshooting | 30% | troubleshooting (assignments 1-4) |
+
+## Repository Layout
 
 ```
 cka-exam-prep/
+├── CLAUDE.md                          # Claude Code project context
 ├── README.md                          # This file
-├── LICENSE
+├── LICENSE                            # Apache 2.0
+├── cka-homework-plan.md               # Master plan: coverage matrix, generation sequence
+│
+├── skills/                            # Claude Code skills for assignment generation
+│   ├── cka-prompt-builder/            # Builds scoped prompt.md files for new topics
+│   │   ├── SKILL.md
+│   │   └── references/
+│   │       ├── cka-curriculum.md      # Official CKA domains and competencies
+│   │       ├── course-section-map.md  # Mumshad course sections mapped to competencies
+│   │       └── assignment-registry.md # Scope and status of all assignments
+│   │
+│   └── k8s-homework-generator/        # Generates tutorial, homework, and answers from a prompt
+│       ├── SKILL.md
+│       └── references/
+│           └── base-template.md       # Structural conventions for all assignments
+│
 └── exercises/
-    ├── pods/                          # Pod-focused series (Assignments 1-7)
+    ├── pods/                          # Pod-focused series (Assignments 1-7) ✓
     │   ├── assignment-1/              # Pod Fundamentals
     │   ├── assignment-2/              # Pod Configuration Injection
     │   ├── assignment-3/              # Pod Health and Observability
@@ -23,12 +51,31 @@ cka-exam-prep/
     │   ├── assignment-5/              # Pod Resources and QoS
     │   ├── assignment-6/              # Multi-Container Patterns
     │   └── assignment-7/              # Workload Controllers
-    └── rbac/                          # RBAC (namespace-scoped)
+    │
+    ├── rbac/                          # RBAC, namespace-scoped ✓
+    │
+    ├── cluster-lifecycle/             # kubeadm, upgrades, etcd backup/restore
+    ├── helm/                          # Chart install, upgrade, rollback, values
+    ├── kustomize/                     # Overlays, patches, transformers, components
+    ├── crds-and-operators/            # CRDs, custom resources, operator pattern
+    ├── services/                      # ClusterIP, NodePort, LoadBalancer, endpoints
+    ├── ingress-and-gateway-api/       # Ingress controllers, Gateway API resources
+    ├── coredns/                       # DNS resolution, CoreDNS config, debugging
+    ├── network-policies/              # Ingress/egress rules, namespace isolation
+    ├── storage/                       # PV, PVC, StorageClass, dynamic provisioning
+    │
+    └── troubleshooting/               # Cross-domain capstone series
+        ├── assignment-1/              # Application failures
+        ├── assignment-2/              # Control plane failures
+        ├── assignment-3/              # Node and kubelet failures
+        └── assignment-4/              # Network and service failures
 ```
+
+Directories marked with ✓ contain completed assignments. The remaining directories have planned assignments that are generated progressively as the corresponding course sections are studied.
 
 Each assignment directory contains five files:
 
-- `prompt.md` is the prompt that was given to Claude to generate the assignment content. Keeping it alongside the output makes the material reproducible and makes it obvious what was in scope (and what was deliberately deferred to later assignments).
+- `prompt.md` is the prompt used to generate the assignment content. Keeping it alongside the output makes the material reproducible and makes it obvious what was in scope (and what was deliberately deferred to later assignments).
 - `README.md` is the assignment's own overview, covering prerequisites, estimated time commitment, and the recommended workflow specific to that topic.
 - `<topic>-tutorial.md` is a step-by-step walkthrough teaching the topic with worked examples. This is where concepts are introduced and the reference tables live.
 - `<topic>-homework.md` contains 15 progressive exercises organized into five difficulty levels (three exercises per level). Exercise headings are intentionally bare (no descriptive titles) so that debugging exercises don't leak hints about what's broken.
@@ -36,7 +83,15 @@ Each assignment directory contains five files:
 
 The `rbac/` directory predates the series structure and lives flat rather than under an `assignment-N/` subdirectory. It covers namespace-scoped RBAC; a future cluster-scoped RBAC assignment will likely extend that area.
 
-## Recommended study progression
+## Assignment Generation
+
+New assignments are generated using two Claude Code skills in the `skills/` directory. The `cka-prompt-builder` skill produces a scoped `prompt.md` for a topic by consulting the CKA curriculum, the Mumshad course structure, and the registry of existing assignments. The `k8s-homework-generator` skill takes that prompt and produces the four content files (README, tutorial, homework, answers) following the structural conventions documented in its base template.
+
+The generation sequence is tied to the daily study plan. As each course section is completed, the corresponding assignments become available for generation. The `cka-homework-plan.md` file documents the full sequence and dependencies. Troubleshooting assignments are generated last because they are cross-domain capstones that combine failure modes from multiple topic areas.
+
+For details on the generation workflow, see `CLAUDE.md`.
+
+## Recommended Study Progression
 
 The pod series is designed to be worked through in order. Each assignment builds on the pod spec concepts from earlier assignments and explicitly declares what it assumes and what it defers. Attempting Assignment 4 (Scheduling) without Assignment 1 (Pod Fundamentals) will still work mechanically but misses the point, which is deliberate practice of a full skill stack.
 
@@ -52,7 +107,9 @@ The RBAC material is independent of the pod series and can be worked through at 
 
 **RBAC (namespace-scoped)** covers Roles and RoleBindings, service accounts, and the common patterns for granting scoped permissions within a namespace. A future assignment will cover cluster-scoped RBAC with ClusterRoles and ClusterRoleBindings.
 
-## How to work through an assignment
+After the pod series, the remaining assignments can be worked in any order that follows the generation sequence, since each is self-contained with its own tutorial. The troubleshooting series should be done last as it draws on concepts from all other topics.
+
+## How to Work Through an Assignment
 
 Each assignment follows the same three-phase workflow, which mirrors how the content is structured across its files.
 
@@ -79,16 +136,6 @@ The assignments use a consistent set of conventions to keep the material predict
 **No em dashes anywhere.** The content uses commas, periods, or parentheses instead. This is a stylistic preference that carries through the prompts and outputs consistently.
 
 **Prose over fragmented bullets.** Explanatory sections use narrative paragraphs rather than stacked single-sentence declarations. Bullet lists appear where lists genuinely belong (verification commands, field references, failure modes to check) and not where prose would read better.
-
-## Adding new assignments
-
-The repository is organized around topic series. The pod series covers one family of related concepts (everything about running a pod, finishing with the controllers that manage them). Future series will follow the same pattern in their own top-level directories under `exercises/`.
-
-Planned future series include storage (PersistentVolumes, PersistentVolumeClaims, StorageClasses, StatefulSets), networking (Services, Ingress, Gateway API, NetworkPolicies, CoreDNS), cluster administration (kubeadm lifecycle, etcd backup and restore, cluster upgrades, certificates), and extensions to the existing RBAC material for cluster-scoped permissions, service account tokens, and CertificateSigningRequests.
-
-To add a new assignment within an existing series, create a new `assignment-N/` directory under the appropriate topic folder, number it as the next in sequence, and include all five files (prompt.md, README.md, tutorial, homework, answers). To add a new series, create a new directory under `exercises/` and decide whether it warrants the `assignment-N/` subdirectory structure (used when multiple assignments are planned) or a flat structure (used for standalone assignments like the current RBAC content).
-
-The prompts in each assignment directory are the canonical way to regenerate content consistently. If a topic needs to be updated to reflect a new Kubernetes version, changed best practices, or corrections, the right path is usually to edit the prompt and regenerate the four output files rather than patching them directly.
 
 ## Prerequisites
 

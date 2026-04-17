@@ -1,0 +1,27 @@
+{
+  "name": "Debian: Trixie - CKA Exam Prep",
+
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils": {
+      "configureZshAsDefaultShell": true
+    },
+    "ghcr.io/devcontainers/features/git": {},
+    "ghcr.io/devcontainers/features/github-cli": {}
+  },
+
+  "mounts": [
+    "type=volume,source=claude-config,target=/home/vscode/.claude"
+  ],
+
+  "runArgs": [
+    "--runtime=io.containerd.runc.v2"
+  ],
+  
+  "overrideCommand": false,
+
+  "postCreateCommand": "bash .devcontainer/post-create.sh"
+}
