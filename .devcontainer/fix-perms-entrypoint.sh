@@ -15,4 +15,11 @@ if [ -d /home/vscode/.claude ]; then
   chown -R vscode:vscode /home/vscode/.claude
 fi
 
+if [ -d /home/vscode/.semgrep ]; then
+  chown -R vscode:vscode /home/vscode/.semgrep
+fi
+
+chmod -R 775 /usr/local/lib/python3.13/
+chown -R vscode:vscode /usr/local/lib/python3.13/
+
 exec "$@"

@@ -56,17 +56,20 @@ Reference file in `skills/k8s-homework-generator/references/`:
 ```
 exercises/                          All homework assignments
   pods/assignment-1/ through 7/     Pod-focused series (complete)
-  rbac/                             RBAC namespace-scoped (complete)
-  cluster-lifecycle/                Planned
-  helm/                             Planned
-  kustomize/                        Planned
-  crds-and-operators/               Planned
-  services/                         Planned
-  ingress-and-gateway-api/          Planned
-  coredns/                          Planned
-  network-policies/                 Planned
-  storage/                          Planned
-  troubleshooting/assignment-1-4/   Planned (capstone, generate last)
+  rbac/assignment-1/                RBAC namespace-scoped (complete)
+  rbac/assignment-2/                RBAC cluster-scoped (planned)
+  tls-and-certificates/             TLS, PKI, Certificates API (planned)
+  security-contexts/                runAsUser, capabilities, seccomp (planned)
+  cluster-lifecycle/                kubeadm, upgrades, etcd backup/restore (planned)
+  helm/                             Chart install, upgrade, rollback, values (planned)
+  kustomize/                        Overlays, patches, transformers, components (planned)
+  crds-and-operators/               CRDs, custom resources, operator pattern (planned)
+  services/                         ClusterIP, NodePort, LoadBalancer, endpoints (planned)
+  ingress-and-gateway-api/          Ingress controllers, Gateway API resources (planned)
+  coredns/                          DNS resolution, CoreDNS config, debugging (planned)
+  network-policies/                 Ingress/egress rules, namespace isolation (planned)
+  storage/                          PV, PVC, StorageClass, dynamic provisioning (planned)
+  troubleshooting/assignment-1-4/   Cross-domain capstone series (planned, generate last)
 skills/                             Claude Code skills for generation
 ```
 
@@ -95,7 +98,7 @@ Each assignment directory contains five files: `prompt.md` (the generation input
 
 ## Existing Content
 
-The pod series (assignments 1-7) and RBAC assignment were generated before the skills
+The pod series (assignments 1-7) and RBAC assignment-1 were generated before the skills
 existed, using standalone prompts. They follow the same conventions the skills encode.
 Do not regenerate them through the skills. The assignment registry documents their
 scope so new assignments avoid overlap.
@@ -103,5 +106,7 @@ scope so new assignments avoid overlap.
 ## Generation Sequence
 
 The `cka-homework-plan.md` file defines the recommended order for generating remaining
-assignments, tied to the daily study plan. Troubleshooting assignments are generated
-last because they are cross-domain capstones.
+assignments, tied to the daily study plan. Security topics (TLS, cluster-scoped RBAC,
+security contexts) are distributed across domains rather than grouped into a single
+series. Troubleshooting assignments are generated last because they are cross-domain
+capstones.

@@ -22,8 +22,8 @@ pod scheduling appears in both the pod series and the troubleshooting series).
 
 | Domain | Weight | Primary Exercise Directories |
 |---|---|---|
-| Cluster Architecture, Installation & Configuration | 25% | rbac, cluster-lifecycle, helm, kustomize, crds-and-operators |
-| Workloads & Scheduling | 15% | pods (assignments 1-7) |
+| Cluster Architecture, Installation & Configuration | 25% | rbac, cluster-lifecycle, helm, kustomize, crds-and-operators, tls-and-certificates |
+| Workloads & Scheduling | 15% | pods (assignments 1-7), security-contexts |
 | Services & Networking | 20% | services, ingress-and-gateway-api, coredns, network-policies |
 | Storage | 10% | storage |
 | Troubleshooting | 30% | troubleshooting (assignments 1-4), plus debugging exercises across all topics |
@@ -40,7 +40,7 @@ exercises that directly test it.
 
 | Competency | Assignments | Status |
 |---|---|---|
-| Manage role-based access control (RBAC) | rbac, pods/assignment-1 (service account basics) | Done (rbac), Partial (pods) |
+| Manage role-based access control (RBAC) | rbac/assignment-1, rbac/assignment-2, pods/assignment-1 (service account basics) | Done (namespace-scoped), Planned (cluster-scoped) |
 | Prepare underlying infrastructure for installing a Kubernetes cluster | cluster-lifecycle/assignment-1 | Planned |
 | Create and manage Kubernetes clusters using kubeadm | cluster-lifecycle/assignment-1 | Planned |
 | Manage the lifecycle of Kubernetes clusters | cluster-lifecycle/assignment-1 | Planned |
@@ -49,6 +49,7 @@ exercises that directly test it.
 | Use Kustomize to install cluster components | kustomize/assignment-1 | Planned |
 | Understand extension interfaces (CNI, CSI, CRI) | cluster-lifecycle/assignment-1, storage/assignment-1 | Planned |
 | Understand CRDs and install and configure operators | crds-and-operators/assignment-1 | Planned |
+| TLS certificates and Kubernetes PKI | tls-and-certificates/assignment-1 | Planned |
 
 ### Domain 2: Workloads & Scheduling (15%)
 
@@ -58,7 +59,7 @@ exercises that directly test it.
 | Use ConfigMaps and Secrets to configure applications | pods/assignment-2 | Done |
 | Configure workload autoscaling | pods/assignment-5 | Done |
 | Understand primitives for robust, self-healing application deployments | pods/assignment-3, pods/assignment-7 | Done |
-| Configure Pod admission and scheduling (limits, node affinity, etc.) | pods/assignment-4, pods/assignment-5 | Done |
+| Configure Pod admission and scheduling (limits, node affinity, etc.) | pods/assignment-4, pods/assignment-5, security-contexts/assignment-1 | Done (scheduling), Planned (security contexts) |
 
 ### Domain 3: Services & Networking (20%)
 
@@ -104,12 +105,15 @@ exercises that directly test it.
 | exercises/pods/assignment-5 | Pod Resources and QoS | Requests, limits, QoS classes, OOMKill, LimitRange, ResourceQuota | Workloads & Scheduling |
 | exercises/pods/assignment-6 | Multi-Container Patterns | Sidecar, ambassador, adapter, native sidecars, shared process namespace | Workloads & Scheduling |
 | exercises/pods/assignment-7 | Workload Controllers | ReplicaSets, Deployments (rollouts/rollbacks), DaemonSets | Workloads & Scheduling |
-| exercises/rbac | RBAC (namespace-scoped) | Roles, RoleBindings, service accounts, namespace-scoped permissions | Cluster Architecture |
+| exercises/rbac/assignment-1 | RBAC (namespace-scoped) | Roles, RoleBindings, service accounts, namespace-scoped permissions | Cluster Architecture |
 
 ### Planned
 
 | Directory | Assignment | Topic | CKA Domain | Unlocked After |
 |---|---|---|---|---|
+| exercises/rbac/assignment-2 | RBAC (cluster-scoped) | ClusterRoles, ClusterRoleBindings, cluster-scoped resources, aggregated ClusterRoles | Cluster Architecture | Day 7 (S7) |
+| exercises/tls-and-certificates/assignment-1 | TLS and Certificates | K8s PKI, cert creation with openssl, viewing cert details, Certificates API, CertificateSigningRequests, kubeconfig cert management | Cluster Architecture | Day 6 (S7 partial) |
+| exercises/security-contexts/assignment-1 | Security Contexts | runAsUser, runAsGroup, fsGroup, capabilities, readOnlyRootFilesystem, allowPrivilegeEscalation, seccomp profiles | Workloads & Scheduling | Day 7 (S7) |
 | exercises/cluster-lifecycle/assignment-1 | Cluster Lifecycle | kubeadm install/upgrade, etcd backup/restore, HA control plane, extension interfaces | Cluster Architecture | Day 6 (S6) |
 | exercises/helm/assignment-1 | Helm | Install, configure, upgrade, rollback charts, chart repositories, values files | Cluster Architecture | Day 11 (S12) |
 | exercises/kustomize/assignment-1 | Kustomize | Kustomization files, overlays, patches, transformers, components | Cluster Architecture | Day 12 (S13) |
@@ -136,18 +140,21 @@ you should not generate it before the course material has been studied.
 | Order | Assignment | Unlocked After | Dependencies |
 |---|---|---|---|
 | 1 | cluster-lifecycle | Day 6 (S6 complete) | None (kind cluster sufficient for etcd exercises) |
-| 2 | crds-and-operators | Day 8 (S7 complete) | None |
-| 3 | storage | Day 8 (S8 complete) | None |
-| 4 | services | Day 9 (S9 partial) | pods/assignment-7 (needs Deployments for service targets) |
-| 5 | coredns | Day 10 (S9 complete) | services (DNS resolves service names) |
-| 6 | network-policies | Day 10 (S9 complete) | services (policies filter traffic to/from services) |
-| 7 | ingress-and-gateway-api | Day 10 (S9 complete) | services (Ingress routes to backend services) |
-| 8 | helm | Day 11 (S12 complete) | None |
-| 9 | kustomize | Day 12 (S13 complete) | None |
-| 10 | troubleshooting/assignment-1 | Day 13 (S14 complete) | All previous assignments (cross-domain scenarios) |
-| 11 | troubleshooting/assignment-2 | Day 13 (S14 complete) | cluster-lifecycle (control plane concepts) |
-| 12 | troubleshooting/assignment-3 | Day 13 (S14 complete) | cluster-lifecycle (node management concepts) |
-| 13 | troubleshooting/assignment-4 | Day 13 (S14 complete) | services, coredns, network-policies |
+| 2 | tls-and-certificates | Day 6 (S7 partial, through KubeConfig) | cluster-lifecycle (cert concepts build on cluster PKI understanding) |
+| 3 | rbac/assignment-2 | Day 7 (S7, RBAC section complete) | rbac/assignment-1 (namespace-scoped RBAC as prerequisite) |
+| 4 | security-contexts | Day 7 (S7, security contexts section) | pods/assignment-1 (pod spec fundamentals) |
+| 5 | crds-and-operators | Day 8 (S7 complete) | None |
+| 6 | storage | Day 8 (S8 complete) | None |
+| 7 | services | Day 9 (S9 partial) | pods/assignment-7 (needs Deployments for service targets) |
+| 8 | coredns | Day 10 (S9 complete) | services (DNS resolves service names) |
+| 9 | network-policies | Day 10 (S9 complete) | services (policies filter traffic to/from services) |
+| 10 | ingress-and-gateway-api | Day 10 (S9 complete) | services (Ingress routes to backend services) |
+| 11 | helm | Day 11 (S12 complete) | None |
+| 12 | kustomize | Day 12 (S13 complete) | None |
+| 13 | troubleshooting/assignment-1 | Day 13 (S14 complete) | All previous assignments (cross-domain scenarios) |
+| 14 | troubleshooting/assignment-2 | Day 13 (S14 complete) | cluster-lifecycle, tls-and-certificates (control plane concepts) |
+| 15 | troubleshooting/assignment-3 | Day 13 (S14 complete) | cluster-lifecycle (node management concepts) |
+| 16 | troubleshooting/assignment-4 | Day 13 (S14 complete) | services, coredns, network-policies |
 
 ---
 
@@ -187,9 +194,9 @@ status column in the coverage matrix above from "Planned" to "Done."
 ## Design Decisions
 
 **Progressive resource gating.** Assignments generated early in the course (through Storage,
-generation order 1-3) explicitly list which Kubernetes resources are in scope. This prevents
+generation order 1-6) explicitly list which Kubernetes resources are in scope. This prevents
 exercises from referencing objects the learner has not yet encountered. Assignments generated
-after Networking (generation order 4+) have access to the full set of CKA resources, since by
+after Networking (generation order 7+) have access to the full set of CKA resources, since by
 that point in the course all major resource types have been introduced.
 
 **Troubleshooting as capstone.** The four troubleshooting assignments are generated last
@@ -208,3 +215,10 @@ topic's scope exceeds what fits naturally into the five-level exercise structure
 debugging exercises at Levels 3 and 5. The troubleshooting series adds cross-domain
 debugging scenarios that combine multiple failure modes. This means troubleshooting
 practice is woven throughout the entire exercise corpus, not isolated in one section.
+
+**Security is distributed across assignments, not a single series.** The CKA exam does
+not have a standalone Security domain (it was consolidated into the other five domains
+in the 2025 curriculum update). Security topics are distributed to the domains they
+belong to: RBAC and TLS under Cluster Architecture, security contexts under Workloads
+& Scheduling, network policies under Services & Networking, and certificate
+troubleshooting under Troubleshooting. This matches how the exam tests them.

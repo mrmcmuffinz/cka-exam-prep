@@ -45,6 +45,7 @@ cross-references.
 - Assignment 5: Resource requests and limits, QoS classes
 - Assignment 6: Sidecar, ambassador, adapter patterns, native sidecars
 - Assignment 7: ReplicaSets, Deployments, DaemonSets
+- security-contexts: runAsUser, capabilities, readOnlyRootFilesystem
 
 ---
 
@@ -169,9 +170,9 @@ cross-references.
 
 ---
 
-### exercises/rbac: RBAC (namespace-scoped)
+### exercises/rbac/assignment-1: RBAC (namespace-scoped)
 
-**Series:** Standalone (predates series structure)
+**Series:** RBAC (1 of 2)
 **CKA domain:** Cluster Architecture, Installation & Configuration
 **Cluster:** Single-node kind
 
@@ -184,12 +185,82 @@ cross-references.
 - Permission design patterns for namespace-scoped access
 
 **Defers to:**
-- Future RBAC assignment: ClusterRoles, ClusterRoleBindings, cluster-scoped resources
+- rbac/assignment-2: ClusterRoles, ClusterRoleBindings, cluster-scoped resources, aggregated ClusterRoles
 - CRDs and Operators: RBAC for custom resources
+- tls-and-certificates: Certificate creation and management in depth
 
 ---
 
 ## Planned Assignments
+
+### exercises/rbac/assignment-2: RBAC (cluster-scoped)
+
+**Series:** RBAC (2 of 2)
+**CKA domain:** Cluster Architecture, Installation & Configuration
+**Cluster:** Single-node kind
+**Generation order:** 3
+
+**Planned scope:**
+- ClusterRoles and ClusterRoleBindings
+- Cluster-scoped resources (nodes, namespaces, PersistentVolumes, clusterroles themselves)
+- Aggregated ClusterRoles (aggregationRule with matchLabels)
+- Default ClusterRoles (cluster-admin, admin, edit, view) and when to use them vs custom
+- Granting cross-namespace access (ClusterRole + RoleBinding for namespace-scoped effect)
+- Service account permissions at cluster scope
+- kubectl auth can-i with --all-namespaces and non-resource URLs
+
+**Prerequisites:** rbac/assignment-1 (namespace-scoped RBAC fundamentals)
+**Adjacent assignments:** tls-and-certificates (user authentication feeds RBAC authorization), crds-and-operators (RBAC for custom resources)
+
+---
+
+### exercises/tls-and-certificates/assignment-1: TLS and Certificates
+
+**CKA domain:** Cluster Architecture, Installation & Configuration
+**Cluster:** Single-node kind (kind's PKI is sufficient for cert exercises)
+**Generation order:** 2
+
+**Planned scope:**
+- Kubernetes PKI overview (which components need certs, who signs what)
+- Certificate creation with openssl (generating keys, CSRs, signing)
+- Viewing certificate details (openssl x509 -in, -noout, -text, checking expiry)
+- Kubernetes Certificates API (CertificateSigningRequest resource)
+- CSR approval workflow (kubectl certificate approve/deny)
+- KubeConfig certificate-based authentication (users, clusters, contexts)
+- Certificate file locations on control plane nodes (/etc/kubernetes/pki/)
+- Diagnosing certificate issues (expiration, wrong CA, wrong subject)
+
+**Prerequisites:** cluster-lifecycle (understanding of control plane components)
+**Adjacent assignments:** rbac (authentication feeds authorization), troubleshooting/assignment-2 (cert expiration as control plane failure)
+
+**Kind cluster note:** Kind generates its own CA and component certificates. Exercises
+should leverage kind's existing PKI for inspection and work within it for user cert
+creation. The tutorial should explain where kind's certs live and how they differ from
+a kubeadm-managed cluster.
+
+---
+
+### exercises/security-contexts/assignment-1: Security Contexts
+
+**CKA domain:** Workloads & Scheduling (Pod admission)
+**Cluster:** Single-node kind
+**Generation order:** 4
+
+**Planned scope:**
+- Pod-level securityContext (runAsUser, runAsGroup, fsGroup, supplementalGroups)
+- Container-level securityContext (runAsUser, runAsNonRoot, readOnlyRootFilesystem)
+- Linux capabilities (add, drop, common capabilities like NET_ADMIN, SYS_TIME)
+- allowPrivilegeEscalation (what it does, why it defaults to true, when to set false)
+- Privilege escalation prevention patterns
+- readOnlyRootFilesystem with writable emptyDir mounts for temp/log directories
+- seccomp profiles (RuntimeDefault, Localhost, Unconfined)
+- How security contexts interact with volume permissions (fsGroup and mounted volumes)
+- Verifying security context enforcement (exec into containers, check uid/gid, test capabilities)
+
+**Prerequisites:** pods/assignment-1 (pod spec fundamentals), pods/assignment-2 (volume mounts for fsGroup interaction)
+**Adjacent assignments:** rbac (authorization controls who can do what, security contexts control what containers can do), storage (fsGroup affects mounted volume permissions)
+
+---
 
 ### exercises/cluster-lifecycle/assignment-1: Cluster Lifecycle
 
@@ -206,7 +277,7 @@ cross-references.
 - Extension interfaces overview (CNI, CSI, CRI) at the conceptual level
 - HA control plane concepts (stacked vs external etcd, may be conceptual only in kind)
 
-**Adjacent assignments:** RBAC (security context for cluster admin operations)
+**Adjacent assignments:** RBAC (security context for cluster admin operations), tls-and-certificates (cluster PKI)
 
 ---
 
@@ -214,7 +285,7 @@ cross-references.
 
 **CKA domain:** Cluster Architecture, Installation & Configuration
 **Cluster:** Single-node kind (sufficient for chart operations)
-**Generation order:** 8
+**Generation order:** 11
 
 **Planned scope:**
 - Helm architecture (client, charts, releases, revisions)
@@ -233,7 +304,7 @@ cross-references.
 
 **CKA domain:** Cluster Architecture, Installation & Configuration
 **Cluster:** Single-node kind
-**Generation order:** 9
+**Generation order:** 12
 
 **Planned scope:**
 - kustomization.yaml structure and purpose
@@ -252,7 +323,7 @@ cross-references.
 
 **CKA domain:** Cluster Architecture, Installation & Configuration
 **Cluster:** Single-node kind
-**Generation order:** 2
+**Generation order:** 5
 
 **Planned scope:**
 - CustomResourceDefinition spec (group, versions, scope, names, schema)
@@ -271,7 +342,7 @@ cross-references.
 
 **CKA domain:** Services & Networking
 **Cluster:** Multi-node kind
-**Generation order:** 4
+**Generation order:** 7
 
 **Planned scope:**
 - ClusterIP services (default, internal access)
@@ -291,7 +362,7 @@ cross-references.
 
 **CKA domain:** Services & Networking
 **Cluster:** Multi-node kind (needs ingress controller installed)
-**Generation order:** 7
+**Generation order:** 10
 
 **Planned scope:**
 - Ingress resource spec (rules, paths, backends, defaultBackend)
@@ -311,7 +382,7 @@ cross-references.
 
 **CKA domain:** Services & Networking
 **Cluster:** Multi-node kind
-**Generation order:** 5
+**Generation order:** 8
 
 **Planned scope:**
 - Service DNS format: `<service>.<namespace>.svc.cluster.local`
@@ -330,7 +401,7 @@ cross-references.
 
 **CKA domain:** Services & Networking
 **Cluster:** Multi-node kind (needs CNI with NetworkPolicy support)
-**Generation order:** 6
+**Generation order:** 9
 
 **Planned scope:**
 - NetworkPolicy spec structure (podSelector, policyTypes, ingress, egress)
@@ -355,7 +426,7 @@ the most common choice for kind clusters).
 
 **CKA domain:** Storage
 **Cluster:** Single-node kind (sufficient for local storage exercises)
-**Generation order:** 3
+**Generation order:** 6
 
 **Planned scope:**
 - Volume types: emptyDir, hostPath, persistentVolumeClaim
@@ -369,7 +440,7 @@ the most common choice for kind clusters).
 - Default StorageClass
 - Volume expansion (allowVolumeExpansion)
 
-**Adjacent assignments:** pods/assignment-2 (ConfigMap and Secret volumes), pods/assignment-6 (emptyDir for inter-container sharing)
+**Adjacent assignments:** pods/assignment-2 (ConfigMap and Secret volumes), pods/assignment-6 (emptyDir for inter-container sharing), security-contexts (fsGroup affects mounted volume permissions)
 
 ---
 
@@ -377,7 +448,7 @@ the most common choice for kind clusters).
 
 **CKA domain:** Troubleshooting
 **Cluster:** Multi-node kind
-**Generation order:** 10
+**Generation order:** 13
 
 **Planned scope:**
 - Pod failure states (CrashLoopBackOff, ImagePullBackOff, ErrImagePull, CreateContainerError)
@@ -397,7 +468,7 @@ topic areas (broken deployment + wrong service selector + missing configmap).
 
 **CKA domain:** Troubleshooting
 **Cluster:** Multi-node kind
-**Generation order:** 11
+**Generation order:** 14
 
 **Planned scope:**
 - API server failures (static pod manifest errors, certificate issues, port conflicts)
@@ -417,7 +488,7 @@ The prompt should identify which scenarios work in kind and which are conceptual
 
 **CKA domain:** Troubleshooting
 **Cluster:** Multi-node kind
-**Generation order:** 12
+**Generation order:** 15
 
 **Planned scope:**
 - Node NotReady diagnosis (kubectl describe node, conditions)
@@ -437,7 +508,7 @@ bare-metal. The prompt should note where kind behavior diverges from real cluste
 
 **CKA domain:** Troubleshooting
 **Cluster:** Multi-node kind (with policy-capable CNI)
-**Generation order:** 13
+**Generation order:** 16
 
 **Planned scope:**
 - Service not reachable (empty endpoints, selector mismatch, wrong port)
