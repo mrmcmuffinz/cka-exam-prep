@@ -21,9 +21,10 @@ Two skills in `skills/` support the assignment generation pipeline.
 
 ### cka-prompt-builder
 
-Produces scoped `prompt.md` files for new assignments. It knows the CKA exam curriculum,
-the Mumshad course structure, and what assignments already exist. Use it when the user
-asks to build, create, or generate a prompt for a topic.
+Produces topic-level README.md files (scoping how many assignments a topic needs) and
+assignment-level prompt.md files (detailed specs for each assignment). It knows the CKA
+exam curriculum, the Mumshad course structure, and what assignments already exist. Use
+it when the user asks to scope out a topic or build a prompt for a specific assignment.
 
 Reference files in `skills/cka-prompt-builder/references/`:
 - `cka-curriculum.md` has the five CKA domains, their competencies, and exam weights.
@@ -42,14 +43,18 @@ Reference file in `skills/k8s-homework-generator/references/`:
 
 ### Generation Workflow
 
-1. User asks for a prompt on a topic (for example, "build a prompt for Network Policies").
-2. The `cka-prompt-builder` skill reads its three reference files and produces a
-   `prompt.md` in the target directory (for example,
-   `exercises/network-policies/assignment-1/prompt.md`).
-3. User reviews and approves the prompt.
-4. The `k8s-homework-generator` skill reads the prompt.md and `base-template.md`, then
+1. User asks to scope out a topic (for example, "scope out Network Policies").
+2. The `cka-prompt-builder` skill reads its reference files and produces a topic-level
+   `README.md` at `exercises/<topic>/README.md` that determines how many assignments
+   the topic needs and what each covers at a high level.
+3. User reviews and approves the scoping.
+4. User asks for a prompt for a specific assignment (for example, "generate the prompt
+   for Network Policies assignment 1").
+5. The `cka-prompt-builder` skill produces a `prompt.md` in the target directory.
+6. User reviews and approves the prompt.
+7. The `k8s-homework-generator` skill reads the prompt.md and `base-template.md`, then
    produces four files in the same directory.
-5. Update `assignment-registry.md` to reflect the new assignment's status.
+8. Update `assignment-registry.md` to reflect the new assignment's status.
 
 ## Directory Structure
 
@@ -73,8 +78,10 @@ exercises/                          All homework assignments
 skills/                             Claude Code skills for generation
 ```
 
-Each assignment directory contains five files: `prompt.md` (the generation input),
-`README.md`, `<topic>-tutorial.md`, `<topic>-homework.md`, `<topic>-homework-answers.md`.
+Each topic directory contains a topic-level `README.md` that scopes the number of
+assignments and what each covers. Each assignment subdirectory contains five files:
+`prompt.md` (the generation input), `README.md` (assignment overview for the learner),
+`<topic>-tutorial.md`, `<topic>-homework.md`, `<topic>-homework-answers.md`.
 
 ## Environment
 

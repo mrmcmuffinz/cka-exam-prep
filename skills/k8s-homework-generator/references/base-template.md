@@ -9,9 +9,21 @@ prompt.md to produce consistent, high-quality output across all topics.
 
 ---
 
+## Directory Structure
+
+Each topic has a topic-level README at `exercises/<topic>/README.md` that scopes the
+number of assignments and what each one covers. This file is produced by the
+`cka-prompt-builder` skill and must exist before any assignment content is generated.
+The homework generator does not produce or modify the topic README.
+
+Each assignment within a topic lives in `exercises/<topic>/assignment-N/` and contains
+the five files described below.
+
 ## Output Files
 
 Every assignment produces exactly four Markdown files in the assignment directory.
+(The fifth file, prompt.md, is the input produced by the prompt builder, not by
+this generator.)
 
 ### 1. README.md
 

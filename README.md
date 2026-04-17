@@ -14,11 +14,13 @@ The assignments in this repository are organized to cover all five CKA exam doma
 
 | Domain | Weight | Exercise Directories |
 |---|---|---|
-| Cluster Architecture, Installation & Configuration | 25% | rbac, cluster-lifecycle, helm, kustomize, crds-and-operators |
-| Workloads & Scheduling | 15% | pods (assignments 1-7) |
+| Cluster Architecture, Installation & Configuration | 25% | rbac, cluster-lifecycle, helm, kustomize, crds-and-operators, tls-and-certificates |
+| Workloads & Scheduling | 15% | pods (assignments 1-7), security-contexts |
 | Services & Networking | 20% | services, ingress-and-gateway-api, coredns, network-policies |
 | Storage | 10% | storage |
 | Troubleshooting | 30% | troubleshooting (assignments 1-4) |
+
+Security topics are distributed across domains rather than grouped into a single series, matching how the CKA exam tests them: RBAC and TLS under Cluster Architecture, security contexts under Workloads & Scheduling, network policies under Services & Networking, and certificate troubleshooting under Troubleshooting.
 
 ## Repository Layout
 
@@ -52,17 +54,42 @@ cka-exam-prep/
     │   ├── assignment-6/              # Multi-Container Patterns
     │   └── assignment-7/              # Workload Controllers
     │
-    ├── rbac/                          # RBAC, namespace-scoped ✓
+    ├── rbac/                          # RBAC series
+    │   ├── assignment-1/              # Namespace-scoped (Roles, RoleBindings) ✓
+    │   └── assignment-2/              # Cluster-scoped (ClusterRoles, ClusterRoleBindings)
+    │
+    ├── tls-and-certificates/          # K8s PKI, cert creation, Certificates API
+    │   └── assignment-1/
+    │
+    ├── security-contexts/             # runAsUser, capabilities, seccomp, fsGroup
+    │   └── assignment-1/
     │
     ├── cluster-lifecycle/             # kubeadm, upgrades, etcd backup/restore
+    │   └── assignment-1/
+    │
     ├── helm/                          # Chart install, upgrade, rollback, values
+    │   └── assignment-1/
+    │
     ├── kustomize/                     # Overlays, patches, transformers, components
+    │   └── assignment-1/
+    │
     ├── crds-and-operators/            # CRDs, custom resources, operator pattern
+    │   └── assignment-1/
+    │
     ├── services/                      # ClusterIP, NodePort, LoadBalancer, endpoints
+    │   └── assignment-1/
+    │
     ├── ingress-and-gateway-api/       # Ingress controllers, Gateway API resources
+    │   └── assignment-1/
+    │
     ├── coredns/                       # DNS resolution, CoreDNS config, debugging
+    │   └── assignment-1/
+    │
     ├── network-policies/              # Ingress/egress rules, namespace isolation
+    │   └── assignment-1/
+    │
     ├── storage/                       # PV, PVC, StorageClass, dynamic provisioning
+    │   └── assignment-1/
     │
     └── troubleshooting/               # Cross-domain capstone series
         ├── assignment-1/              # Application failures
@@ -73,7 +100,9 @@ cka-exam-prep/
 
 Directories marked with ✓ contain completed assignments. The remaining directories have planned assignments that are generated progressively as the corresponding course sections are studied.
 
-Each assignment directory contains five files:
+Each topic directory contains a topic-level `README.md` that explains why the topic has its number of assignments, what each one covers, scope boundaries, cluster requirements, and recommended order. This is the scoping document that determines how a topic is decomposed before any assignment content is generated.
+
+Each assignment subdirectory contains five files:
 
 - `prompt.md` is the prompt used to generate the assignment content. Keeping it alongside the output makes the material reproducible and makes it obvious what was in scope (and what was deliberately deferred to later assignments).
 - `README.md` is the assignment's own overview, covering prerequisites, estimated time commitment, and the recommended workflow specific to that topic.
@@ -81,11 +110,9 @@ Each assignment directory contains five files:
 - `<topic>-homework.md` contains 15 progressive exercises organized into five difficulty levels (three exercises per level). Exercise headings are intentionally bare (no descriptive titles) so that debugging exercises don't leak hints about what's broken.
 - `<topic>-homework-answers.md` contains complete solutions with explanations, including a common-mistakes section and a verification commands cheat sheet.
 
-The `rbac/` directory predates the series structure and lives flat rather than under an `assignment-N/` subdirectory. It covers namespace-scoped RBAC; a future cluster-scoped RBAC assignment will likely extend that area.
-
 ## Assignment Generation
 
-New assignments are generated using two Claude Code skills in the `skills/` directory. The `cka-prompt-builder` skill produces a scoped `prompt.md` for a topic by consulting the CKA curriculum, the Mumshad course structure, and the registry of existing assignments. The `k8s-homework-generator` skill takes that prompt and produces the four content files (README, tutorial, homework, answers) following the structural conventions documented in its base template.
+New assignments are generated using two Claude Code skills in the `skills/` directory. The `cka-prompt-builder` skill first produces a topic-level README that scopes how many assignments a topic needs and what each covers, then produces detailed `prompt.md` files for individual assignments by consulting the CKA curriculum, the Mumshad course structure, and the registry of existing assignments. The `k8s-homework-generator` skill takes a prompt and produces the four content files (assignment README, tutorial, homework, answers) following the structural conventions documented in its base template.
 
 The generation sequence is tied to the daily study plan. As each course section is completed, the corresponding assignments become available for generation. The `cka-homework-plan.md` file documents the full sequence and dependencies. Troubleshooting assignments are generated last because they are cross-domain capstones that combine failure modes from multiple topic areas.
 
@@ -95,7 +122,7 @@ For details on the generation workflow, see `CLAUDE.md`.
 
 The pod series is designed to be worked through in order. Each assignment builds on the pod spec concepts from earlier assignments and explicitly declares what it assumes and what it defers. Attempting Assignment 4 (Scheduling) without Assignment 1 (Pod Fundamentals) will still work mechanically but misses the point, which is deliberate practice of a full skill stack.
 
-The RBAC material is independent of the pod series and can be worked through at any point after Assignment 1, since it requires only the ability to create pods for testing service account permissions.
+The RBAC material is independent of the pod series and can be worked through at any point after Assignment 1, since it requires only the ability to create pods for testing service account permissions. RBAC assignment-2 (cluster-scoped) builds on assignment-1 (namespace-scoped) and should be done after it.
 
 1. **Assignment 1: Pod Fundamentals** establishes the pod spec, single and multi-container mechanics, commands and arguments, environment variables from literals, restart policy, image pull policy, and basic init containers. Everything later builds on this.
 2. **Assignment 2: Pod Configuration Injection** adds ConfigMaps and Secrets, consumed as environment variables, volume mounts, and projected volumes, along with the downward API.
@@ -105,7 +132,11 @@ The RBAC material is independent of the pod series and can be worked through at 
 6. **Assignment 6: Multi-Container Patterns** teaches the sidecar, ambassador, and adapter patterns, along with native sidecars (init containers with restartPolicy: Always) and shared process namespace.
 7. **Assignment 7: Workload Controllers** transitions from pods to the controllers that manage them: ReplicaSets, Deployments (including rollouts, rollbacks, and strategies), and DaemonSets.
 
-**RBAC (namespace-scoped)** covers Roles and RoleBindings, service accounts, and the common patterns for granting scoped permissions within a namespace. A future assignment will cover cluster-scoped RBAC with ClusterRoles and ClusterRoleBindings.
+**RBAC assignment-1 (namespace-scoped)** covers Roles and RoleBindings, service accounts, and the common patterns for granting scoped permissions within a namespace. **RBAC assignment-2 (cluster-scoped)** extends this to ClusterRoles, ClusterRoleBindings, aggregated ClusterRoles, and cluster-scoped resources like nodes and PersistentVolumes.
+
+**TLS and Certificates** covers the Kubernetes PKI, certificate creation and inspection with openssl, the Certificates API and CertificateSigningRequests, and kubeconfig certificate management.
+
+**Security Contexts** covers pod and container security settings: runAsUser, runAsGroup, fsGroup, Linux capabilities, readOnlyRootFilesystem, allowPrivilegeEscalation, and seccomp profiles.
 
 After the pod series, the remaining assignments can be worked in any order that follows the generation sequence, since each is self-contained with its own tutorial. The troubleshooting series should be done last as it draws on concepts from all other topics.
 
