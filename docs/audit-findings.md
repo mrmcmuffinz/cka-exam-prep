@@ -198,9 +198,10 @@ Setup creates a pod referencing a missing PVC and a command that reads a non-exi
 file. Objective says "stuck in Pending" (PVC issue), but the answer key fixes both. The
 exercise is labeled Level 1 "single, clear failure" but actually has two.
 
-**Status: Pending.** Scheduled for regeneration in Phase 4 (P4.8). The fix is to
-rewrite the Level 1 exercise with a single clear failure, moving any dual-failure
-scenario to Level 4 or 5.
+**Status: Resolved 2026-04-18 (P4.8).** Exercise 1.2 rewritten with a single
+clear failure (missing PVC); the container command changed from `cat /data/input.txt`
+(which masked a second failure mode) to `sleep 3600` so the pod reaches Running
+after a single PVC-create fix. Answer now uses the three-stage debugging structure.
 
 **U7. `storage/assignment-1` answer key duplicates every YAML block twice.**
 Once for display, once inside a `kubectl apply -f - <<EOF` heredoc. Two sources of truth

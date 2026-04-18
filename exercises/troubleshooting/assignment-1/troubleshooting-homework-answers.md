@@ -41,19 +41,32 @@ The nginx command requires the semicolon at the end of the directive.
 
 ## Exercise 1.2 Solution
 
-**Diagnosis:**
+### Diagnosis
+
+Check pod status and events:
 
 ```bash
 kubectl get pod data-processor -n ex-1-2
-kubectl describe pod data-processor -n ex-1-2
+kubectl describe pod data-processor -n ex-1-2 | tail -15
+```
+
+Expected: pod is `Pending`; Events include `FailedScheduling` citing `persistentvolumeclaim "data-pvc" not found` or similar.
+
+Confirm no PVC exists:
+
+```bash
 kubectl get pvc -n ex-1-2
 ```
 
-The pod is Pending because the PVC "data-pvc" does not exist.
+Expected: no PVCs listed.
 
-**Fix:**
+### What the bug is and why it happens
 
-Create the PVC (using the default StorageClass).
+The pod's `spec.volumes[0].persistentVolumeClaim.claimName` references `data-pvc`, but no PVC by that name exists in the namespace. Kubelet cannot satisfy the volume mount because no storage is bound to the reference, so the pod stays `Pending` at the scheduling stage. The container's command (`sleep 3600`) is fine; it only becomes relevant once the pod reaches a node.
+
+### Fix
+
+Create the missing PVC using the default StorageClass (kind's `standard`):
 
 ```bash
 cat <<EOF | kubectl apply -f -
@@ -69,33 +82,11 @@ spec:
     requests:
       storage: 100Mi
 EOF
+
+kubectl wait --for=condition=Ready pod/data-processor -n ex-1-2 --timeout=60s
 ```
 
-Also, the command tries to read a file that does not exist. Update the pod to do something that works.
-
-```bash
-kubectl delete pod data-processor -n ex-1-2
-
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Pod
-metadata:
-  name: data-processor
-  namespace: ex-1-2
-spec:
-  containers:
-  - name: processor
-    image: busybox:1.36
-    command: ["sh", "-c", "ls /data; sleep 3600"]
-    volumeMounts:
-    - name: data
-      mountPath: /data
-  volumes:
-  - name: data
-    persistentVolumeClaim:
-      claimName: data-pvc
-EOF
-```
+The PVC binds within a few seconds; the pod's volume mount succeeds; the container starts. No other changes are required.
 
 -----
 

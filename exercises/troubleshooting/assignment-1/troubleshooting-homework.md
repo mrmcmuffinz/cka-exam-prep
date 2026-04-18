@@ -87,7 +87,7 @@ spec:
   containers:
   - name: processor
     image: busybox:1.36
-    command: ["sh", "-c", "cat /data/input.txt"]
+    command: ["sh", "-c", "sleep 3600"]
     volumeMounts:
     - name: data
       mountPath: /data
@@ -100,12 +100,16 @@ EOF
 
 **Objective:**
 
-The pod is stuck in Pending. Diagnose and fix the issue so the pod can start.
+The pod is stuck in Pending. Diagnose and fix the single issue so the pod reaches Running.
 
 **Verification:**
 
 ```bash
-kubectl get pod data-processor -n ex-1-2 | grep -E "Running|Completed"
+kubectl get pod data-processor -n ex-1-2 -o jsonpath='{.status.phase}{"\n"}'
+# Expected: Running
+
+kubectl get pvc data-pvc -n ex-1-2 -o jsonpath='{.status.phase}{"\n"}'
+# Expected: Bound
 ```
 
 -----

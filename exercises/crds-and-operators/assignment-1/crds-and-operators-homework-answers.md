@@ -72,39 +72,64 @@ EOF
 
 ## Exercise 1.2 Solution
 
-**Task:** List and describe CRDs.
+Create the Application custom resource:
 
 ```bash
-# List all CRDs
-kubectl get crd
-
-# Describe the applications CRD
-kubectl describe crd applications.apps.example.com
-
-# Extract group and scope
-kubectl get crd applications.apps.example.com -o jsonpath='{.spec.group} {.spec.scope}'
+cat <<EOF | kubectl apply -f -
+apiVersion: apps.example.com/v1
+kind: Application
+metadata:
+  name: webapp
+  namespace: ex-1-2
+spec:
+  name: webapp-production
+EOF
 ```
 
-**Explanation:** kubectl get lists resources, describe shows details, and jsonpath extracts specific fields.
+The apiVersion combines the CRD's `spec.group` (`apps.example.com`) and the version name (`v1`). The kind matches `spec.names.kind` (`Application`). Because the CRD is `Namespaced`, every custom resource instance must be created in a specific namespace. Retrieving the resource with `kubectl get applications webapp -n ex-1-2 -o yaml` returns the full object, including the `spec.name` field defined in the CRD's openAPI schema.
 
 ---
 
 ## Exercise 1.3 Solution
 
-**Task:** Verify the API resource is available.
+Update the CRD to include an `additionalPrinterColumns` entry on the `v1` version:
 
 ```bash
-# Check api-resources for the apps.example.com group
-kubectl api-resources --api-group=apps.example.com
-
-# Check API versions
-kubectl api-versions | grep apps.example.com
-
-# Use kubectl explain
-kubectl explain applications --api-version=apps.example.com/v1
+cat <<EOF | kubectl apply -f -
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: applications.apps.example.com
+spec:
+  group: apps.example.com
+  versions:
+  - name: v1
+    served: true
+    storage: true
+    additionalPrinterColumns:
+    - name: Application-Name
+      type: string
+      jsonPath: .spec.name
+    schema:
+      openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              name:
+                type: string
+  scope: Namespaced
+  names:
+    plural: applications
+    singular: application
+    kind: Application
+EOF
 ```
 
-**Explanation:** These commands verify that the CRD has registered its API endpoints and the new resource type is usable.
+`additionalPrinterColumns` is a per-version field on the CRD that adds columns to the default `kubectl get` output for the custom resource. Each entry names a column (`Application-Name`), declares its type (`string`), and uses a JSONPath expression (`.spec.name`) to extract the value from each resource. Reapplying the CRD is a safe operation because the existing object storage version remains compatible; existing custom resource instances continue to work and immediately show up with the new column.
+
+Run `kubectl get applications -n ex-1-2` after the update: the output now includes a column for `APPLICATION-NAME` with the value `webapp-production` for the `webapp` object.
 
 ---
 

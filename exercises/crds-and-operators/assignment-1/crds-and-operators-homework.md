@@ -43,72 +43,55 @@ kubectl api-resources | grep applications
 
 ### Exercise 1.2
 
-**Objective:** List and describe CRDs in the cluster.
+**Objective:** Create an instance of the `Application` custom resource from Exercise 1.1.
 
 **Setup:**
 
-Ensure the CRD from Exercise 1.1 exists.
+The CRD from Exercise 1.1 must exist. Create a namespace for the custom resource:
+
+```bash
+kubectl create namespace ex-1-2
+```
 
 **Task:**
 
-Use kubectl to:
-1. List all CRDs in the cluster
-2. Get detailed information about the applications CRD
-3. Extract just the group and scope from the CRD
+Create an `Application` custom resource named `webapp` in namespace `ex-1-2` with `spec.name` set to `webapp-production`. The object's apiVersion is `apps.example.com/v1` and kind is `Application`.
 
 **Verification:**
 
 ```bash
-# List all CRDs
-kubectl get crd
+kubectl get applications.apps.example.com webapp -n ex-1-2 \
+  -o jsonpath='{.metadata.name}:{.spec.name}{"\n"}'
+# Expected: webapp:webapp-production
 
-# Expected: Shows applications.apps.example.com plus any system CRDs
-
-# Describe the CRD
-kubectl describe crd applications.apps.example.com
-
-# Expected: Shows full CRD details including schema
-
-# Extract group and scope
-kubectl get crd applications.apps.example.com -o jsonpath='{.spec.group} {.spec.scope}'
-
-# Expected: apps.example.com Namespaced
+kubectl get applications -n ex-1-2 \
+  -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'
+# Expected: webapp (on one line)
 ```
 
 ---
 
 ### Exercise 1.3
 
-**Objective:** Verify the new API resource is available.
+**Objective:** Update the `applications.apps.example.com` CRD to add additional printer columns so `kubectl get applications` shows the application's `spec.name` in its output.
 
 **Setup:**
 
-Ensure the CRD from Exercise 1.1 exists.
+The CRD from Exercise 1.1 and the custom resource from Exercise 1.2 must both exist.
 
 **Task:**
 
-Use kubectl to verify:
-1. The applications resource appears in api-resources
-2. The API version is available
-3. You can use kubectl explain on the new resource type
+Modify the `applications.apps.example.com` CRD to add an `additionalPrinterColumns` entry on the `v1` version with a column named `Application-Name`, type `string`, and `jsonPath` `.spec.name`. After applying the change, `kubectl get applications -n ex-1-2` must show a new column containing the value of each resource's `spec.name`.
 
 **Verification:**
 
 ```bash
-# Check api-resources
-kubectl api-resources --api-group=apps.example.com
+kubectl get crd applications.apps.example.com \
+  -o jsonpath='{.spec.versions[0].additionalPrinterColumns[0].name}:{.spec.versions[0].additionalPrinterColumns[0].jsonPath}{"\n"}'
+# Expected: Application-Name:.spec.name
 
-# Expected: applications listed with Kind Application
-
-# Check API versions
-kubectl api-versions | grep apps.example.com
-
-# Expected: apps.example.com/v1
-
-# Try kubectl explain (may show limited info without detailed schema)
-kubectl explain applications --api-version=apps.example.com/v1
-
-# Expected: Shows KIND and VERSION information
+kubectl get applications -n ex-1-2 --no-headers
+# Expected: a row showing webapp and webapp-production (the additional column).
 ```
 
 ---
