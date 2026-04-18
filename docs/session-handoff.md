@@ -102,7 +102,7 @@ Use Sonnet 4.6 for Phase 5 technique-weaving (`kubectl debug`, `kubectl port-for
 
 ### Context budgeting rule of thumb
 
-In my experience generating the two completed Phase 4 assignments today:
+Observed from generating the eight completed Phase 4 assignments to date:
 
 - Reading the prompt, base-template, and an existing assignment as quality-bar reference: ~5-8% of 1M context
 - Web-fetching upstream docs for API verification: ~3-5%
@@ -110,7 +110,7 @@ In my experience generating the two completed Phase 4 assignments today:
 - Documentation updates and commit preparation: ~1-2%
 - **Total per full assignment: 20-30% of 1M context**
 
-Starting fresh, you can plan for 3 full assignments per session. Starting part-way through a context, reduce accordingly.
+Starting fresh, you can plan for 2-3 full assignments per session. Surgical fixes (P4.6-style homework-only regens, single-exercise rewrites) are much cheaper (5-10% each) and several can fit alongside a full regen.
 
 ### When to start a fresh session
 
@@ -126,7 +126,7 @@ Do not push through context exhaustion; the quality of later work degrades and m
 
 ## Reference quality bar
 
-When generating new Phase 4 content, read one of the completed reference assignments first so the style is fresh in context. Both of these demonstrate the full set of Phase 2 hard gates:
+When generating new Phase 4 content, read one of the completed reference assignments first so the style is fresh in context. All of these demonstrate the full set of Phase 2 hard gates:
 
 - `exercises/pods/assignment-1/` — the hand-crafted original; the narrative bar for tutorials
 - `exercises/rbac/assignment-1/` — hand-crafted; the narrative bar for RBAC and subject-oriented topics
@@ -134,10 +134,12 @@ When generating new Phase 4 content, read one of the completed reference assignm
 - `exercises/pod-security/assignment-1/` — skill-generated under the new hard gates; admission-style topic
 - `exercises/rbac/assignment-2/` — skill-generated under the new hard gates; cluster-scoped authorization topic; demonstrates the three-stage debugging structure on silent-failure RBAC bugs
 - `exercises/statefulsets/assignment-1/` — skill-generated under the new hard gates; workload-controller topic with rich tutorial narrative on scope-matrix failures and staged rollouts
-- `exercises/troubleshooting/assignment-2/` — skill-generated under the new hard gates; all-debug troubleshooting topic with kind-specific inside-the-node workflows, the canonical reference for a "15 debug exercises" shape
+- `exercises/troubleshooting/assignment-2/` — skill-generated under the new hard gates; all-debug troubleshooting topic (control plane) with kind-specific inside-the-node workflows, the canonical reference for a "15 debug exercises" shape
 - `exercises/autoscaling/assignment-1/` — skill-generated under the new hard gates; mixes build, debug, and design exercises around a controller that depends on a live observable signal (metrics-server)
+- `exercises/admission-controllers/assignment-1/` — skill-generated under the new hard gates; request-flow-and-CEL topic with ValidatingAdmissionPolicy authoring plus multi-bug debug
+- `exercises/troubleshooting/assignment-4/` — skill-generated under the new hard gates; all-debug network troubleshooting organized around a six-layer diagnostic playbook
 
-Pick whichever is most shape-adjacent to the assignment being generated. For ingress assignments, read a networking-style reference. For RBAC-style authorization or admission topics, `rbac/assignment-2` is the current Phase 4 exemplar. For workload-controller topics, `jobs-and-cronjobs/assignment-1` and `statefulsets/assignment-1` are the nearest shape. For autoscaling or other controller topics depending on metrics-server, `autoscaling/assignment-1` is the reference. For troubleshooting-heavy topics (troubleshooting/assignment-4, any future all-debug assignment), `troubleshooting/assignment-2` is the shape.
+Pick whichever is most shape-adjacent to the assignment being generated. For ingress assignments, `troubleshooting/assignment-4` is the nearest networking shape. For security-contexts (P4.2), `pod-security/assignment-1` is the nearest admission/enforcement shape. For storage (P4.3), `statefulsets/assignment-1` is the nearest volume-centric shape. For RBAC-style authorization topics, `rbac/assignment-2` is the exemplar. For workload-controller topics, `jobs-and-cronjobs/assignment-1` and `statefulsets/assignment-1` are the shape. For autoscaling or other controller topics depending on metrics-server, `autoscaling/assignment-1` is the reference. For all-debug topics, `troubleshooting/assignment-2` (control plane) and `troubleshooting/assignment-4` (network) are the shape.
 
 ---
 
@@ -187,8 +189,8 @@ Tick every item before marking a task Complete.
 
 ## Summary
 
-Six assignments complete out of roughly 19 in Phase 4. Each full assignment takes 20-30% of a 1M context window, so plan on 2-3 assignments per session with Opus 4.7 1M. Smaller fixes (Phase 5 technique weaving, targeted homework-only regenerations) fit comfortably on Sonnet 4.6 at 200k.
+Eight full assignments complete out of roughly 19 in Phase 4, plus three surgical regens (P4.6 cluster-lifecycle/1 homework, P4.7 crds-and-operators/1 Level 1, P4.8 troubleshooting/1 Exercise 1.2). All five new-topic curriculum gaps (G1, G2, G3, G5, G6) resolved; all stub READMEs (P4.1, P4.4, P4.5) regenerated. Remaining Phase 4 work: P4.2 (security-contexts/1-3), P4.3 (storage/1-3), and P4.9-P4.13 (ingress controller swap, five assignments). Each full assignment takes 20-30% of a 1M context window; plan on 2-3 assignments per session with Opus 4.7 1M. Smaller fixes (Phase 5 technique weaving, targeted homework-only regenerations) fit comfortably on Sonnet 4.6 at 200k.
 
-The reference quality bar is set by `jobs-and-cronjobs/assignment-1`, `pod-security/assignment-1`, `rbac/assignment-2`, `statefulsets/assignment-1`, `troubleshooting/assignment-2`, and `autoscaling/assignment-1`. Future Phase 4 output must meet the same bar.
+The reference quality bar is set by the eight skill-generated Phase 4 assignments above plus the two hand-crafted originals (`pods/assignment-1`, `rbac/assignment-1`). Future Phase 4 output must meet the same bar.
 
 Doc sync is not optional: update `remediation-plan.md` and `audit-findings.md` in the same commit as each content task to avoid the drift that required the 2026-04-18 doc-sync pass.
