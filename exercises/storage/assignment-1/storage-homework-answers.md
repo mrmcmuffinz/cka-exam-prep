@@ -1,714 +1,585 @@
-# Storage Homework Answers: Volumes and PersistentVolumes
+# Volumes and PersistentVolumes Homework Answers
 
-This file contains complete solutions for all 15 exercises on volumes and PersistentVolumes.
+Complete solutions. Level 3 and Level 5 debugging answers use the three-stage structure (diagnosis, what the bug is and why, fix).
 
 ---
 
 ## Exercise 1.1 Solution
 
-**Task:** Create pod with emptyDir.
-
 ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: temp-storage
+  name: shared-scratch
   namespace: ex-1-1
 spec:
   containers:
-  - name: app
+  - name: writer
     image: busybox:1.36
-    command: ["sh", "-c", "echo 'cached data' > /cache/data.txt && sleep 3600"]
+    command: ["sh", "-c", "echo hello > /data/message && sleep 3600"]
     volumeMounts:
-    - name: cache
-      mountPath: /cache
+    - name: data
+      mountPath: /data
+  - name: reader
+    image: busybox:1.36
+    command: ["sh", "-c", "sleep 2 && cat /data/message && sleep 3600"]
+    volumeMounts:
+    - name: data
+      mountPath: /data
   volumes:
-  - name: cache
+  - name: data
     emptyDir: {}
 ```
 
-Apply with:
-
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Pod
-metadata:
-  name: temp-storage
-  namespace: ex-1-1
-spec:
-  containers:
-  - name: app
-    image: busybox:1.36
-    command: ["sh", "-c", "echo 'cached data' > /cache/data.txt && sleep 3600"]
-    volumeMounts:
-    - name: cache
-      mountPath: /cache
-  volumes:
-  - name: cache
-    emptyDir: {}
-EOF
-```
-
-**Explanation:** emptyDir creates an empty directory that exists for the lifetime of the pod. Data is lost when the pod is deleted.
+`emptyDir` is shared across all containers in the pod that mount it. The writer starts its write immediately; the reader sleeps two seconds so the write has time to complete. Both end on `sleep 3600` so the pod stays Running. `emptyDir: {}` uses the default medium (node filesystem) with no size limit.
 
 ---
 
 ## Exercise 1.2 Solution
 
-**Task:** Create pod with hostPath.
-
 ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: host-storage
+  name: host-consumer
   namespace: ex-1-2
 spec:
   containers:
   - name: app
     image: busybox:1.36
-    command: ["sh", "-c", "echo 'host data' > /host-data/file.txt && sleep 3600"]
+    command: ["sleep", "3600"]
     volumeMounts:
-    - name: host-volume
-      mountPath: /host-data
+    - name: host
+      mountPath: /data
   volumes:
-  - name: host-volume
+  - name: host
     hostPath:
-      path: /tmp/ex-1-2-data
-      type: DirectoryOrCreate
+      path: /host-1-2
+      type: Directory
 ```
 
-Apply with:
-
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Pod
-metadata:
-  name: host-storage
-  namespace: ex-1-2
-spec:
-  containers:
-  - name: app
-    image: busybox:1.36
-    command: ["sh", "-c", "echo 'host data' > /host-data/file.txt && sleep 3600"]
-    volumeMounts:
-    - name: host-volume
-      mountPath: /host-data
-  volumes:
-  - name: host-volume
-    hostPath:
-      path: /tmp/ex-1-2-data
-      type: DirectoryOrCreate
-EOF
-```
-
-**Explanation:** hostPath mounts a directory from the host into the pod. DirectoryOrCreate creates the directory if it does not exist.
+`type: Directory` causes the kubelet to verify that the host path already exists. If it does not, the pod goes Pending with a mount failure, which is exactly what the exercise setup ensures does not happen.
 
 ---
 
 ## Exercise 1.3 Solution
 
-**Task:** Multi-container pod with shared volume.
+Two applies: the first creates the pod that writes both files, the second creates a new pod that mounts the same volumes (but with different write commands that do nothing). The verification uses the recreated pod.
+
+First pod (writer):
 
 ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: multi-container
+  name: ephemeral-writer
   namespace: ex-1-3
 spec:
   containers:
-  - name: writer
+  - name: probe
     image: busybox:1.36
-    command: ["sh", "-c", "echo 'shared message' > /shared/message.txt && sleep 3600"]
+    command: ["sh", "-c", "echo A > /empty/mark-A && echo B > /host/mark-B && sleep 3600"]
     volumeMounts:
-    - name: shared
-      mountPath: /shared
-  - name: reader
-    image: busybox:1.36
-    command: ["sh", "-c", "sleep 5 && cat /shared/message.txt && sleep 3600"]
-    volumeMounts:
-    - name: shared
-      mountPath: /shared
+    - name: empty
+      mountPath: /empty
+    - name: host
+      mountPath: /host
   volumes:
-  - name: shared
+  - name: empty
     emptyDir: {}
+  - name: host
+    hostPath:
+      path: /host-1-3
+      type: Directory
 ```
 
-Apply with:
+After the pod is deleted, the `emptyDir` is garbage-collected by the kubelet. The `hostPath` directory is on the node and survives. The recreated pod (using `command: ["sleep", "3600"]` as in the Task) sees an empty `/empty` and `/host/mark-B` still there.
 
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Pod
-metadata:
-  name: multi-container
-  namespace: ex-1-3
-spec:
-  containers:
-  - name: writer
-    image: busybox:1.36
-    command: ["sh", "-c", "echo 'shared message' > /shared/message.txt && sleep 3600"]
-    volumeMounts:
-    - name: shared
-      mountPath: /shared
-  - name: reader
-    image: busybox:1.36
-    command: ["sh", "-c", "sleep 5 && cat /shared/message.txt && sleep 3600"]
-    volumeMounts:
-    - name: shared
-      mountPath: /shared
-  volumes:
-  - name: shared
-    emptyDir: {}
-EOF
-```
-
-**Explanation:** Both containers mount the same emptyDir volume, allowing them to share data.
+The learning: `emptyDir` is pod-lifetime. `hostPath` is node-lifetime.
 
 ---
 
 ## Exercise 2.1 Solution
 
-**Task:** Create PV with hostPath.
-
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv-hostpath
+  name: ex-2-1-pv
 spec:
   capacity:
-    storage: 1Gi
-  accessModes:
-  - ReadWriteOnce
+    storage: 2Gi
+  accessModes: ["ReadWriteOnce"]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
+  storageClassName: manual
   hostPath:
-    path: /tmp/pv-hostpath-data
+    path: /ex-2-1
     type: DirectoryOrCreate
 ```
 
-Apply with:
-
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: pv-hostpath
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-  - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
-  hostPath:
-    path: /tmp/pv-hostpath-data
-    type: DirectoryOrCreate
-EOF
-```
-
-**Explanation:** A basic PV with hostPath backend. Empty storageClassName enables static binding.
+`DirectoryOrCreate` instructs the kubelet to create the directory if it does not exist. The PV enters `Available` because no PVC has bound to it yet. PVs are cluster-scoped; there is no namespace in the metadata.
 
 ---
 
 ## Exercise 2.2 Solution
 
-**Task:** Create PV with multiple access modes.
-
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv-multimode
+  name: ex-2-2-pv
 spec:
   capacity:
-    storage: 2Gi
-  accessModes:
-  - ReadWriteOnce
-  - ReadOnlyMany
-  persistentVolumeReclaimPolicy: Delete
-  storageClassName: ""
+    storage: 500Mi
+  accessModes: ["ReadOnlyMany"]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
   hostPath:
-    path: /tmp/pv-multimode-data
-    type: DirectoryOrCreate
+    path: /ex-2-2
+    type: Directory
 ```
 
-Apply with:
-
-```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: pv-multimode
-spec:
-  capacity:
-    storage: 2Gi
-  accessModes:
-  - ReadWriteOnce
-  - ReadOnlyMany
-  persistentVolumeReclaimPolicy: Delete
-  storageClassName: ""
-  hostPath:
-    path: /tmp/pv-multimode-data
-    type: DirectoryOrCreate
-EOF
-```
-
-**Explanation:** A PV can support multiple access modes. The actual mode used depends on the PVC that binds to it.
+`ReadOnlyMany` means many nodes can mount the volume read-only. The backend still must support that semantic; `hostPath` nominally does for single-node test setups.
 
 ---
 
 ## Exercise 2.3 Solution
 
-**Task:** List and describe PVs.
-
 ```bash
-# List PVs
-kubectl get pv
-
-# Describe
-kubectl describe pv pv-hostpath
-
-# Get reclaim policy
-kubectl get pv pv-multimode -o jsonpath='{.spec.persistentVolumeReclaimPolicy}'
+kubectl get pv ex-2-3-pv -o jsonpath='{.spec.capacity.storage}/{.spec.accessModes[0]}/{.spec.persistentVolumeReclaimPolicy}/{.spec.storageClassName}/{.spec.hostPath.path}/{.metadata.labels.purpose}'
 ```
 
-**Explanation:** Standard kubectl commands work with PVs just like other resources.
+Every field queried in one `jsonpath`. The extra `/` separators come out literally. The expected output is `750Mi/ReadWriteOnce/Delete/manual//ex-2-3/inspection`. Note the double slash before `/ex-2-3` because the path starts with a slash.
 
 ---
 
 ## Exercise 3.1 Solution
 
-**Problem:** PV is stuck in Released state due to claimRef.
-
-**Fix:**
+**Diagnosis.**
 
 ```bash
-kubectl patch pv released-pv --type=json -p='[{"op": "remove", "path": "/spec/claimRef"}]'
+kubectl get pv ex-3-1-pv
+kubectl describe pv ex-3-1-pv 2>&1 | head -n 20
 ```
 
-Or edit manually:
+The describe shows no such PV (the API server rejected the spec at admission time). Re-apply and capture the error.
 
 ```bash
-kubectl edit pv released-pv
-# Remove the claimRef section
+kubectl apply -f - <<'EOF'
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ex-3-1-pv
+spec:
+  capacity:
+    storage: 1G1
+  accessModes: ["ReadWriteOnce"]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: /ex-3-1
+    type: DirectoryOrCreate
+EOF
 ```
 
-**Explanation:** When a PVC is deleted, the PV with Retain policy keeps the claimRef. Remove it to make the PV Available again.
+Expected error: `Invalid value: "1G1": quantities must match the regular expression`. The capacity quantity `1G1` is not a valid Kubernetes quantity.
+
+**What the bug is and why.** Kubernetes quantities use SI suffixes (`K`, `M`, `G`, `T`, `P`, `E`) or binary IEC suffixes (`Ki`, `Mi`, `Gi`, `Ti`, `Pi`, `Ei`). `1G1` is neither. The API server's quantity validator rejects the spec at write time, so the PV never exists. The key diagnostic hint is that `kubectl get pv ex-3-1-pv` returns "not found" rather than showing a PV in some odd state.
+
+**Fix.** Correct the capacity to a valid quantity.
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ex-3-1-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes: ["ReadWriteOnce"]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  hostPath:
+    path: /ex-3-1
+    type: DirectoryOrCreate
+```
 
 ---
 
 ## Exercise 3.2 Solution
 
-**Problem:** Invalid capacity format (GB instead of Gi).
-
-**Fix:**
-
-```yaml
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: invalid-capacity-pv
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-  - ReadWriteOnce
-  hostPath:
-    path: /tmp/invalid-pv
-    type: DirectoryOrCreate
-```
-
-Apply with:
+**Diagnosis.**
 
 ```bash
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: invalid-capacity-pv
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-  - ReadWriteOnce
-  storageClassName: ""
-  hostPath:
-    path: /tmp/invalid-pv
-    type: DirectoryOrCreate
-EOF
+kubectl get pv ex-3-2-pv
+kubectl describe pv ex-3-2-pv | grep -E "Status|Claim"
 ```
 
-**Explanation:** Kubernetes uses binary units (Ki, Mi, Gi, Ti) not decimal units (KB, MB, GB, TB).
+Output shows `Status: Released` and a `Claim` referencing `ex-3-2/temp-claim`, but the PVC does not exist anymore. `Released` blocks rebinding.
+
+**What the bug is and why.** `reclaimPolicy: Retain` means when the PVC is deleted, the PV keeps its data but also keeps a `spec.claimRef` field pointing to the deleted PVC. Kubernetes will not rebind the PV as long as `claimRef` is set, because that would violate the exclusive-binding invariant. The administrator must explicitly remove `claimRef` to indicate the data is free to be reused.
+
+**Fix.** Remove the `claimRef`.
+
+```bash
+kubectl patch pv ex-3-2-pv --type='json' -p='[{"op": "remove", "path": "/spec/claimRef"}]'
+```
+
+`kubectl get pv ex-3-2-pv -o jsonpath='{.status.phase}'` now returns `Available`. The data at `/ex-3-2/data` is unchanged on the node.
 
 ---
 
 ## Exercise 3.3 Solution
 
-**Analysis:**
+**Diagnosis.**
 
-The PV has only ReadWriteOnce access mode, which means it can only be mounted by one node at a time. For multi-node read access, you would need either ReadOnlyMany (ROX) or ReadWriteMany (RWX).
-
-To fix, you would need to recreate the PV with additional access modes:
-
-```yaml
-accessModes:
-- ReadWriteOnce
-- ReadOnlyMany
+```bash
+kubectl get pvc -n ex-3-3 needy
+kubectl describe pvc -n ex-3-3 needy
 ```
 
-Note that hostPath volumes inherently only work on a single node, so even with ROX, the pods would need to be on the same node.
+The events show `no persistent volumes available for this claim and no storage class is set` with details about the mismatch. Compare PV and PVC specs:
+
+- PV: `accessModes: [ReadOnlyMany]`, `capacity: 500Mi`.
+- PVC: `accessModes: [ReadWriteMany]`, `requests: 200Mi`.
+
+The access-mode list does not match (the PV does not offer RWX), so no match. Capacity is fine (PV offers 500Mi, PVC asks for 200Mi).
+
+**What the bug is and why.** A PVC binds to a PV only if the PV's `accessModes` is a superset of (or equals) the PVC's `accessModes`. `ReadOnlyMany` is not a superset of `ReadWriteMany`. The binding algorithm rejects the candidate and leaves the PVC Pending.
+
+**Fix.** Change the PVC's `accessModes` to match what the PV offers.
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: needy
+  namespace: ex-3-3
+spec:
+  accessModes: ["ReadOnlyMany"]
+  resources:
+    requests:
+      storage: 200Mi
+  storageClassName: manual
+```
+
+Delete the old PVC and reapply (PVC specs are mostly immutable; easier to delete and recreate for this case). The PVC binds to `ex-3-3-pv` immediately.
 
 ---
 
 ## Exercise 4.1 Solution
 
-**Task:** Create PV with node affinity.
-
-```bash
-# Get node name
-NODE_NAME=$(kubectl get nodes -o jsonpath='{.items[0].metadata.name}')
-
-kubectl apply -f - <<EOF
+```yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: local-affinity-pv
+  name: ex-4-1-pv
 spec:
   capacity:
     storage: 1Gi
-  accessModes:
-  - ReadWriteOnce
+  accessModes: ["ReadWriteOnce"]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
+  storageClassName: manual
   local:
-    path: /tmp/local-affinity
+    path: /ex-4-1
   nodeAffinity:
     required:
       nodeSelectorTerms:
       - matchExpressions:
         - key: kubernetes.io/hostname
           operator: In
-          values:
-          - $NODE_NAME
-EOF
+          values: ["kind-control-plane"]
 ```
 
-**Explanation:** Node affinity ensures the PV is only used by pods scheduled on the specified node.
+`local` volume type is the modern replacement for `hostPath` when you want node affinity and the Kubernetes lifecycle to enforce scheduling constraints. Pods that claim this PV will only schedule onto `kind-control-plane`.
 
 ---
 
 ## Exercise 4.2 Solution
 
-**Task:** Create PV with labels.
-
 ```yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: labeled-pv
+  name: ex-4-2-ssd
   labels:
-    tier: gold
-    environment: production
+    tier: ssd
 spec:
   capacity:
-    storage: 500Mi
-  accessModes:
-  - ReadWriteOnce
+    storage: 1Gi
+  accessModes: ["ReadWriteOnce"]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
+  storageClassName: manual
   hostPath:
-    path: /tmp/labeled-pv
+    path: /ex-4-2-ssd
     type: DirectoryOrCreate
-```
-
-Apply with:
-
-```bash
-kubectl apply -f - <<EOF
+---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: labeled-pv
+  name: ex-4-2-hdd
   labels:
-    tier: gold
-    environment: production
+    tier: hdd
 spec:
   capacity:
-    storage: 500Mi
-  accessModes:
-  - ReadWriteOnce
+    storage: 1Gi
+  accessModes: ["ReadWriteOnce"]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
+  storageClassName: manual
   hostPath:
-    path: /tmp/labeled-pv
+    path: /ex-4-2-hdd
     type: DirectoryOrCreate
-EOF
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: want-ssd
+  namespace: ex-4-2
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: manual
+  selector:
+    matchLabels:
+      tier: ssd
 ```
 
-**Explanation:** Labels enable PVCs to select specific PVs using label selectors.
+The PVC's `selector` restricts the candidate set to PVs matching `tier=ssd`. Only `ex-4-2-ssd` qualifies; it binds. `ex-4-2-hdd` stays Available for any other PVC that wants `tier=hdd` or no selector.
 
 ---
 
 ## Exercise 4.3 Solution
 
-**Task:** Create PVs with different reclaim policies.
-
-```bash
-kubectl apply -f - <<EOF
+```yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: retain-pv
+  name: ex-4-3-retain
 spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-  - ReadWriteOnce
+  capacity: {storage: 500Mi}
+  accessModes: ["ReadWriteOnce"]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
-  hostPath:
-    path: /tmp/retain-pv
-    type: DirectoryOrCreate
+  storageClassName: manual
+  hostPath: {path: /ex-4-3-retain, type: Directory}
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: delete-pv
+  name: ex-4-3-delete
 spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-  - ReadWriteOnce
+  capacity: {storage: 500Mi}
+  accessModes: ["ReadWriteOnce"]
   persistentVolumeReclaimPolicy: Delete
-  storageClassName: ""
-  hostPath:
-    path: /tmp/delete-pv
-    type: DirectoryOrCreate
-EOF
+  storageClassName: manual
+  hostPath: {path: /ex-4-3-delete, type: Directory}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-retain
+  namespace: ex-4-3
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: {requests: {storage: 200Mi}}
+  storageClassName: manual
+  volumeName: ex-4-3-retain
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-delete
+  namespace: ex-4-3
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: {requests: {storage: 200Mi}}
+  storageClassName: manual
+  volumeName: ex-4-3-delete
 ```
 
-**Explanation:** Retain keeps the PV and data after PVC deletion. Delete removes the PV (and underlying storage if applicable).
+Then:
+
+```bash
+kubectl delete pvc -n ex-4-3 claim-retain claim-delete
+```
+
+Retain-policy PV enters `Released`; the directory on the node is unchanged. Delete-policy PV for `hostPath` has no real deletion path: Kubernetes tries to "delete" the backend but `hostPath` has no deletion provisioner, so the PV ends up in `Failed` phase (visible with `kubectl get pv`). The underlying directory on the node is untouched.
+
+The practical takeaway: `Delete` reclaim policy makes sense for provisioners that can actually delete (CSI drivers for AWS EBS, Azure Disk, etc.). For `hostPath`, always use `Retain`.
 
 ---
 
 ## Exercise 5.1 Solution
 
-**Task:** Create PVs for multi-tier application.
-
-```bash
-kubectl apply -f - <<EOF
+```yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: database-pv
+  name: ex-5-1-data
 spec:
-  capacity:
-    storage: 10Gi
-  accessModes:
-  - ReadWriteOnce
+  capacity: {storage: 2Gi}
+  accessModes: ["ReadWriteOnce"]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
-  hostPath:
-    path: /tmp/ex-5-1/database
-    type: DirectoryOrCreate
+  storageClassName: manual
+  local: {path: /ex-5-1-data}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - {key: kubernetes.io/hostname, operator: In, values: [kind-control-plane]}
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: cache-pv
+  name: ex-5-1-config
+  labels: {purpose: config}
 spec:
-  capacity:
-    storage: 2Gi
-  accessModes:
-  - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Delete
-  storageClassName: ""
-  hostPath:
-    path: /tmp/ex-5-1/cache
-    type: DirectoryOrCreate
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: logs-pv
-spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-  - ReadWriteMany
+  capacity: {storage: 100Mi}
+  accessModes: ["ReadOnlyMany"]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
-  hostPath:
-    path: /tmp/ex-5-1/logs
-    type: DirectoryOrCreate
-EOF
+  storageClassName: manual
+  local: {path: /ex-5-1-config}
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - {key: kubernetes.io/hostname, operator: In, values: [kind-control-plane]}
 ```
 
-**Explanation:** Different tiers have different requirements. Database needs Retain for data safety. Cache can use Delete since it is recreatable. Logs need RWX for multi-pod access.
+Both PVs use `local` (with `nodeAffinity`) rather than `hostPath` because local volumes formalize the node-pinning semantic that `hostPath` only implements by accident. The `purpose=config` label lets a PVC with a selector target specifically the config PV.
 
 ---
 
 ## Exercise 5.2 Solution
 
-**Problem:** PV has a storageClassName that prevents static binding.
-
-**Fix:**
+**Diagnosis.**
 
 ```bash
-kubectl patch pv problem-pv --type=json -p='[{"op": "replace", "path": "/spec/storageClassName", "value": ""}]'
+kubectl get pv ex-5-2-primary
+kubectl describe pv ex-5-2-primary | grep -E "Status|Claim"
 ```
 
-Or apply a corrected version:
+Status shows `Pending` or `Available` with a dangling `Claim: ghost-namespace/ghost-claim`. The PV was created with a pre-set `spec.claimRef`, which tells Kubernetes "only bind this PV to this exact PVC in this namespace." Since that PVC does not exist, the PV is effectively reserved for a PVC that will never arrive.
+
+**What the bug is and why.** Pre-setting `spec.claimRef` at creation is a technique for pre-binding a PV to a specific PVC (same as the pattern in Exercise 5.3). When the referenced PVC does not exist, the PV is reserved but idle. Kubernetes keeps it that way to preserve the administrator's explicit intent.
+
+**Fix.** Remove the `claimRef`.
 
 ```bash
-kubectl delete pv problem-pv
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: problem-pv
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-  - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
-  hostPath:
-    path: /tmp/problem-pv
-    type: DirectoryOrCreate
-EOF
+kubectl patch pv ex-5-2-primary --type='json' -p='[{"op": "remove", "path": "/spec/claimRef"}]'
 ```
 
-**Explanation:** An empty storageClassName allows static binding. A non-existent class prevents matching with PVCs that have no class.
+The PV now enters `Available` and will bind to any compatible PVC.
 
 ---
 
 ## Exercise 5.3 Solution
 
-**Task:** Pre-provision PVs for team.
+Use `spec.claimRef` on each PV to pre-bind it to a specific PVC that does not exist yet. When the PVC is created later, Kubernetes sees the pre-bind and completes the binding.
 
-```bash
-kubectl apply -f - <<EOF
+```yaml
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv-db-0
-  labels:
-    app: database
-    replica: "0"
+  name: ex-5-3-pv-0
 spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-  - ReadWriteOnce
+  capacity: {storage: 500Mi}
+  accessModes: ["ReadWriteOnce"]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
-  hostPath:
-    path: /tmp/ex-5-3/db-0
-    type: DirectoryOrCreate
+  storageClassName: manual
+  claimRef: {namespace: ex-5-3, name: data-app-0, kind: PersistentVolumeClaim, apiVersion: v1}
+  hostPath: {path: /ex-5-3-0, type: DirectoryOrCreate}
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv-db-1
-  labels:
-    app: database
-    replica: "1"
+  name: ex-5-3-pv-1
 spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-  - ReadWriteOnce
+  capacity: {storage: 500Mi}
+  accessModes: ["ReadWriteOnce"]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
-  hostPath:
-    path: /tmp/ex-5-3/db-1
-    type: DirectoryOrCreate
+  storageClassName: manual
+  claimRef: {namespace: ex-5-3, name: data-app-1, kind: PersistentVolumeClaim, apiVersion: v1}
+  hostPath: {path: /ex-5-3-1, type: DirectoryOrCreate}
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv-db-2
-  labels:
-    app: database
-    replica: "2"
+  name: ex-5-3-pv-2
 spec:
-  capacity:
-    storage: 5Gi
-  accessModes:
-  - ReadWriteOnce
+  capacity: {storage: 500Mi}
+  accessModes: ["ReadWriteOnce"]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
-  hostPath:
-    path: /tmp/ex-5-3/db-2
-    type: DirectoryOrCreate
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: pv-config
-  labels:
-    app: config
-spec:
-  capacity:
-    storage: 100Mi
-  accessModes:
-  - ReadOnlyMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
-  hostPath:
-    path: /tmp/ex-5-3/config
-    type: DirectoryOrCreate
-EOF
+  storageClassName: manual
+  claimRef: {namespace: ex-5-3, name: data-app-2, kind: PersistentVolumeClaim, apiVersion: v1}
+  hostPath: {path: /ex-5-3-2, type: DirectoryOrCreate}
 ```
 
-**Explanation:** Pre-provisioning PVs with consistent naming and labels makes it easier for PVCs to select the right storage.
+Then apply the three PVCs (no selector, no `volumeName`; the PV's `claimRef` does the work):
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: data-app-0, namespace: ex-5-3}
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: {requests: {storage: 200Mi}}
+  storageClassName: manual
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: data-app-1, namespace: ex-5-3}
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: {requests: {storage: 200Mi}}
+  storageClassName: manual
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: data-app-2, namespace: ex-5-3}
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources: {requests: {storage: 200Mi}}
+  storageClassName: manual
+```
+
+Each PVC binds to exactly its pre-bound PV via the `claimRef`. This is the canonical static-provisioning pattern for StatefulSet-style workloads when you want specific data to be associated with specific pods.
 
 ---
 
 ## Common Mistakes
 
-### hostPath not existing on node
+**1. Forgetting that PVs are cluster-scoped.** A PV does not have a namespace. A PVC does. Copying a PV spec from one cluster to another does not carry over namespace context. Exercises that confuse the two produce apply errors.
 
-Use `type: DirectoryOrCreate` to automatically create the directory.
+**2. Not removing `spec.claimRef` after PVC deletion.** A PV with `reclaimPolicy: Retain` whose PVC is deleted enters `Released` and retains its `claimRef` pointing to the deleted PVC. Until an administrator removes the `claimRef`, the PV cannot rebind. The removal is `kubectl patch pv ... --type='json' -p='[{"op":"remove","path":"/spec/claimRef"}]'`.
 
-### Access mode not matching workload requirements
+**3. Using `hostPath` with `reclaimPolicy: Delete`.** The `Delete` policy expects the backend to delete the underlying storage. `hostPath` has no such implementation, so the reclaim operation goes to `Failed` phase and the directory on the node is untouched. For `hostPath`, always use `Retain`.
 
-RWO for single-node, ROX for multi-node read, RWX for multi-node write. Match the mode to your workload.
+**4. Invalid quantity strings in `capacity.storage`.** Kubernetes quantities use `Ki`/`Mi`/`Gi`/`Ti` (binary) or `K`/`M`/`G`/`T` (decimal). Typos like `1G1`, `500m` (millibyte!), or `2 Gi` (space) are rejected at admission. The symptom is a 422 from `kubectl apply`, not a stuck PV.
 
-### Reclaim policy misunderstanding
+**5. Access-mode mismatch between PV and PVC.** A PVC can only bind to a PV whose `accessModes` contain every mode the PVC requests. A PVC asking for `[ReadWriteOnce, ReadWriteMany]` does not bind to a PV offering only `[ReadWriteOnce]`. Exam scenarios intentionally confuse the directionality.
 
-Retain keeps data but leaves PV in Released state. Delete removes PV. Neither automatically makes the PV available for reuse without intervention.
+**6. Omitting `storageClassName` on the PV but setting it on the PVC (or vice versa).** An empty `storageClassName` is distinct from an unset `storageClassName` in some Kubernetes versions. For static provisioning, explicitly set `storageClassName: manual` (or any non-cluster-default string) on both sides so they match.
 
-### Local volume without node affinity
+**7. `local` volume type without `nodeAffinity`.** The `local` backend requires `spec.nodeAffinity` to be set; the API server rejects a `local` PV that does not declare it.
 
-Local volumes require node affinity to ensure pods are scheduled on the node with the storage.
-
-### Capacity format errors
-
-Use Gi, Mi, Ki (binary units), not GB, MB, KB (decimal units).
+**8. `hostPath` with `type: Directory` when the path does not yet exist.** The pod goes Pending with a `MountVolume.SetUp` error. Use `type: DirectoryOrCreate` if you want the kubelet to create the path on demand.
 
 ---
 
-## PV Commands Cheat Sheet
+## Verification Commands Cheat Sheet
 
-| Task | Command |
-|------|---------|
-| List PVs | `kubectl get pv` |
-| Describe PV | `kubectl describe pv <name>` |
-| Get PV YAML | `kubectl get pv <name> -o yaml` |
-| Delete PV | `kubectl delete pv <name>` |
-| Get capacity | `kubectl get pv <name> -o jsonpath='{.spec.capacity.storage}'` |
-| Get access modes | `kubectl get pv <name> -o jsonpath='{.spec.accessModes}'` |
-| Get phase | `kubectl get pv <name> -o jsonpath='{.status.phase}'` |
-| Get reclaim policy | `kubectl get pv <name> -o jsonpath='{.spec.persistentVolumeReclaimPolicy}'` |
-| Filter by label | `kubectl get pv -l <label>=<value>` |
-| Remove claimRef | `kubectl patch pv <name> --type=json -p='[{"op":"remove","path":"/spec/claimRef"}]'` |
+| Check | Command |
+|---|---|
+| PV phase | `kubectl get pv <name> -o jsonpath='{.status.phase}'` |
+| PV capacity | `kubectl get pv <name> -o jsonpath='{.spec.capacity.storage}'` |
+| PV access modes | `kubectl get pv <name> -o jsonpath='{.spec.accessModes}'` |
+| PV reclaim policy | `kubectl get pv <name> -o jsonpath='{.spec.persistentVolumeReclaimPolicy}'` |
+| PV storage class | `kubectl get pv <name> -o jsonpath='{.spec.storageClassName}'` |
+| PV backing path (hostPath) | `kubectl get pv <name> -o jsonpath='{.spec.hostPath.path}'` |
+| PV claim reference | `kubectl get pv <name> -o jsonpath='{.spec.claimRef.namespace}/{.spec.claimRef.name}'` |
+| Remove a stale claimRef | `kubectl patch pv <name> --type='json' -p='[{"op":"remove","path":"/spec/claimRef"}]'` |
+| PVC phase | `kubectl get pvc -n <ns> <name> -o jsonpath='{.status.phase}'` |
+| PVC bound PV | `kubectl get pvc -n <ns> <name> -o jsonpath='{.spec.volumeName}'` |
+| Events on a PV | `kubectl describe pv <name>` |

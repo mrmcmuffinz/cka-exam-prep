@@ -1,14 +1,16 @@
-# Storage Homework: Volumes and PersistentVolumes
+# Volumes and PersistentVolumes Homework
 
-This homework contains 15 progressive exercises to practice volume types and PersistentVolumes. Complete the tutorial before attempting these exercises.
+Fifteen exercises covering `emptyDir`, `hostPath`, PersistentVolume creation, the five PV lifecycle phases, reclaim policies, label selectors, and node affinity. Work through the tutorial first. The exercises assume you can read `kubectl describe pv` and identify why a PV is in a particular phase.
+
+Exercise namespaces follow `ex-<level>-<exercise>` for namespaced resources. PersistentVolumes are cluster-scoped; the setup blocks name them with an `ex-<level>-<exercise>` prefix to keep them visually separate. The global cleanup block at the bottom removes every namespace and every PV created during the exercises.
 
 ---
 
-## Level 1: Basic Volume Types
+## Level 1: Volume Types
 
 ### Exercise 1.1
 
-**Objective:** Create a pod with an emptyDir volume for temporary storage.
+**Objective:** Create a pod with an `emptyDir` shared between two containers and prove writes from one are visible to the other.
 
 **Setup:**
 
@@ -16,85 +18,109 @@ This homework contains 15 progressive exercises to practice volume types and Per
 kubectl create namespace ex-1-1
 ```
 
-**Task:**
-
-Create a pod named `temp-storage` in namespace `ex-1-1` using busybox:1.36. The pod should:
-- Have an emptyDir volume named `cache`
-- Mount the volume at `/cache`
-- Run command: `["sh", "-c", "echo 'cached data' > /cache/data.txt && sleep 3600"]`
+**Task:** In namespace `ex-1-1`, create a pod named `shared-scratch` with two containers both running `busybox:1.36`. The `writer` container writes `hello` to `/data/message` once and sleeps. The `reader` container reads `/data/message` once (after a short delay to let the write complete) and sleeps. Both mount the same `emptyDir` at `/data`.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod temp-storage -n ex-1-1
+kubectl wait --for=condition=Ready pod/shared-scratch -n ex-1-1 --timeout=60s
 
-# Verify the file was created
-kubectl exec -n ex-1-1 temp-storage -- cat /cache/data.txt
+kubectl logs -n ex-1-1 shared-scratch -c reader
+# Expected: hello
 
-# Expected: cached data
+kubectl exec -n ex-1-1 shared-scratch -c writer -- cat /data/message
+# Expected: hello
+
+kubectl get pod -n ex-1-1 shared-scratch -o jsonpath='{.spec.volumes[0].emptyDir}'
+# Expected: {}
 ```
 
 ---
 
 ### Exercise 1.2
 
-**Objective:** Create a pod with a hostPath volume.
+**Objective:** Create a pod that mounts a `hostPath` directory from the kind node and reads a file that was placed there out of band.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-1-2
+nerdctl exec kind-control-plane sh -c 'mkdir -p /host-1-2 && echo "node-preloaded" > /host-1-2/content'
 ```
 
-**Task:**
-
-Create a pod named `host-storage` in namespace `ex-1-2` using busybox:1.36. The pod should:
-- Have a hostPath volume at `/tmp/ex-1-2-data` with type DirectoryOrCreate
-- Mount the volume at `/host-data`
-- Run command: `["sh", "-c", "echo 'host data' > /host-data/file.txt && sleep 3600"]`
+**Task:** In namespace `ex-1-2`, create a pod named `host-consumer` running image `busybox:1.36` with command `["sleep", "3600"]`. Mount `/host-1-2` on the node at `/data` in the container, using `type: Directory`.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod host-storage -n ex-1-2
+kubectl wait --for=condition=Ready pod/host-consumer -n ex-1-2 --timeout=60s
 
-# Verify the file was created
-kubectl exec -n ex-1-2 host-storage -- cat /host-data/file.txt
+kubectl exec -n ex-1-2 host-consumer -- cat /data/content
+# Expected: node-preloaded
 
-# Expected: host data
+kubectl get pod -n ex-1-2 host-consumer -o jsonpath='{.spec.volumes[0].hostPath.type}'
+# Expected: Directory
 ```
 
 ---
 
 ### Exercise 1.3
 
-**Objective:** Verify volume mounts and data persistence within pod lifecycle.
+**Objective:** Demonstrate that `emptyDir` does not persist across pod deletion but `hostPath` does.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-1-3
+nerdctl exec kind-control-plane mkdir -p /host-1-3
 ```
 
-**Task:**
-
-Create a pod named `multi-container` in namespace `ex-1-3` with two containers sharing an emptyDir volume:
-- Container `writer` using busybox:1.36: writes "shared message" to /shared/message.txt
-- Container `reader` using busybox:1.36: reads from /shared/message.txt after a delay
-- Both containers mount the emptyDir at /shared
+**Task:** In namespace `ex-1-3`, create a pod `ephemeral-writer` running `busybox:1.36` that writes two files on startup: `mark-A` to an `emptyDir` at `/empty` and `mark-B` to a `hostPath` at `/host`. Then delete and recreate the pod with the same specs (except the `emptyDir` content should be missing and the `hostPath` content should still be there).
 
 **Verification:**
 
 ```bash
-# Wait for pod to be ready
-kubectl wait --for=condition=Ready pod/multi-container -n ex-1-3 --timeout=60s
+# First pod applies, writes both files, then is deleted
+kubectl wait --for=condition=Ready pod/ephemeral-writer -n ex-1-3 --timeout=60s
+kubectl exec -n ex-1-3 ephemeral-writer -- cat /empty/mark-A
+# Expected: A
+kubectl exec -n ex-1-3 ephemeral-writer -- cat /host/mark-B
+# Expected: B
 
-# Check reader container logs
-kubectl logs multi-container -n ex-1-3 -c reader
+kubectl delete pod -n ex-1-3 ephemeral-writer
 
-# Expected: shared message
+# Recreate with the same spec, do NOT overwrite the files this time
+# (setup blocks allow you to write a second pod spec that only reads)
+
+kubectl apply -n ex-1-3 -f - <<'EOF'
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ephemeral-writer
+spec:
+  containers:
+  - name: probe
+    image: busybox:1.36
+    command: ["sleep", "3600"]
+    volumeMounts:
+    - {name: empty, mountPath: /empty}
+    - {name: host,  mountPath: /host}
+  volumes:
+  - name: empty
+    emptyDir: {}
+  - name: host
+    hostPath:
+      path: /host-1-3
+      type: Directory
+EOF
+
+kubectl wait --for=condition=Ready pod/ephemeral-writer -n ex-1-3 --timeout=60s
+
+kubectl exec -n ex-1-3 ephemeral-writer -- ls /empty
+# Expected: (empty directory; no mark-A)
+
+kubectl exec -n ex-1-3 ephemeral-writer -- cat /host/mark-B
+# Expected: B
 ```
 
 ---
@@ -103,456 +129,471 @@ kubectl logs multi-container -n ex-1-3 -c reader
 
 ### Exercise 2.1
 
-**Objective:** Create a PersistentVolume with hostPath backend.
+**Objective:** Create a statically provisioned PersistentVolume backed by `hostPath` and verify it enters the `Available` phase.
 
 **Setup:**
 
-No namespace needed as PVs are cluster-scoped.
+```bash
+nerdctl exec kind-control-plane mkdir -p /ex-2-1
+```
 
-**Task:**
-
-Create a PV named `pv-hostpath` with:
-- Capacity: 1Gi
-- Access mode: ReadWriteOnce
-- Reclaim policy: Retain
-- hostPath: /tmp/pv-hostpath-data (DirectoryOrCreate)
-- No storage class (empty string)
+**Task:** Create a cluster-scoped PersistentVolume named `ex-2-1-pv` with capacity 2Gi, access mode `ReadWriteOnce`, reclaim policy `Retain`, `storageClassName: manual`, and `hostPath` backend at `/ex-2-1` with `type: DirectoryOrCreate`.
 
 **Verification:**
 
 ```bash
-# Verify PV exists
-kubectl get pv pv-hostpath
+kubectl get pv ex-2-1-pv -o jsonpath='{.status.phase}'
+# Expected: Available
 
-# Expected: Shows 1Gi, RWO, Retain, Available
+kubectl get pv ex-2-1-pv -o jsonpath='{.spec.capacity.storage}'
+# Expected: 2Gi
 
-# Verify capacity
-kubectl get pv pv-hostpath -o jsonpath='{.spec.capacity.storage}'
+kubectl get pv ex-2-1-pv -o jsonpath='{.spec.accessModes[0]}'
+# Expected: ReadWriteOnce
 
-# Expected: 1Gi
+kubectl get pv ex-2-1-pv -o jsonpath='{.spec.persistentVolumeReclaimPolicy}'
+# Expected: Retain
 ```
 
 ---
 
 ### Exercise 2.2
 
-**Objective:** Create a PV with specific access modes.
+**Objective:** Create a PV with `ReadOnlyMany` access mode for shared read-only reference data.
 
 **Setup:**
 
-None needed.
+```bash
+nerdctl exec kind-control-plane mkdir -p /ex-2-2 && nerdctl exec kind-control-plane sh -c 'echo shared > /ex-2-2/reference.txt'
+```
 
-**Task:**
-
-Create a PV named `pv-multimode` with:
-- Capacity: 2Gi
-- Access modes: ReadWriteOnce AND ReadOnlyMany
-- Reclaim policy: Delete
-- hostPath: /tmp/pv-multimode-data
+**Task:** Create a PV named `ex-2-2-pv` with capacity 500Mi, access mode `ReadOnlyMany`, reclaim policy `Retain`, `storageClassName: manual`, and `hostPath` backend at `/ex-2-2`.
 
 **Verification:**
 
 ```bash
-# Verify PV exists
-kubectl get pv pv-multimode
+kubectl get pv ex-2-2-pv -o jsonpath='{.status.phase}'
+# Expected: Available
 
-# Verify access modes
-kubectl get pv pv-multimode -o jsonpath='{.spec.accessModes}'
+kubectl get pv ex-2-2-pv -o jsonpath='{.spec.accessModes[0]}'
+# Expected: ReadOnlyMany
 
-# Expected: ["ReadWriteOnce","ReadOnlyMany"]
+kubectl get pv ex-2-2-pv -o jsonpath='{.spec.hostPath.path}'
+# Expected: /ex-2-2
 ```
 
 ---
 
 ### Exercise 2.3
 
-**Objective:** List and describe PersistentVolumes.
+**Objective:** Inspect a pre-existing PV and extract every key spec field in one JSON path query.
 
 **Setup:**
 
-Ensure PVs from 2.1 and 2.2 exist.
+```bash
+nerdctl exec kind-control-plane mkdir -p /ex-2-3
+kubectl apply -f - <<'EOF'
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ex-2-3-pv
+  labels:
+    purpose: inspection
+spec:
+  capacity:
+    storage: 750Mi
+  accessModes: ["ReadWriteOnce"]
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: manual
+  hostPath:
+    path: /ex-2-3
+    type: DirectoryOrCreate
+EOF
+```
 
-**Task:**
-
-Use kubectl to:
-1. List all PVs with their status
-2. Get detailed information about pv-hostpath
-3. Extract just the reclaim policy of pv-multimode
+**Task:** Using `kubectl get pv ... -o jsonpath`, extract and print the capacity, the first access mode, the reclaim policy, the storage class, the hostPath path, and the label `purpose`, all in one shell command.
 
 **Verification:**
 
 ```bash
-# List PVs
-kubectl get pv
-
-# Expected: Shows pv-hostpath and pv-multimode
-
-# Describe
-kubectl describe pv pv-hostpath
-
-# Get reclaim policy
-kubectl get pv pv-multimode -o jsonpath='{.spec.persistentVolumeReclaimPolicy}'
-
-# Expected: Delete
+kubectl get pv ex-2-3-pv -o jsonpath='{.spec.capacity.storage}/{.spec.accessModes[0]}/{.spec.persistentVolumeReclaimPolicy}/{.spec.storageClassName}/{.spec.hostPath.path}/{.metadata.labels.purpose}'
+# Expected: 750Mi/ReadWriteOnce/Delete/manual//ex-2-3/inspection
 ```
 
 ---
 
-## Level 3: Debugging PV Issues
+## Level 3: Debugging
 
 ### Exercise 3.1
 
-**Objective:** A PV is stuck in Released state. Understand why and resolve.
+**Objective:** The PV below is not reaching `Available`. Diagnose the root cause and fix the PV spec.
 
 **Setup:**
 
 ```bash
-kubectl apply -f - <<EOF
+kubectl apply -f - <<'EOF'
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: released-pv
+  name: ex-3-1-pv
 spec:
   capacity:
-    storage: 1Gi
-  accessModes:
-  - ReadWriteOnce
+    storage: 1G1
+  accessModes: ["ReadWriteOnce"]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
+  storageClassName: manual
   hostPath:
-    path: /tmp/released-pv
-  claimRef:
-    name: old-claim
-    namespace: deleted-namespace
+    path: /ex-3-1
+    type: DirectoryOrCreate
 EOF
+nerdctl exec kind-control-plane mkdir -p /ex-3-1
 ```
 
-**Task:**
-
-The PV above has a claimRef to a deleted PVC, making it stuck in Released state. To make it Available again, you need to remove the claimRef. Edit the PV to remove the claimRef so it can be bound to a new PVC.
+**Task:** Replace the PV with a corrected version so that `kubectl get pv ex-3-1-pv` reports phase `Available`.
 
 **Verification:**
 
 ```bash
-# Check status before fix
-kubectl get pv released-pv
-
-# Expected: Released (before fix)
-
-# After fixing
-kubectl get pv released-pv
-
+kubectl get pv ex-3-1-pv -o jsonpath='{.status.phase}'
 # Expected: Available
+
+kubectl get pv ex-3-1-pv -o jsonpath='{.spec.capacity.storage}'
+# Expected: 1Gi (or any valid quantity like 1G)
 ```
 
 ---
 
 ### Exercise 3.2
 
-**Objective:** A PV has invalid capacity. Find and fix the issue.
+**Objective:** The PV below is stuck in `Released`. Make it `Available` again so it can rebind without losing the data.
 
 **Setup:**
 
-Try to create this PV (it will fail):
-
 ```bash
-kubectl apply -f - <<EOF
+nerdctl exec kind-control-plane mkdir -p /ex-3-2
+nerdctl exec kind-control-plane sh -c 'echo keep-me > /ex-3-2/data'
+
+kubectl apply -f - <<'EOF'
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: invalid-capacity-pv
+  name: ex-3-2-pv
 spec:
   capacity:
-    storage: 1GB
-  accessModes:
-  - ReadWriteOnce
+    storage: 1Gi
+  accessModes: ["ReadWriteOnce"]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
   hostPath:
-    path: /tmp/invalid-pv
+    path: /ex-3-2
+    type: Directory
 EOF
+
+kubectl create namespace ex-3-2
+kubectl apply -n ex-3-2 -f - <<'EOF'
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: temp-claim
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: manual
+EOF
+
+sleep 3
+kubectl delete pvc -n ex-3-2 temp-claim
+sleep 3
 ```
 
-**Task:**
-
-The PV creation fails because the capacity format is invalid. Kubernetes uses binary units (Gi, Mi, Ki) not decimal units (GB, MB, KB). Fix the capacity to use the correct format.
+**Task:** `ex-3-2-pv` is now in `Released`. Without deleting it (which would lose the data reference), make it `Available` again so a new PVC can bind.
 
 **Verification:**
 
 ```bash
-# After fixing, verify PV exists
-kubectl get pv invalid-capacity-pv
+kubectl get pv ex-3-2-pv -o jsonpath='{.status.phase}'
+# Expected: Available
 
-# Expected: Shows 1Gi
+nerdctl exec kind-control-plane cat /ex-3-2/data
+# Expected: keep-me
 ```
 
 ---
 
 ### Exercise 3.3
 
-**Objective:** Debug why a PV cannot be used for a specific access mode.
+**Objective:** The PVC below is stuck in `Pending`. The PV `ex-3-3-pv` exists but does not bind. Find and fix the problem.
 
 **Setup:**
 
 ```bash
-kubectl apply -f - <<EOF
+nerdctl exec kind-control-plane mkdir -p /ex-3-3
+kubectl apply -f - <<'EOF'
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: single-mode-pv
+  name: ex-3-3-pv
 spec:
   capacity:
-    storage: 1Gi
-  accessModes:
-  - ReadWriteOnce
+    storage: 500Mi
+  accessModes: ["ReadOnlyMany"]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: ""
+  storageClassName: manual
   hostPath:
-    path: /tmp/single-mode-pv
+    path: /ex-3-3
+    type: DirectoryOrCreate
+EOF
+
+kubectl create namespace ex-3-3
+kubectl apply -n ex-3-3 -f - <<'EOF'
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: needy
+spec:
+  accessModes: ["ReadWriteMany"]
+  resources:
+    requests:
+      storage: 200Mi
+  storageClassName: manual
 EOF
 ```
 
-**Task:**
-
-A user wants to mount this PV on multiple nodes simultaneously for reading. Explain why this is not possible with the current configuration and what access mode would be needed.
+**Task:** The PVC `needy` is Pending. Adjust the PVC spec (do not change the PV; there are reasons the administrator cannot edit the PV in production) so that it binds. The fix must preserve the PVC's claim to ~200Mi of storage.
 
 **Verification:**
 
 ```bash
-# Check current access modes
-kubectl get pv single-mode-pv -o jsonpath='{.spec.accessModes}'
+kubectl get pvc -n ex-3-3 needy -o jsonpath='{.status.phase}'
+# Expected: Bound
 
-# Expected: ["ReadWriteOnce"]
-
-# For multi-node read access, you would need ReadOnlyMany or ReadWriteMany
+kubectl get pvc -n ex-3-3 needy -o jsonpath='{.spec.volumeName}'
+# Expected: ex-3-3-pv
 ```
 
 ---
 
-## Level 4: PV Configuration
+## Level 4: Configuration
 
 ### Exercise 4.1
 
-**Objective:** Configure a PV with node affinity.
+**Objective:** Create a PV with node affinity pinning it to the kind control-plane node.
 
 **Setup:**
 
-Get the node name:
-
 ```bash
-kubectl get nodes -o jsonpath='{.items[0].metadata.name}'
+nerdctl exec kind-control-plane mkdir -p /ex-4-1
 ```
 
-**Task:**
-
-Create a PV named `local-affinity-pv` with:
-- Capacity: 1Gi
-- Access mode: ReadWriteOnce
-- Local path: /tmp/local-affinity
-- Node affinity restricting to the cluster's node (use the node name from above)
+**Task:** Create a PV named `ex-4-1-pv` using the `local` volume type (not `hostPath`) at `/ex-4-1`, with capacity 1Gi, access mode `ReadWriteOnce`, reclaim policy `Retain`, `storageClassName: manual`, and node affinity requiring `kubernetes.io/hostname = kind-control-plane`.
 
 **Verification:**
 
 ```bash
-# Verify PV exists
-kubectl get pv local-affinity-pv
+kubectl get pv ex-4-1-pv -o jsonpath='{.status.phase}'
+# Expected: Available
 
-# Verify node affinity is set
-kubectl get pv local-affinity-pv -o yaml | grep -A 10 nodeAffinity
+kubectl get pv ex-4-1-pv -o jsonpath='{.spec.local.path}'
+# Expected: /ex-4-1
 
-# Expected: Shows nodeAffinity with the node name
+kubectl get pv ex-4-1-pv -o jsonpath='{.spec.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].values[0]}'
+# Expected: kind-control-plane
 ```
 
 ---
 
 ### Exercise 4.2
 
-**Objective:** Set up a PV with labels for selective binding.
+**Objective:** Create two PVs with different labels and show that a PVC with a label selector binds to exactly one.
 
 **Setup:**
 
-None needed.
+```bash
+nerdctl exec kind-control-plane sh -c 'mkdir -p /ex-4-2-ssd /ex-4-2-hdd'
+kubectl create namespace ex-4-2
+```
 
-**Task:**
-
-Create a PV named `labeled-pv` with:
-- Capacity: 500Mi
-- Access mode: ReadWriteOnce
-- Labels: tier=gold, environment=production
-- hostPath: /tmp/labeled-pv
+**Task:** Create two PVs `ex-4-2-ssd` and `ex-4-2-hdd`, both with capacity 1Gi, access mode RWO, reclaim `Retain`, `storageClassName: manual`, `hostPath` to the respective directory. Label `ex-4-2-ssd` with `tier=ssd` and `ex-4-2-hdd` with `tier=hdd`. In namespace `ex-4-2`, create a PVC named `want-ssd` that uses `matchLabels: {tier: ssd}` in its `spec.selector`.
 
 **Verification:**
 
 ```bash
-# Verify labels
-kubectl get pv labeled-pv --show-labels
+kubectl get pvc -n ex-4-2 want-ssd -o jsonpath='{.spec.volumeName}'
+# Expected: ex-4-2-ssd
 
-# Expected: Shows tier=gold,environment=production
+kubectl get pv ex-4-2-ssd -o jsonpath='{.status.phase}'
+# Expected: Bound
 
-# Filter by label
-kubectl get pv -l tier=gold
-
-# Expected: Shows labeled-pv
+kubectl get pv ex-4-2-hdd -o jsonpath='{.status.phase}'
+# Expected: Available
 ```
 
 ---
 
 ### Exercise 4.3
 
-**Objective:** Configure different reclaim policies.
+**Objective:** Compare `Retain` and `Delete` reclaim policies side by side on `hostPath`-backed PVs, and document what happens to the backing directory.
 
 **Setup:**
 
-None needed.
+```bash
+nerdctl exec kind-control-plane sh -c 'mkdir -p /ex-4-3-retain /ex-4-3-delete'
+nerdctl exec kind-control-plane sh -c 'echo keep > /ex-4-3-retain/data && echo should-go > /ex-4-3-delete/data'
+kubectl create namespace ex-4-3
+```
 
-**Task:**
-
-Create two PVs to understand reclaim policies:
-1. `retain-pv`: 1Gi, RWO, Retain policy, hostPath /tmp/retain-pv
-2. `delete-pv`: 1Gi, RWO, Delete policy, hostPath /tmp/delete-pv
+**Task:** Create two PVs `ex-4-3-retain` (reclaim `Retain`) and `ex-4-3-delete` (reclaim `Delete`), both `hostPath`, both 500Mi, both RWO, both `storageClassName: manual`. Create two PVCs `claim-retain` and `claim-delete` each bound to the respective PV (via `spec.volumeName`). Delete both PVCs. Observe the resulting phase of each PV and confirm the directory on the node.
 
 **Verification:**
 
 ```bash
-# Check reclaim policies
-kubectl get pv retain-pv -o jsonpath='{.spec.persistentVolumeReclaimPolicy}'
-# Expected: Retain
+# After the PVCs are created and then deleted:
+kubectl get pv ex-4-3-retain -o jsonpath='{.status.phase}'
+# Expected: Released (because Retain)
 
-kubectl get pv delete-pv -o jsonpath='{.spec.persistentVolumeReclaimPolicy}'
-# Expected: Delete
+kubectl get pv ex-4-3-delete -o jsonpath='{.status.phase}' 2>/dev/null || echo "not found"
+# Expected: Failed OR not found (hostPath Delete fails because the backend has no deletion semantics;
+# the PV may be marked Failed. This is an important practical subtlety.)
+
+nerdctl exec kind-control-plane cat /ex-4-3-retain/data
+# Expected: keep
+
+nerdctl exec kind-control-plane cat /ex-4-3-delete/data 2>/dev/null || echo "gone"
+# Expected: should-go (because hostPath Delete does not actually delete host dirs)
 ```
 
 ---
 
-## Level 5: Complex Scenarios
+## Level 5: Advanced
 
 ### Exercise 5.1
 
-**Objective:** Design a PV strategy for a multi-tier application.
+**Objective:** Design a PV strategy for an application that runs on the kind control-plane node and needs two distinct PVs: a `data-volume` (2Gi, RWO) and a `config-volume` (100Mi, ROX, labeled `purpose=config`).
 
 **Setup:**
 
 ```bash
-kubectl create namespace ex-5-1
+nerdctl exec kind-control-plane sh -c 'mkdir -p /ex-5-1-data /ex-5-1-config'
 ```
 
-**Task:**
-
-Create PVs for a three-tier application:
-1. `database-pv`: 10Gi, RWO, Retain (data must survive deletion)
-2. `cache-pv`: 2Gi, RWO, Delete (cache can be recreated)
-3. `logs-pv`: 5Gi, RWX, Retain (logs accessed by multiple pods)
-
-All should use hostPath under /tmp/ex-5-1/.
+**Task:** Create both PVs with appropriate backends. Both must pin to the control-plane node via `nodeAffinity` (use `local` volume type for both), both use `storageClassName: manual`, the data volume is `Retain`, the config volume is `Retain`. Label the config volume with `purpose=config`. Name them `ex-5-1-data` and `ex-5-1-config`.
 
 **Verification:**
 
 ```bash
-# List all PVs with specific criteria
-kubectl get pv -o custom-columns='NAME:.metadata.name,CAPACITY:.spec.capacity.storage,ACCESS:.spec.accessModes,RECLAIM:.spec.persistentVolumeReclaimPolicy'
+kubectl get pv ex-5-1-data ex-5-1-config -o jsonpath='{.items[*].status.phase}'
+# Expected: Available Available
 
-# Expected: Shows all three PVs with correct configurations
+kubectl get pv ex-5-1-data -o jsonpath='{.spec.capacity.storage}'
+# Expected: 2Gi
+
+kubectl get pv ex-5-1-config -o jsonpath='{.spec.capacity.storage}'
+# Expected: 100Mi
+
+kubectl get pv ex-5-1-config -o jsonpath='{.metadata.labels.purpose}'
+# Expected: config
 ```
 
 ---
 
 ### Exercise 5.2
 
-**Objective:** Diagnose why a PV is not becoming Available.
+**Objective:** Diagnose why the PV below does not reach `Available` despite the `hostPath` directory existing and the spec being valid.
 
 **Setup:**
 
 ```bash
-kubectl apply -f - <<EOF
+nerdctl exec kind-control-plane mkdir -p /ex-5-2-primary
+
+kubectl apply -f - <<'EOF'
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: problem-pv
+  name: ex-5-2-primary
 spec:
   capacity:
     storage: 1Gi
-  accessModes:
-  - ReadWriteOnce
+  accessModes: ["ReadWriteOnce"]
   persistentVolumeReclaimPolicy: Retain
-  storageClassName: nonexistent-class
+  storageClassName: manual
+  claimRef:
+    namespace: ghost-namespace
+    name: ghost-claim
+    kind: PersistentVolumeClaim
+    apiVersion: v1
   hostPath:
-    path: /tmp/problem-pv
+    path: /ex-5-2-primary
+    type: Directory
 EOF
 ```
 
-**Task:**
-
-The PV above has a storageClassName that does not exist. While this does not prevent the PV from being Available, it means PVCs without a storageClassName will not match it. Update the PV to have an empty storageClassName so it can be used with static binding.
+**Task:** The PV enters `Available` or stays in an odd bound-but-not-bound limbo because of a `claimRef` pointing at a PVC and namespace that do not exist. Fix the PV so that it is simply `Available` and can be claimed by a real PVC without any pre-binding hint.
 
 **Verification:**
 
 ```bash
-# Check storageClassName before fix
-kubectl get pv problem-pv -o jsonpath='{.spec.storageClassName}'
+kubectl get pv ex-5-2-primary -o jsonpath='{.status.phase}'
+# Expected: Available
 
-# Expected: nonexistent-class (before fix)
-
-# After fixing
-kubectl get pv problem-pv -o jsonpath='{.spec.storageClassName}'
-
-# Expected: (empty)
+kubectl get pv ex-5-2-primary -o jsonpath='{.spec.claimRef}' 2>/dev/null
+# Expected: (empty; the claimRef has been removed)
 ```
 
 ---
 
 ### Exercise 5.3
 
-**Objective:** Pre-provision PVs for specific workloads.
+**Objective:** Pre-provision a set of PVs for a specific workload: a three-replica statefulset-style workload will produce three PVCs named `data-app-0`, `data-app-1`, `data-app-2`. Author three PVs so that when those PVCs are created they each bind to exactly one PV.
 
 **Setup:**
 
 ```bash
+nerdctl exec kind-control-plane sh -c 'mkdir -p /ex-5-3-0 /ex-5-3-1 /ex-5-3-2'
 kubectl create namespace ex-5-3
 ```
 
-**Task:**
+**Task:** Create three PVs `ex-5-3-pv-0`, `ex-5-3-pv-1`, `ex-5-3-pv-2`, each 500Mi, RWO, `storageClassName: manual`, `hostPath` to the respective directory. Use labels or pre-set `spec.claimRef` so that when the three PVCs `data-app-0`, `data-app-1`, `data-app-2` are later applied to namespace `ex-5-3`, each binds to exactly one PV in the 0-to-0, 1-to-1, 2-to-2 pattern.
 
-Pre-provision PVs for a team that needs:
-1. 3 identical PVs for a distributed database (pv-db-0, pv-db-1, pv-db-2)
-   - Each: 5Gi, RWO, Retain
-   - Labels: app=database, replica=0/1/2
-2. 1 shared PV for configuration
-   - Name: pv-config
-   - 100Mi, ROX, Retain
-   - Label: app=config
+Then apply the three PVCs and verify.
 
 **Verification:**
 
 ```bash
-# List all database PVs
-kubectl get pv -l app=database
+# After creating PVs and then the PVCs:
+kubectl get pvc -n ex-5-3 data-app-0 -o jsonpath='{.spec.volumeName}'
+# Expected: ex-5-3-pv-0
 
-# Expected: 3 PVs
+kubectl get pvc -n ex-5-3 data-app-1 -o jsonpath='{.spec.volumeName}'
+# Expected: ex-5-3-pv-1
 
-# List config PV
-kubectl get pv -l app=config
-
-# Expected: 1 PV with 100Mi
+kubectl get pvc -n ex-5-3 data-app-2 -o jsonpath='{.spec.volumeName}'
+# Expected: ex-5-3-pv-2
 ```
 
 ---
 
 ## Cleanup
 
-Delete all PVs created in these exercises:
+Delete every exercise namespace and every PV created. Also remove the host directories created on the kind node.
 
 ```bash
-kubectl delete pv pv-hostpath pv-multimode released-pv invalid-capacity-pv single-mode-pv local-affinity-pv labeled-pv retain-pv delete-pv database-pv cache-pv logs-pv problem-pv pv-db-0 pv-db-1 pv-db-2 pv-config --ignore-not-found
-kubectl delete namespace ex-1-1 ex-1-2 ex-1-3 ex-5-1 ex-5-3 --ignore-not-found
-```
+for ns in ex-1-1 ex-1-2 ex-1-3 ex-3-2 ex-3-3 ex-4-2 ex-4-3 ex-5-3; do
+  kubectl delete namespace "$ns" --ignore-not-found
+done
 
----
+kubectl delete pv ex-2-1-pv ex-2-2-pv ex-2-3-pv ex-3-1-pv ex-3-2-pv ex-3-3-pv \
+                  ex-4-1-pv ex-4-2-ssd ex-4-2-hdd ex-4-3-retain ex-4-3-delete \
+                  ex-5-1-data ex-5-1-config ex-5-2-primary \
+                  ex-5-3-pv-0 ex-5-3-pv-1 ex-5-3-pv-2 --ignore-not-found
+
+nerdctl exec kind-control-plane sh -c 'rm -rf /host-1-2 /host-1-3 /ex-2-1 /ex-2-2 /ex-2-3 \
+  /ex-3-1 /ex-3-2 /ex-3-3 /ex-4-1 /ex-4-2-ssd /ex-4-2-hdd \
+  /ex-4-3-retain /ex-4-3-delete /ex-5-1-data /ex-5-1-config /ex-5-2-primary \
+  /ex-5-3-0 /ex-5-3-1 /ex-5-3-2'
+```
 
 ## Key Takeaways
 
-1. emptyDir volumes are ephemeral and tied to pod lifetime
-2. hostPath volumes access the node filesystem directly
-3. PersistentVolumes are cluster-scoped storage resources
-4. Access modes (RWO, ROX, RWX, RWOP) control how volumes are mounted
-5. Reclaim policies (Retain, Delete) determine post-release behavior
-6. Use labels for selective PV-to-PVC binding
-7. Node affinity constrains local PVs to specific nodes
-8. Released PVs need claimRef removed to become Available again
+PersistentVolumes are cluster-scoped resources separate from pods. Capacity, access modes, reclaim policy, storage class, and the backend fields make up the PV spec. The five PV lifecycle phases are `Available`, `Bound`, `Released`, `Failed`, and (briefly) `Pending`. A PV with `reclaimPolicy: Retain` plus a deleted PVC ends up `Released`; removing `spec.claimRef` reverts it to `Available`. Labels on PVs combined with a PVC `selector` let administrators steer binding without StorageClasses. `spec.nodeAffinity` on local-backed PVs ensures consumers schedule onto the right node. `hostPath` does not implement `reclaimPolicy: Delete` semantics; the backing directory persists regardless.
