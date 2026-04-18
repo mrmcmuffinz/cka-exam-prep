@@ -33,7 +33,7 @@ seven independent modules.
 | assignment-2 | Pod Configuration Injection | ConfigMaps, Secrets, projected volumes, downward API, immutable configs | Assignment 1 |
 | assignment-3 | Pod Health and Observability | Liveness/readiness/startup probes, lifecycle hooks, termination, diagnostic workflow | Assignment 1 |
 | assignment-4 | Pod Scheduling and Placement | nodeSelector, node affinity, pod affinity/anti-affinity, taints/tolerations, topology spread, priority classes | Assignments 1-3 |
-| assignment-5 | Pod Resources and QoS | Requests/limits, QoS classes, OOMKill, LimitRange, ResourceQuota, autoscaling (HPA, VPA) | Assignments 1-3 |
+| assignment-5 | Pod Resources and QoS | Requests/limits, QoS classes, OOMKill, LimitRange, ResourceQuota | Assignments 1-3 |
 | assignment-6 | Multi-Container Patterns | Sidecar, ambassador, adapter, native sidecars, shared process namespace | Assignments 1-2 |
 | assignment-7 | Workload Controllers | ReplicaSets, Deployments (rollouts, rollbacks, strategies), DaemonSets | Assignments 1-5 |
 
@@ -46,6 +46,9 @@ controllers. The following related areas are handled by other topics:
 - **Services** (exposing pods via ClusterIP, NodePort, LoadBalancer): covered in `services/`
 - **Storage** (PersistentVolumes, PersistentVolumeClaims, StorageClasses): covered in `storage/`
 - **Network Policies** (controlling traffic to/from pods): covered in `network-policies/`
+- **Autoscaling (HPA, VPA, in-place pod resize)**: covered in `autoscaling/` (planned; see `docs/remediation-plan.md` tasks P3.2, P3.6)
+- **Jobs and CronJobs**: covered in `jobs-and-cronjobs/` (planned; see `docs/remediation-plan.md` tasks P3.1, P3.6)
+- **StatefulSets**: covered in `statefulsets/` (planned; see `docs/remediation-plan.md` tasks P3.3, P3.6)
 - **Helm and Kustomize** (managing pod/controller manifests at scale): covered in `helm/` and `kustomize/`
 
 ## Cluster Requirements

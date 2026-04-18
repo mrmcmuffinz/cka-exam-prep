@@ -48,7 +48,7 @@ KIND_EXPERIMENTAL_PROVIDER=nerdctl kind create cluster --config kind-multi-node.
 If you did not install metallb during assignment-1, install it now:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/metallb-native.yaml
 
 kubectl wait --namespace metallb-system \
   --for=condition=ready pod \

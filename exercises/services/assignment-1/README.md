@@ -50,7 +50,7 @@ Kind does not natively support LoadBalancer services. Install metallb to enable 
 
 ```bash
 # Install metallb
-kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.15.3/config/manifests/metallb-native.yaml
 
 # Wait for metallb to be ready
 kubectl wait --namespace metallb-system \

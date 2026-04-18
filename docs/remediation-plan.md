@@ -1,7 +1,7 @@
 # Remediation Plan
 
 **Created:** 2026-04-18
-**Last updated:** 2026-04-18 (Phase 1 complete; version pins corrected to K8s 1.35 compatible releases)
+**Last updated:** 2026-04-18 (Phase 2 complete)
 **Companion document:** `audit-findings.md`
 
 This plan addresses the findings from the audit. Every task has an explicit
@@ -115,19 +115,19 @@ These edits raise the quality bar before any regeneration happens.
 
 | ID | Task | Status | Notes |
 |---|---|---|---|
-| P2.1 | Update `base-template.md` to require narrative prose (with pod/assignment-1 tutorial as the canonical reference) (ref E1, E3) | Not started | Quote specific passages from pods/assignment-1 as style exemplars. |
-| P2.2 | Update `base-template.md` to require, for every new resource type introduced in a tutorial: spec fields, valid values, defaults, failure modes when misconfigured (ref E3) | Not started | Make this a hard gate in the skill quality checks. |
-| P2.3 | Update `base-template.md` to require answer keys for debugging exercises to have a 3-stage structure: diagnostic commands + what to look for, the bug identification, why it happens (ref E2) | Not started | Reference pod/assignment-1 answers as the exemplar. |
-| P2.4 | Update `base-template.md` to require a "Common Mistakes" section with three or more entries per assignment (ref E5) | Not started | |
-| P2.5 | Update `base-template.md` verification rules to mandate RBAC-style `# expect: yes/no` or specific exact output, prohibit `grep -q ... && echo SUCCESS \|\| echo FAILED` chains (ref U4) | Not started | |
-| P2.6 | Define the canonical assignment-level README shape in `base-template.md` (pick pod/assignment-1 narrative style) (ref O1, O3) | Not started | Document a single template with a Files table, Recommended Workflow, Difficulty Progression, Prerequisites, Cluster Requirements, Estimated Time, and a series-position line. |
-| P2.7 | Update `k8s-homework-generator/SKILL.md` Quality Checks section to enforce all of the above as hard gates (ref E1-E5, U4) | Not started | |
-| P2.8 | Add a "no reading-only tasks" rule to the homework generator skill (ref U5) | Not started | Explicitly prohibit "document your findings" and "list and describe" as exercise task descriptions. |
-| P2.9 | Add `docs/cluster-setup.md` with named sections (single-node, multi-node, multi-node-with-calico, multi-node-with-ingress, multi-node-with-metallb). Pin all versions there. (ref U1) | Not started | Assignment READMEs reference this document by anchor rather than inlining setup. |
-| P2.10 | Teach `k8s-homework-generator/SKILL.md` to reference `docs/cluster-setup.md` by anchor instead of inlining setup in every README (ref U1) | Not started | |
-| P2.11 | Refresh `.claude/skills/cka-prompt-builder/references/assignment-registry.md` to reflect actual completion status for all 40 existing assignments (ref O4) | Not started | Strip generation-order fields that no longer matter; keep scope summary and cross-refs. |
-| P2.12 | Refresh `cka-homework-plan.md` Status Summary and Generation Sequence to reflect reality (ref O4) | Not started | The Generation Sequence table is historical at this point. |
-| P2.13 | Fix the documentation contradiction in `exercises/pods/README.md` line 36: remove the HPA/VPA claim (or update once G1 is closed) (ref O1, G1) | Not started | |
+| P2.1 | Update `base-template.md` to require narrative prose (with pod/assignment-1 tutorial as the canonical reference) (ref E1, E3) | Complete | 2026-04-18. Tutorial section rewritten with explicit narrative requirement and pod/assignment-1 named as reference. |
+| P2.2 | Update `base-template.md` to require, for every new resource type introduced in a tutorial: spec fields, valid values, defaults, failure modes when misconfigured (ref E3) | Complete | 2026-04-18. Marked as hard gate in tutorial section and Quality Standards. |
+| P2.3 | Update `base-template.md` to require answer keys for debugging exercises to have a 3-stage structure: diagnostic commands + what to look for, the bug identification, why it happens (ref E2) | Complete | 2026-04-18. Answer key section now specifies 3-stage structure as a hard gate. |
+| P2.4 | Update `base-template.md` to require a "Common Mistakes" section with three or more entries per assignment (ref E5) | Complete | 2026-04-18. Required with minimum 3 entries as a hard gate. |
+| P2.5 | Update `base-template.md` verification rules to mandate RBAC-style `# expect: yes/no` or specific exact output, prohibit `grep -q ... && echo SUCCESS \|\| echo FAILED` chains (ref U4) | Complete | 2026-04-18. New "Verification rules" subsection added with required forms and prohibited patterns. |
+| P2.6 | Define the canonical assignment-level README shape in `base-template.md` (pick pod/assignment-1 narrative style) (ref O1, O3) | Complete | 2026-04-18. 9-section canonical shape defined in base-template.md section 1. |
+| P2.7 | Update `k8s-homework-generator/SKILL.md` Quality Checks section to enforce all of the above as hard gates (ref E1-E5, U4) | Complete | 2026-04-18. Quality Checks replaced with a checklist of hard gates organized by output file. |
+| P2.8 | Add a "no reading-only tasks" rule to the homework generator skill (ref U5) | Complete | 2026-04-18. New "Exercise task types" subsection added to base-template.md. |
+| P2.9 | Add `docs/cluster-setup.md` with named sections (single-node, multi-node, multi-node-with-calico, multi-node-with-ingress, multi-node-with-metallb). Pin all versions there. (ref U1) | Complete | 2026-04-18. Created with all current-verified pins: kind v0.31.0, kindest/node v1.35.0, Calico v3.31.5, MetalLB v0.15.3, metrics-server v0.8.1, Gateway API v1.5.1. |
+| P2.10 | Teach `k8s-homework-generator/SKILL.md` to reference `docs/cluster-setup.md` by anchor instead of inlining setup in every README (ref U1) | Complete | 2026-04-18. Environment section of base-template.md now references `docs/cluster-setup.md` anchors. |
+| P2.11 | Refresh `.claude/skills/cka-prompt-builder/references/assignment-registry.md` to reflect actual completion status for all 38 existing assignments (ref O4) | Complete | 2026-04-18. Consolidated the "Completed" and "Planned" sections into a single "Assignments" section with a Status Summary noting all 38 exist; "Planned scope" renamed to "Scope". |
+| P2.12 | Refresh `cka-homework-plan.md` Status Summary and Generation Sequence to reflect reality (ref O4) | Complete | 2026-04-18. Status Summary now lists 38 generated plus 7 planned (ingress expansion + new topics). Generation Sequence section marked historical. |
+| P2.13 | Fix the documentation contradiction in `exercises/pods/README.md` line 36: remove the HPA/VPA claim (or update once G1 is closed) (ref O1, G1) | Complete | 2026-04-18. HPA/VPA removed from the Assignment 5 row; Scope Boundaries section updated with forward references to the planned `autoscaling/`, `jobs-and-cronjobs/`, and `statefulsets/` topics. |
 
 ---
 
@@ -217,3 +217,4 @@ Record notable progress events here with date. Keep entries short.
 | 2026-04-18 | Phase 1 complete (P1.1-P1.5). Infrastructure fixes applied: typo corrected, tmux commit made, `ingress-nginx` pinned to `controller-v1.11.2`, Calico standardized at `v3.27.0`, empty `.claude/worktrees/` removed. |
 | 2026-04-18 | Version pins corrected after verifying against upstream documentation. K8s 1.35 is the exam target (confirmed by `CKA_Curriculum_v1.35.pdf` in github.com/cncf/curriculum). `ingress-nginx` re-pinned to `controller-v1.15.1`, Calico re-pinned to `v3.31.5`, `cka-curriculum.md` reference file updated from "v1.34+" to "v1.35". |
 | 2026-04-18 | Ingress topic restructured to 5 assignments with controller diversity per D8. Research confirmed CKA exam allowed docs include `gateway-api.sigs.k8s.io/` but dropped the NGINX Ingress Controller URL (now CKS-only). `cka-curriculum.md` Domain 3 entries for Gateway API and Ingress updated to reflect the 2026 reality (retirement, migration tool, Gateway-API-first recommendation, conformant implementations list). Plan tasks P3.10-P3.15 and P4.9-P4.13 added. |
+| 2026-04-18 | Phase 2 complete (P2.1-P2.13). `base-template.md` and `k8s-homework-generator/SKILL.md` rewritten with hard gates: canonical 9-section README shape, narrative prose requirement, resource field documentation, debugging 3-stage answer structure, Common Mistakes with 3+ entries, RBAC-style verification, prohibition of reading-only tasks and fragile pipes. `docs/cluster-setup.md` created as single source of truth for cluster recipes with all pins verified against upstream (kind v0.31.0, kindest/node v1.35.0, Calico v3.31.5, MetalLB v0.15.3, metrics-server v0.8.1, Gateway API v1.5.1). MetalLB pin updated in services/1 and /2 from v0.13.12 to v0.15.3; metrics-server pin in troubleshooting/1 changed from `releases/latest` to `v0.8.1`. `assignment-registry.md` and `cka-homework-plan.md` refreshed to reflect current state. `pods/README.md` HPA/VPA contradiction fixed. Ready for Phase 3 scoping of new topics. |

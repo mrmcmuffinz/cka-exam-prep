@@ -1,6 +1,6 @@
 # CKA Homework Assignment Plan
 
-**Status:** Active
+**Status:** Content complete for the original scope; expansion and regeneration underway per `docs/remediation-plan.md`
 **Last updated:** 2026-04-18
 
 ---
@@ -32,26 +32,49 @@ pod scheduling appears in both the pod series and the troubleshooting series).
 
 ## Assignment Status Summary
 
-**Total assignments:** 38
-- **Completed:** 8 (pods 1-7, rbac/assignment-1)
-- **Planned:** 30 (all remaining topics with 3+ assignments each)
+**Total assignments as of 2026-04-18:** 38 generated, with 7 new assignments
+planned (2 for the ingress topic expansion plus 5 for new topics).
+
+- **Generated (original scope):** 38. All assignments across pods (1-7),
+  rbac (1-2), cluster-lifecycle (1-3), tls-and-certificates (1-3),
+  security-contexts (1-3), crds-and-operators (1-3), storage (1-3),
+  services (1-3), coredns (1-3), network-policies (1-3),
+  ingress-and-gateway-api (1-3), helm (1-3), kustomize (1-3), and
+  troubleshooting (1-4).
+- **Planned regeneration (Phase 4 of `docs/remediation-plan.md`):** several
+  assignments will be regenerated against stricter quality gates defined in
+  `base-template.md`. This does not add assignments; it raises the quality
+  bar of existing ones.
+- **Planned new assignments (Phase 3 of `docs/remediation-plan.md`):**
+  - `ingress-and-gateway-api/assignment-4` and `assignment-5` (ingress
+    topic expansion per decision D8)
+  - New topic `autoscaling/` covering HPA, VPA, and in-place pod resize
+    (1 to 2 assignments)
+  - New topic `jobs-and-cronjobs/` (1 assignment)
+  - New topic `statefulsets/` (1 assignment)
+  - New topic `admission-controllers/` (1 assignment)
+  - New topic `pod-security/` covering Pod Security Standards and
+    Pod Security Admission (1 assignment)
 
 **Assignment distribution:**
-- **3-assignment topics:** 11 topics (cluster-lifecycle, tls-and-certificates, security-contexts, crds-and-operators, storage, services, coredns, network-policies, ingress-and-gateway-api, helm, kustomize)
+- **3-assignment topics:** 10 topics (cluster-lifecycle, tls-and-certificates, security-contexts, crds-and-operators, storage, services, coredns, network-policies, helm, kustomize)
 - **4-assignment topic:** 1 topic (troubleshooting)
-- **7-assignment series:** 1 topic (pods, completed)
-- **2-assignment series:** 1 topic (rbac, 1 completed + 1 planned)
+- **5-assignment topic (planned expansion):** 1 topic (ingress-and-gateway-api)
+- **7-assignment series:** 1 topic (pods)
+- **2-assignment series:** 1 topic (rbac)
+- **Planned new single or dual-assignment topics:** 5 (autoscaling, jobs-and-cronjobs, statefulsets, admission-controllers, pod-security)
 
 ---
 
-## Generation Sequence
+## Generation Sequence (historical)
 
-This is the recommended order for generating assignments, aligned with the daily
-study plan. The "Unlocked After" column indicates when the relevant course material
-has been covered. You do not need to generate the assignment on that exact day, but
-you should not generate it before the course material has been studied.
+**Historical record.** All 38 assignments in the table below have been
+generated. This section is preserved as the record of the original
+generation sequence. For the current plan of work (regeneration,
+expansion, and new topics) see `docs/remediation-plan.md`.
 
-**Note:** Generation orders 1-38 represent the complete sequence from current state (8 completed) through all 30 remaining assignments.
+The original sequence was aligned with the daily study plan. The "Unlocked After"
+column indicated when the relevant course material had been covered.
 
 | Order | Assignment | Unlocked After | Dependencies |
 |---|---|---|---|

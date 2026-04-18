@@ -1,6 +1,6 @@
 # Assignment Registry
 
-**Last updated:** 2026-04-17
+**Last updated:** 2026-04-18
 
 ---
 
@@ -16,7 +16,23 @@ cross-references.
 
 ---
 
-## Completed Assignments
+## Status Summary
+
+All 38 assignments listed below exist as content files as of 2026-04-18. Some
+are slated for regeneration against stronger quality gates (see
+`docs/remediation-plan.md` Phase 4) and the ingress-and-gateway-api topic is
+expanding from 3 to 5 assignments (see `docs/remediation-plan.md` decision D8
+and tasks P3.10-P3.15 / P4.9-P4.13). New topics planned under
+`docs/remediation-plan.md` Phase 3 (autoscaling, jobs-and-cronjobs,
+statefulsets, admission-controllers, pod-security) will appear in this
+registry once their prompts are generated.
+
+`Generation order` fields are preserved as historical record. For current
+status, see `docs/remediation-plan.md`.
+
+---
+
+## Assignments
 
 ### exercises/pods/assignment-1: Pod Fundamentals
 
@@ -191,8 +207,6 @@ cross-references.
 
 ---
 
-## Planned Assignments
-
 ### exercises/cluster-lifecycle/assignment-1: Cluster Installation
 
 **Series:** Cluster Lifecycle (1 of 3)
@@ -200,7 +214,7 @@ cross-references.
 **Cluster:** Multi-node kind
 **Generation order:** 1
 
-**Planned scope:**
+**Scope:**
 - Node prerequisites and preparation (container runtime, networking, ports, swap disabled)
 - kubeadm init workflow and configuration
 - kubeadm join for worker nodes
@@ -220,7 +234,7 @@ cross-references.
 **Cluster:** Multi-node kind
 **Generation order:** 2
 
-**Planned scope:**
+**Scope:**
 - Upgrade planning (kubeadm upgrade plan, version compatibility)
 - Control plane node upgrade workflow
 - Worker node upgrade workflow
@@ -240,7 +254,7 @@ cross-references.
 **Cluster:** Multi-node kind (may need custom kind config for etcd exercises)
 **Generation order:** 3
 
-**Planned scope:**
+**Scope:**
 - etcd architecture in Kubernetes
 - etcd backup with etcdctl snapshot save
 - etcd restore with etcdctl snapshot restore
@@ -260,7 +274,7 @@ cross-references.
 **Cluster:** Single-node kind
 **Generation order:** 4
 
-**Planned scope:**
+**Scope:**
 - Kubernetes PKI overview
 - Certificate anatomy (subject, issuer, validity, key usage)
 - Creating certificates with openssl (keys, CSRs, signing)
@@ -280,7 +294,7 @@ cross-references.
 **Cluster:** Single-node kind
 **Generation order:** 5
 
-**Planned scope:**
+**Scope:**
 - CertificateSigningRequest resource
 - CSR creation and submission
 - CSR approval and denial workflow
@@ -300,7 +314,7 @@ cross-references.
 **Cluster:** Single-node kind
 **Generation order:** 6
 
-**Planned scope:**
+**Scope:**
 - Diagnosing certificate expiration
 - Certificate subject/issuer mismatches
 - Wrong CA in certificate chain
@@ -320,7 +334,7 @@ cross-references.
 **Cluster:** Single-node kind
 **Generation order:** 7
 
-**Planned scope:**
+**Scope:**
 - ClusterRoles and ClusterRoleBindings
 - Cluster-scoped resources (nodes, namespaces, PersistentVolumes, clusterroles themselves)
 - Aggregated ClusterRoles (aggregationRule with matchLabels)
@@ -341,7 +355,7 @@ cross-references.
 **Cluster:** Single-node kind
 **Generation order:** 8
 
-**Planned scope:**
+**Scope:**
 - Pod-level securityContext (runAsUser, runAsGroup, fsGroup, supplementalGroups)
 - Container-level securityContext (runAsUser, runAsNonRoot)
 - fsGroup interaction with volumes and mounted storage
@@ -361,7 +375,7 @@ cross-references.
 **Cluster:** Single-node kind
 **Generation order:** 9
 
-**Planned scope:**
+**Scope:**
 - Linux capabilities overview
 - Adding capabilities (NET_ADMIN, SYS_TIME, SYS_ADMIN)
 - Dropping capabilities (CAP_NET_RAW, CAP_SETUID)
@@ -381,7 +395,7 @@ cross-references.
 **Cluster:** Single-node kind
 **Generation order:** 10
 
-**Planned scope:**
+**Scope:**
 - readOnlyRootFilesystem flag
 - Combining readOnlyRootFilesystem with writable emptyDir mounts
 - seccomp profiles (RuntimeDefault, Localhost, Unconfined)
@@ -401,7 +415,7 @@ cross-references.
 **Cluster:** Single-node kind
 **Generation order:** 11
 
-**Planned scope:**
+**Scope:**
 - CRD spec structure (group, versions, scope, names)
 - CRD schema definition (OpenAPI v3)
 - CRD versioning strategies
@@ -421,7 +435,7 @@ cross-references.
 **Cluster:** Single-node kind
 **Generation order:** 12
 
-**Planned scope:**
+**Scope:**
 - Custom resource CRUD operations
 - Custom resource namespacing vs cluster-scoping
 - RBAC for custom resources (Roles referencing CR types)
@@ -441,7 +455,7 @@ cross-references.
 **Cluster:** Single-node kind
 **Generation order:** 13
 
-**Planned scope:**
+**Scope:**
 - Custom controller concept (watch-reconcile loop)
 - Operator pattern overview
 - Installing existing operators
@@ -461,7 +475,7 @@ cross-references.
 **Cluster:** Single-node kind
 **Generation order:** 14
 
-**Planned scope:**
+**Scope:**
 - Volume types overview (emptyDir, hostPath, PVC)
 - PersistentVolume spec (capacity, accessModes, persistentVolumeReclaimPolicy)
 - PV lifecycle phases (Available, Bound, Released, Failed)
@@ -481,7 +495,7 @@ cross-references.
 **Cluster:** Single-node kind
 **Generation order:** 15
 
-**Planned scope:**
+**Scope:**
 - PVC spec (resources.requests.storage, accessModes, storageClassName)
 - PV-to-PVC binding mechanics (capacity, access mode, storage class matching)
 - Using PVCs in pod specs (volumes, volumeMounts)
@@ -501,7 +515,7 @@ cross-references.
 **Cluster:** Single-node kind
 **Generation order:** 16
 
-**Planned scope:**
+**Scope:**
 - StorageClass resources and provisioner field
 - Dynamic provisioning workflow
 - Default StorageClass annotation
@@ -521,7 +535,7 @@ cross-references.
 **Cluster:** Multi-node kind
 **Generation order:** 17
 
-**Planned scope:**
+**Scope:**
 - ClusterIP service type (default, internal access)
 - Service selectors and label matching
 - Endpoints and EndpointSlices
@@ -541,7 +555,7 @@ cross-references.
 **Cluster:** Multi-node kind
 **Generation order:** 18
 
-**Planned scope:**
+**Scope:**
 - NodePort services (external access on static port)
 - NodePort port allocation and kube-proxy behavior
 - LoadBalancer services (cloud provider integration)
@@ -561,7 +575,7 @@ cross-references.
 **Cluster:** Multi-node kind
 **Generation order:** 19
 
-**Planned scope:**
+**Scope:**
 - Multi-port services
 - Session affinity (ClientIP)
 - Service topology and traffic policies
@@ -581,7 +595,7 @@ cross-references.
 **Cluster:** Multi-node kind
 **Generation order:** 20
 
-**Planned scope:**
+**Scope:**
 - Service DNS format (<service>.<namespace>.svc.cluster.local)
 - Pod DNS records
 - DNS policies in pod spec (ClusterFirst, Default, None, ClusterFirstWithHostNet)
@@ -601,7 +615,7 @@ cross-references.
 **Cluster:** Multi-node kind
 **Generation order:** 21
 
-**Planned scope:**
+**Scope:**
 - CoreDNS Deployment in kube-system
 - CoreDNS ConfigMap and Corefile structure
 - CoreDNS plugins (kubernetes, forward, cache, errors, health)
@@ -621,7 +635,7 @@ cross-references.
 **Cluster:** Multi-node kind
 **Generation order:** 22
 
-**Planned scope:**
+**Scope:**
 - Diagnosing DNS resolution failures
 - CoreDNS pod failures
 - DNS policy misconfigurations
@@ -641,7 +655,7 @@ cross-references.
 **Cluster:** Multi-node kind (needs CNI with NetworkPolicy support)
 **Generation order:** 23
 
-**Planned scope:**
+**Scope:**
 - NetworkPolicy spec structure (apiVersion, kind, metadata, spec)
 - podSelector mechanics for targeting pods in the same namespace
 - Basic ingress rules (from.podSelector within namespace)
@@ -664,7 +678,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 **Cluster:** Multi-node kind (CNI already configured in assignment-1)
 **Generation order:** 24
 
-**Planned scope:**
+**Scope:**
 - namespaceSelector mechanics for cross-namespace rules
 - Combined selectors (podSelector + namespaceSelector, AND vs OR semantics)
 - ipBlock and CIDR selectors for external traffic control
@@ -685,7 +699,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 **Cluster:** Multi-node kind
 **Generation order:** 25
 
-**Planned scope:**
+**Scope:**
 - Diagnosing blocked traffic (expected communication fails, policy too restrictive)
 - Diagnosing unexpectedly allowed traffic (security gaps, missing policies)
 - Multi-policy conflict resolution (overlapping policies, rule interaction)
@@ -705,7 +719,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 **Cluster:** Multi-node kind (needs ingress controller installed)
 **Generation order:** 26
 
-**Planned scope:**
+**Scope:**
 - Ingress resource spec (rules, paths, backends, defaultBackend)
 - Ingress controller deployment (nginx-ingress)
 - Path types (Prefix, Exact, ImplementationSpecific)
@@ -725,7 +739,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 **Cluster:** Multi-node kind
 **Generation order:** 27
 
-**Planned scope:**
+**Scope:**
 - Ingress annotations and rewrite-target
 - TLS termination with Ingress
 - Certificate management for Ingress
@@ -745,7 +759,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 **Cluster:** Multi-node kind
 **Generation order:** 28
 
-**Planned scope:**
+**Scope:**
 - Gateway API resources (GatewayClass, Gateway, HTTPRoute)
 - Gateway API vs Ingress comparison
 - Traffic routing with HTTPRoute
@@ -765,7 +779,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 **Cluster:** Single-node kind
 **Generation order:** 29
 
-**Planned scope:**
+**Scope:**
 - Helm architecture and concepts (charts, releases, revisions)
 - Chart repositories (add, search, update, list)
 - Installing charts (helm install, release naming)
@@ -784,7 +798,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 **Cluster:** Single-node kind
 **Generation order:** 30
 
-**Planned scope:**
+**Scope:**
 - Upgrading releases (helm upgrade)
 - Values files (-f values.yaml)
 - Reusing values (--reuse-values vs --reset-values)
@@ -804,7 +818,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 **Cluster:** Single-node kind
 **Generation order:** 31
 
-**Planned scope:**
+**Scope:**
 - Template rendering (helm template)
 - Debugging chart installations
 - Helm hooks (pre-install, post-install)
@@ -824,7 +838,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 **Cluster:** Single-node kind
 **Generation order:** 32
 
-**Planned scope:**
+**Scope:**
 - kustomization.yaml structure and purpose
 - Resource references (resources field)
 - Managing directories (bases)
@@ -844,7 +858,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 **Cluster:** Single-node kind
 **Generation order:** 33
 
-**Planned scope:**
+**Scope:**
 - Strategic merge patches
 - JSON 6902 patches
 - Inline patches
@@ -864,7 +878,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 **Cluster:** Single-node kind
 **Generation order:** 34
 
-**Planned scope:**
+**Scope:**
 - Base and overlay directory structure
 - Environment-specific configurations (dev, staging, prod)
 - Components (reusable partial configurations)
@@ -884,7 +898,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 **Cluster:** Multi-node kind
 **Generation order:** 35
 
-**Planned scope:**
+**Scope:**
 - Pod failure states (CrashLoopBackOff, ImagePullBackOff, ErrImagePull, CreateContainerError)
 - Diagnosing crashes from logs and events
 - Resource exhaustion (OOMKilled, CPU throttling, eviction)
@@ -905,7 +919,7 @@ topic areas (broken deployment + wrong service selector + missing configmap).
 **Cluster:** Multi-node kind
 **Generation order:** 36
 
-**Planned scope:**
+**Scope:**
 - API server failures (static pod manifest errors, certificate issues, port conflicts)
 - Scheduler failures (not running, misconfigured)
 - Controller manager failures (not running, RBAC issues)
@@ -926,7 +940,7 @@ The prompt should identify which scenarios work in kind and which are conceptual
 **Cluster:** Multi-node kind
 **Generation order:** 37
 
-**Planned scope:**
+**Scope:**
 - Node NotReady diagnosis (kubectl describe node, conditions)
 - Kubelet not running (systemctl status kubelet, journalctl -u kubelet)
 - Container runtime issues
@@ -947,7 +961,7 @@ bare-metal. The prompt should note where kind behavior diverges from real cluste
 **Cluster:** Multi-node kind (with policy-capable CNI)
 **Generation order:** 38
 
-**Planned scope:**
+**Scope:**
 - Service not reachable (empty endpoints, selector mismatch, wrong port)
 - DNS resolution failures (CoreDNS not running, misconfigured, pod DNS policy)
 - Network policy blocking expected traffic

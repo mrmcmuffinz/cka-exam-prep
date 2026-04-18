@@ -87,21 +87,49 @@ produces `network-policies-tutorial.md`).
 
 ## Quality Checks
 
-Before finalizing output, verify:
+Every check below is a hard gate. The generator must not finalize an assignment
+unless every gate passes. The detailed definition of each gate lives in
+`references/base-template.md` under "Quality Standards"; this list is the
+checklist form.
 
-- All four files are present and non-empty
-- Tutorial uses its own namespace (`tutorial-<topic>`) and resource names that
-  do not conflict with any exercise
-- Every exercise has setup commands, task description, and verification commands
-- Debugging exercises (Levels 3 and 5) have anti-spoiler headings (no descriptive
-  titles, no bug count in objectives)
-- No exercise uses Kubernetes resources outside the prompt's resource gate
-- All container images use explicit version tags (no `:latest`)
-- No em dashes anywhere in any file
-- Verification commands produce specific expected outputs (yes/no answers),
-  not vague instructions like "check if it works"
-- Exercise namespaces are unique across all 15 exercises (ex-1-1 through ex-5-3)
-- Different user/resource names per exercise (no reuse of alice, bob, etc. across exercises)
+**Structural:**
+- [ ] All four files present and non-empty.
+- [ ] Tutorial namespace `tutorial-<topic>`, exercise namespaces `ex-<level>-<exercise>`.
+- [ ] No resource-name, user-name, or namespace collisions between tutorial and exercises.
+- [ ] All container image tags are explicit versions and verified against the registry.
+- [ ] All commands are copy-paste ready with no placeholders.
+
+**README (see base-template section "### 1. README.md"):**
+- [ ] Follows the canonical 9-section shape.
+- [ ] References `docs/cluster-setup.md` by anchor instead of inlining cluster commands.
+- [ ] Uses narrative prose, not a metadata header block or tables-only layout.
+
+**Tutorial (see base-template section "### 2. <topic>-tutorial.md"):**
+- [ ] Narrative paragraph flow, not stacked one-sentence paragraphs.
+- [ ] Every new resource type has spec fields, valid values, defaults, and
+      failure-mode-when-misconfigured documented.
+- [ ] Imperative and declarative forms shown together where both are realistic.
+
+**Homework (see base-template section "### 3. <topic>-homework.md" and "Exercise task types"):**
+- [ ] Every exercise is a build-or-fix task; no reading-only tasks.
+- [ ] Debugging exercises have bare headings; objectives do not telegraph bug count or type.
+- [ ] Verification commands use RBAC-style `# expect: yes/no` or specific exact outputs.
+- [ ] No `grep -q ... && echo SUCCESS` or `timeout N ... || echo BLOCKED` patterns.
+- [ ] No exercise uses resources outside the prompt.md resource gate.
+
+**Answer key (see base-template section "### 4. <topic>-homework-answers.md"):**
+- [ ] Every Level 3 and Level 5 debugging answer follows the three-stage structure:
+      diagnosis (commands + what to look for), bug explanation, fix.
+- [ ] Common Mistakes section present with three or more topic-specific entries.
+- [ ] No duplicated YAML (display + heredoc of the same config).
+- [ ] Verification Commands Cheat Sheet present.
+
+**Formatting:**
+- [ ] No em dashes anywhere.
+- [ ] Full replacement files on any update.
+
+If any gate fails, fix it before finalizing or flag the specific gap to the
+user and ask for a decision. Do not silently ship output that fails a gate.
 
 ## Conventions
 
