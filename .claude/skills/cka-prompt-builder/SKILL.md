@@ -82,13 +82,17 @@ The topic README must contain:
 
 - Each assignment produces 15 exercises across five difficulty levels (3 per level).
 - Each distinct subtopic should map to at least 2-3 exercises.
-- A topic with 8-15 distinct subtopics fits naturally into one assignment.
-- A topic with 16-25 subtopics should split into two assignments.
-- A topic with 25+ subtopics should split into three or more assignments.
-- Natural breakpoints matter more than raw subtopic counts. If a topic has 14
-  subtopics but half are conceptually independent from the other half, two focused
-  assignments are better than one sprawling one.
-- When in doubt, prefer fewer, denser assignments over many thin ones.
+- **Default to 3+ focused assignments per topic** where the scope supports it. The user
+  prefers depth over breadth, with each assignment covering 5-6 core subtopics rather
+  than cramming 12-15 subtopics into a single dense assignment.
+- A topic with 15-18 distinct subtopics should split into three assignments (5-6 subtopics each).
+- A topic with 18-24 subtopics should split into four assignments.
+- A topic with 8-12 subtopics may warrant two assignments if natural breakpoints exist.
+- Very narrow topics (fewer than 8 subtopics) may be single assignments, but this should
+  be the exception, not the default.
+- Natural breakpoints for progressive learning (fundamentals, advanced patterns, debugging
+  or integration) should guide the decomposition.
+- When in doubt, prefer more focused assignments over fewer dense ones.
 
 ### Step 2: Assignment Prompt (detailed spec)
 
@@ -152,9 +156,23 @@ When building a topic README or prompt, follow these steps:
    (generation order 1-6 in the homework plan), list permitted resources explicitly. If
    it unlocks after, state "all CKA resources are in scope."
 
-8. Write the file following the output contract above.
+8. **Scope drift check (prompts only).** Before writing the prompt, compare the
+   subtopic list you are about to include against what the topic README scoped for
+   this assignment. Count the subtopics. If the count exceeds 7-8 subtopics for a
+   single assignment, or includes subtopics that belong to a different assignment
+   in the topic's decomposition, stop and flag the drift to the user. Present three
+   options:
+   - Trim the prompt's scope to fit the topic README's original decomposition (5-6 subtopics)
+   - Split the assignment into two (which requires updating the topic README first)
+   - Expand the current assignment's scope in the topic README with justification
+   Do not write the prompt until the user has chosen an approach and the topic README
+   is consistent with the decision.
 
-9. After writing, update `assignment-registry.md` to reflect any new information.
+9. Write the file following the output contract above.
+
+10. After writing, update `assignment-registry.md` to reflect any new information.
+    If the topic README was modified in step 8, ensure the assignment registry's
+    planned scope entries match the updated decomposition.
 
 ## Quality Checks
 
@@ -168,15 +186,21 @@ Before finalizing a topic README, verify:
 Before finalizing a prompt, verify:
 
 - The topic README exists and the prompt is consistent with its assignment summary
+- The prompt's subtopic count falls within the topic README's scoped range for this
+  assignment. If it does not, the scope drift check in step 8 must have been resolved
+  before reaching this point.
 - Every CKA competency listed in the header block has at least one matching subtopic
   in the scope declaration
 - No subtopic overlaps with an existing assignment's scope (check the registry)
 - The resource gate is consistent with the assignment's position in the generation sequence
 - Forward and backward references point to real assignments that exist or are planned
-- The scope is large enough for 15 exercises across five levels but not so large that
-  it would require more than one assignment
+- The scope targets 5-6 core subtopics (sufficient for 15 exercises across five levels
+  with 2-3 exercises per subtopic). Assignments with 8+ subtopics should be flagged for
+  potential splitting.
 - Topic-specific conventions include everything the homework generator would need to
   know that is not in the base template (environment setup, special tools, gotchas)
+- If the topic README was updated during this process, verify the updated README is
+  written to disk before the prompt is finalized
 
 ## Conventions
 

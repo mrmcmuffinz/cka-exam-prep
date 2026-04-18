@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 ## Repository Purpose
 
 This is a CKA (Certified Kubernetes Administrator) exam prep repository containing
@@ -40,6 +42,25 @@ exercise format, environment assumptions.
 
 Reference file in `skills/k8s-homework-generator/references/`:
 - `base-template.md` has the full structural contract for assignment output.
+
+### How to Invoke Skills
+
+Skills are invoked using the `/` prefix in Claude Code:
+
+- `/cka-prompt-builder` - Scope a topic or build a prompt for an assignment
+- `/k8s-homework-generator` - Generate the four content files from a prompt
+
+Example workflow:
+```
+User: "Scope out the Network Policies topic"
+→ /cka-prompt-builder reads references, produces exercises/network-policies/README.md
+
+User: "Generate prompt for Network Policies assignment 1"
+→ /cka-prompt-builder produces exercises/network-policies/assignment-1/prompt.md
+
+User: "Generate the assignment from that prompt"
+→ /k8s-homework-generator produces the 4 content files
+```
 
 ### Generation Workflow
 
@@ -90,6 +111,14 @@ assignments and what each covers. Each assignment subdirectory contains five fil
   scheduling, controllers, networking, and troubleshooting
 - `KIND_EXPERIMENTAL_PROVIDER=nerdctl kind create cluster` for cluster creation
 
+## Common Tasks
+
+- **Start the generation sequence**: Read `cka-homework-plan.md` to see what's next
+- **Scope a new topic**: Use `/cka-prompt-builder` with the topic name
+- **Generate an assignment**: First create the prompt, then run `/k8s-homework-generator`
+- **Update the registry**: After generating, edit `skills/cka-prompt-builder/references/assignment-registry.md`
+- **Test an assignment**: Create a kind cluster with `KIND_EXPERIMENTAL_PROVIDER=nerdctl kind create cluster`
+
 ## Conventions
 
 - No em dashes anywhere. Use commas, periods, or parentheses.
@@ -102,6 +131,10 @@ assignments and what each covers. Each assignment subdirectory contains five fil
 - Debugging exercise headings are bare (`### Exercise 3.1`) with no descriptive titles
   that would hint at the problem.
 - Full file replacements when updating, never patches or diffs.
+- **Resource gates** constrain which Kubernetes objects exercises can reference. Early
+  assignments (before Networking) use explicit allowlists. Later assignments have access
+  to all CKA resources. This prevents exercises from assuming knowledge the learner
+  doesn't yet have.
 
 ## Existing Content
 

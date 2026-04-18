@@ -48,5 +48,5 @@ existing CA and kubeconfig infrastructure.
 
 ## Recommended Order
 
-Complete assignment-1 before assignment-2. Cluster-scoped RBAC builds directly on the
-namespace-scoped fundamentals.
+1. Complete assignment-1 before assignment-2 (cluster-scoped RBAC builds on namespace-scoped fundamentals)
+2. Complete `tls-and-certificates/assignment-2` before `rbac/assignment-2` (certificate-based authentication feeds RBAC authorization)

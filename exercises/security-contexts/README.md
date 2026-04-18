@@ -1,45 +1,42 @@
 # Security Contexts
 
 **CKA Domain:** Workloads & Scheduling (15%)
-**Competencies covered:** Configure Pod admission and scheduling
+**Competencies covered:** Configure Pod admission and scheduling (security context aspects)
 
 ---
 
-## Why One Assignment
+## Rationale for Number of Assignments
 
-Security contexts control what a container can do at runtime: which user it runs as,
-which Linux capabilities it has, whether it can escalate privileges, and whether its
-root filesystem is read-only. The subtopic count is moderate (roughly 10 distinct
-areas including pod-level vs container-level settings, capabilities, fsGroup
-interaction with volumes, and seccomp profiles), and the concepts are tightly related.
-A single assignment provides enough room for basic configuration exercises, multi-layer
-scenarios combining pod-level and container-level settings, and debugging exercises
-where a misconfigured security context prevents a container from functioning.
+Security contexts control runtime security settings for pods and containers: which user and group the process runs as, which Linux capabilities it has access to, whether it can escalate privileges, whether the root filesystem is writable, and which seccomp profiles apply. This produces roughly 16-18 distinct subtopics. The material splits naturally into three focused progressions: user and group identity with filesystem permissions, capabilities and privilege control, and filesystem constraints with seccomp profiles. Each assignment delivers 5-6 subtopics at depth, building from basic identity management through fine-grained capability control to comprehensive defense-in-depth patterns.
 
 ---
 
-## Assignments
+## Assignment Summary
 
-| Assignment | Title | Covers | Prerequisites |
-|---|---|---|---|
-| assignment-1 | Security Contexts | Pod-level securityContext (runAsUser, runAsGroup, fsGroup), container-level securityContext (runAsNonRoot, readOnlyRootFilesystem, capabilities, allowPrivilegeEscalation), seccomp profiles, fsGroup interaction with volumes, verification via exec | pods/assignment-1, pods/assignment-2 |
+| Assignment | Description | Prerequisites |
+|---|---|---|
+| assignment-1 | User and Group Security | Pod-level securityContext (runAsUser, runAsGroup, fsGroup, supplementalGroups), container-level securityContext (runAsUser, runAsNonRoot), fsGroup interaction with volumes, volume ownership and permission propagation, security context precedence (container overrides pod), verification via exec | pods/assignment-1, pods/assignment-2 |
+| assignment-2 | Capabilities and Privilege Control | Linux capabilities overview, adding capabilities (NET_ADMIN, SYS_TIME, SYS_ADMIN), dropping capabilities (CAP_NET_RAW, CAP_SETUID), default capabilities from container runtime, allowPrivilegeEscalation flag and implications, privilege escalation prevention patterns | security-contexts/assignment-1 |
+| assignment-3 | Filesystem and seccomp Profiles | readOnlyRootFilesystem flag, combining readOnlyRootFilesystem with writable emptyDir mounts, seccomp profiles (RuntimeDefault, Localhost, Unconfined), creating custom seccomp profiles, seccomp profile debugging, security context best practices and defense in depth | security-contexts/assignment-2 |
 
 ## Scope Boundaries
 
-This topic covers runtime security settings on pods and containers. The following
-related areas are handled by other topics:
+This topic covers runtime security settings on pods and containers. The following related areas are handled by other topics:
 
 - **RBAC** (who can create pods with specific security contexts): covered in `rbac/`
-- **Network Policies** (network-level security): covered in `network-policies/`
-- **Admission controllers** (enforcing security standards at admission time): covered in the pod series scheduling material
+- **Network Policies** (network-level security, distinct from process-level security): covered in `network-policies/`
 - **Pod Security Standards/Admission** (namespace-level enforcement of security baselines): may be added as a future assignment if exam coverage warrants it
+- **Admission controllers** (validating security configurations at admission time): covered in the pod series scheduling material
+
+Assignment-1 focuses on identity and file permissions. Assignment-2 focuses on process capabilities and privilege escalation. Assignment-3 focuses on filesystem constraints and syscall filtering.
 
 ## Cluster Requirements
 
-Single-node kind cluster. No special configuration needed. Security context
-enforcement is handled by the container runtime, which kind provides out of the box.
+Single-node kind cluster for all three assignments. Security context enforcement is handled by the container runtime (containerd in kind), which provides full support for user/group identity, capabilities, and seccomp profiles out of the box. No special cluster configuration needed.
 
 ## Recommended Order
 
-Complete pods/assignment-1 (pod spec fundamentals) and pods/assignment-2 (volume mounts,
-needed for fsGroup exercises) before this assignment.
+1. Complete `pods/assignment-1` (pod spec fundamentals) and `pods/assignment-2` (volume mounts, needed for fsGroup exercises) before this series
+2. Work through assignments 1, 2, 3 sequentially
+3. Assignment-2 assumes understanding of basic security context structure from assignment-1
+4. Assignment-3 assumes understanding of both identity controls and capability management from assignments 1 and 2
