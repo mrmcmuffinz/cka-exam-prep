@@ -1,179 +1,82 @@
-I need you to create a comprehensive Kubernetes homework assignment to help me practice **Ingress Fundamentals**.
+# Prompt: Ingress API Fundamentals with Traefik (assignment-1)
 
-CONTEXT:
-- I'm studying for the CKA (Certified Kubernetes Administrator) exam
-- I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed services/assignment-1
-- I want to build real-world skills, not just pass the exam
+## Header
 
-SCOPE (IMPORTANT):
-This assignment covers Ingress resource structure, controller deployment, path types, host-based routing, and basic Ingress creation. Advanced Ingress patterns and TLS are covered in assignment-2. Gateway API is covered in assignment-3.
+- **Series:** Ingress and Gateway API (1 of 5)
+- **CKA domain:** Services & Networking (20%)
+- **Competencies covered:** Know how to use Ingress controllers and Ingress resources (the Ingress API is frozen but still tested)
+- **Course sections referenced:** S9 (lectures 231-237, Ingress controllers and resources)
+- **Prerequisites:** `services/assignment-1`
 
-**In scope for this assignment:**
+## Scope declaration
 
-*Ingress Resource Spec*
-- apiVersion: networking.k8s.io/v1
-- kind: Ingress
-- spec.rules: list of routing rules
-- spec.rules[].host: optional hostname for routing
-- spec.rules[].http.paths: list of path-based routes
-- spec.defaultBackend: catch-all backend
+### In scope for this assignment
 
-*Ingress Controller Deployment*
-- Ingress resources require a controller
-- nginx-ingress as the standard example
-- Controller watches Ingress resources
-- Controller configures underlying load balancer/proxy
-- Installing nginx-ingress in kind
+*Ingress v1 API fundamentals*
+- `apiVersion: networking.k8s.io/v1`, `kind: Ingress`
+- `spec.ingressClassName` (and the relationship to `IngressClass` resources)
+- `spec.rules` structure: `host`, `http.paths[]`, each path with `path`, `pathType`, `backend.service`
+- `spec.defaultBackend` for unmatched traffic
+- Path types: `Prefix`, `Exact`, `ImplementationSpecific` (and what each means in practice)
+- Host-based routing with the `host` field
+- Ingress status fields (`status.loadBalancer.ingress[]`)
 
-*Path Types*
-- Prefix: matches URL path prefix
-- Exact: matches URL path exactly
-- ImplementationSpecific: controller decides
-- Path matching priority (Exact > longest Prefix)
-- Leading slash requirements
+*IngressClass resource*
+- `apiVersion: networking.k8s.io/v1`, `kind: IngressClass`
+- `spec.controller` identifies which controller watches
+- Default IngressClass via annotation `ingressclass.kubernetes.io/is-default-class: "true"`
+- How a pod that creates an Ingress without `ingressClassName` gets the default
 
-*Host-Based Routing*
-- Routing to different backends by hostname
-- spec.rules[].host field
-- Wildcard hosts (*.example.com)
-- No host (matches all hosts)
-- Testing with /etc/hosts or curl --header
+*Traefik as the controller*
+- Installing Traefik v3.6.13 via Helm chart (see `docs/cluster-setup.md` and the tutorial for the exact install command)
+- Traefik's `IngressClass` name (`traefik` by default)
+- Exposing Traefik via kind's extraPortMappings on ports 80 and 443
+- Verifying Traefik is ready with `kubectl get pods -n <traefik-ns>`
 
-*Ingress Creation and Verification*
-- Creating Ingress with kubectl apply
-- kubectl get ingress
-- kubectl describe ingress
-- Checking Ingress ADDRESS
-- Testing with curl
+*Backend addressing and verification*
+- Creating a Deployment and Service that an Ingress routes to
+- Testing routing with `curl -H "Host: <hostname>"` against the node's localhost port
+- Reading `kubectl describe ingress` to see the backend resolution and any warnings
 
-*Basic Troubleshooting*
-- Backend not found: service does not exist
-- No endpoints: service has no ready pods
-- Ingress no address: controller not running
-- Path not matching: wrong pathType
+*Basic troubleshooting*
+- Ingress without a matching IngressClass or controller: stuck with no address
+- Ingress pointing at a Service that does not exist or has no endpoints
+- Path mismatch between Ingress and application (404 response)
 
-**Out of scope (covered in other assignments, do not include):**
+### Out of scope (covered in other assignments, do not include)
 
-- Ingress annotations and rewrite-target (exercises/ingress-and-gateway-api/assignment-2)
-- TLS termination (exercises/ingress-and-gateway-api/assignment-2)
-- Gateway API (exercises/ingress-and-gateway-api/assignment-3)
-- Services in depth (exercises/services/)
-- Network Policies (exercises/network-policies/)
+- Advanced annotations, rewrite-target, TLS termination: covered in assignment-2 with HAProxy Ingress
+- Gateway API resources (`Gateway`, `HTTPRoute`): covered in assignments 3 and 4
+- Migration tooling (Ingress2Gateway CLI): covered in assignment-5
+- NetworkPolicy affecting ingress traffic: covered in `network-policies/`
+- DNS resolution for the Ingress hostname: covered in `coredns/` (exercises use `curl -H "Host: ..."` rather than real DNS)
 
-ASSIGNMENT REQUIREMENTS:
+## Environment requirements
 
-1. **Tutorial File (Separate from Exercises)**
-   - Create a standalone tutorial file: ingress-and-gateway-api-tutorial.md
-   - Explain what Ingress provides (L7 routing)
-   - Include nginx-ingress installation for kind
-   - Walk through Ingress resource structure
-   - Demonstrate path-based routing
-   - Demonstrate host-based routing
-   - Show verification and basic troubleshooting
-   - Use tutorial-ingress namespace
+- Multi-node kind cluster with extraPortMappings for 80 and 443 per `docs/cluster-setup.md#multi-node-kind-cluster`, with the additional port mappings documented in the tutorial
+- Traefik v3.6.13 installed via its official Helm chart (verify against `github.com/traefik/traefik/releases` at generation time)
+- No Gateway API CRDs required for this assignment
 
-2. **Homework Exercises File (15 Progressive Exercises)**
-   - Create the exercises file: ingress-and-gateway-api-homework.md
-   - 15 exercises across 5 difficulty levels (3 exercises per level)
+## Resource gate
 
-   **Level 1 (Exercises 1.1-1.3): Basic Ingress Creation**
-   - Create Ingress with single backend
-   - Verify Ingress address assignment
-   - Test Ingress with curl
+All CKA resources are in scope. Exercises primarily use Ingress, IngressClass, Service, Deployment, and Pod resources. ConfigMaps may appear for nginx configuration on backend Deployments.
 
-   **Level 2 (Exercises 2.1-2.3): Path and Host Routing**
-   - Create Ingress with multiple paths
-   - Create Ingress with multiple hosts
-   - Test different path types
+## Topic-specific conventions
 
-   **Level 3 (Exercises 3.1-3.3): Debugging Ingress Issues**
-   - Three debugging exercises
-   - Exercise headings are bare (### Exercise 3.1)
-   - Scenarios: backend service not found, path not matching, no address assigned
+- Every Ingress exercise must create a backend Deployment with at least 2 replicas to make the "routes to any healthy endpoint" behavior observable.
+- Verification uses `curl -H "Host: <hostname>" http://localhost/<path>`. Do not assume DNS resolution works for arbitrary hostnames; the Host header simulates resolution.
+- The tutorial must compare imperative Ingress creation (`kubectl create ingress`) with declarative YAML, showing why declarative dominates in production.
+- Debugging exercises cover the three most common Ingress failures: no IngressClass match (no address assigned), backend not found (404 or 503), and path type mismatch.
+- The `ingressClassName` field must be set explicitly in every Ingress exercise. Do not rely on cluster default behavior because it varies across environments.
 
-   **Level 4 (Exercises 4.1-4.3): Advanced Routing**
-   - Configure default backend
-   - Use wildcard hosts
-   - Multiple services on different paths
+## Cross-references
 
-   **Level 5 (Exercises 5.1-5.3): Application Scenarios**
-   - Exercise 5.1: Multi-service application with path routing
-   - Exercise 5.2: Debug complex routing issue
-   - Exercise 5.3: Design Ingress strategy for microservices
+**Prerequisites (must be completed first):**
+- `exercises/services/assignment-1`: ClusterIP Services are the backends
 
-3. **Answer Key File**
-   - Create the answer key: ingress-and-gateway-api-homework-answers.md
-   - Full solutions with explanations
-   - Common mistakes section covering:
-     - Ingress controller not installed
-     - Service name or port wrong
-     - PathType mismatch
-     - Host not matching request
-     - Backend service has no endpoints
-   - Ingress debugging cheat sheet
+**Adjacent topics:**
+- `exercises/ingress-and-gateway-api/assignment-2`: advanced Ingress patterns with HAProxy Ingress
+- `exercises/ingress-and-gateway-api/assignment-3`: Gateway API fundamentals (the modern replacement)
 
-4. **README File for the Assignment**
-   - Create: README.md
-   - Overview of Ingress Fundamentals assignment
-   - Prerequisites: services/assignment-1
-   - Estimated time commitment: 4-6 hours
-   - Cluster requirements: multi-node kind with nginx-ingress
-   - nginx-ingress installation instructions
-   - Recommended workflow
-
-ENVIRONMENT REQUIREMENTS:
-- Multi-node kind cluster
-- nginx-ingress controller installed
-- kubectl client
-
-KIND CLUSTER NOTE:
-Kind requires special configuration for Ingress to work. Include the kind cluster config with extra port mappings:
-
-```yaml
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-- role: control-plane
-  kubeadmConfigPatches:
-  - |
-    kind: InitConfiguration
-    nodeRegistration:
-      kubeletExtraArgs:
-        node-labels: "ingress-ready=true"
-  extraPortMappings:
-  - containerPort: 80
-    hostPort: 80
-    protocol: TCP
-  - containerPort: 443
-    hostPort: 443
-    protocol: TCP
-- role: worker
-- role: worker
-```
-
-RESOURCE GATE:
-All CKA resources are in scope (generation order 26):
-- Ingress
-- Services, Deployments, Pods
-- Namespaces
-
-CONVENTIONS:
-- No em dashes anywhere.
-- Narrative paragraph flow in prose sections.
-- Exercise namespaces follow `ex-<level>-<exercise>` pattern.
-- Tutorial namespace is `tutorial-ingress`.
-- Debugging exercise headings are bare.
-- Container images use explicit version tags.
-- Full file replacements when generating.
-
-CROSS-REFERENCES:
-- **Prerequisites:**
-  - exercises/services/assignment-1: Service basics
-
-- **Follow-up assignments:**
-  - exercises/ingress-and-gateway-api/assignment-2: Advanced Ingress and TLS
-  - exercises/ingress-and-gateway-api/assignment-3: Gateway API
-
-COURSE MATERIAL REFERENCE:
-- S9 (Lectures 231-237): Ingress controllers, resources, annotations
+**Forward references:**
+- `exercises/ingress-and-gateway-api/assignment-5`: migration from Ingress to Gateway API

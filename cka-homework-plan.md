@@ -22,11 +22,11 @@ pod scheduling appears in both the pod series and the troubleshooting series).
 
 | Domain | Weight | Primary Exercise Directories |
 |---|---|---|
-| Cluster Architecture, Installation & Configuration | 25% | cluster-lifecycle, tls-and-certificates, rbac, crds-and-operators, helm, kustomize |
-| Workloads & Scheduling | 15% | pods (assignments 1-7), security-contexts |
-| Services & Networking | 20% | services, coredns, network-policies, ingress-and-gateway-api |
+| Cluster Architecture, Installation & Configuration | 25% | cluster-lifecycle, tls-and-certificates, rbac, crds-and-operators, helm, kustomize, admission-controllers |
+| Workloads & Scheduling | 15% | pods (1-7), security-contexts, jobs-and-cronjobs, autoscaling, statefulsets, admission-controllers, pod-security |
+| Services & Networking | 20% | services, coredns, network-policies, ingress-and-gateway-api (1-5) |
 | Storage | 10% | storage |
-| Troubleshooting | 30% | troubleshooting (assignments 1-4), plus debugging exercises across all topics |
+| Troubleshooting | 30% | troubleshooting (1-4), plus debugging exercises across all topics |
 
 ---
 

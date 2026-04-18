@@ -1,42 +1,69 @@
 # Ingress and Gateway API
 
 **CKA Domain:** Services & Networking (20%)
-**Competencies covered:** Use the Gateway API to manage Ingress traffic, know how to use Ingress controllers and Ingress resources
+**Competencies covered:** Use the Gateway API to manage Ingress traffic (primary emphasis), know how to use Ingress controllers and Ingress resources
 
 ---
 
 ## Rationale for Number of Assignments
 
-Ingress and Gateway API are complementary approaches to L7 traffic routing into the cluster. The material encompasses Ingress resource construction, controller deployment, annotations and rewrite rules, TLS termination, Gateway API resources (GatewayClass, Gateway, HTTPRoute), and the comparison between approaches. This produces roughly 16-18 distinct subtopics. The material splits naturally into three focused progressions: Ingress fundamentals with controller setup, advanced Ingress patterns with TLS, and Gateway API resources with routing strategies. Each assignment delivers 5-6 subtopics at depth, building from basic HTTP routing through secure TLS termination to next-generation Gateway API patterns.
+This topic was restructured on 2026-04-18 to reflect two changes in the Kubernetes ecosystem. First, the Ingress API was officially frozen, with Gateway API promoted as the modern replacement; the CKA allowed documentation set now includes `gateway-api.sigs.k8s.io/` as a dedicated URL while no longer listing the NGINX Ingress Controller documentation (which moved to the CKS exam only). Second, the ingress-nginx project is retiring in March 2026, along with its intended successor InGate. For details of the rationale, see `docs/remediation-plan.md` decision D8 and the January 2026 Kubernetes Steering Committee statement.
+
+The five-assignment structure is deliberate. Learners gain breadth across multiple actively-maintained implementations rather than depth in any single one, which aligns with the reality that the CKA exam tests the API spec rather than a specific controller. Assignments 1 and 2 cover the frozen Ingress v1 API with two different controllers, reinforcing that the API is universal. Assignments 3 and 4 cover Gateway API with two different implementations for the same reason. Assignment 5 covers the migration from Ingress to Gateway API, which the 2026 CKA exam tests explicitly.
+
+The total subtopic count across the five assignments is approximately 28, well within the 2-3 exercises per subtopic ratio targeted by the 15-exercise assignment format.
 
 ---
 
 ## Assignment Summary
 
-| Assignment | Description | Prerequisites |
-|---|---|---|
-| assignment-1 | Ingress Fundamentals | Ingress resource spec (rules, paths, backends, defaultBackend), Ingress controller deployment (nginx-ingress), path types (Prefix, Exact, ImplementationSpecific), host-based routing, Ingress creation and verification, basic troubleshooting (backend not found) | services/assignment-1 |
-| assignment-2 | Advanced Ingress and TLS | Ingress annotations and rewrite-target, TLS termination with Ingress, certificate management for Ingress, multi-host and multi-path rules, default backend configuration, Ingress controller customization | ingress-and-gateway-api/assignment-1 |
-| assignment-3 | Gateway API | Gateway API resources (GatewayClass, Gateway, HTTPRoute), Gateway API vs Ingress comparison, traffic routing with HTTPRoute, header-based routing, Gateway API path matching, Gateway API troubleshooting | ingress-and-gateway-api/assignment-2 |
+| Assignment | API | Controller | Focus | Prerequisites |
+|---|---|---|---|---|
+| assignment-1 | Ingress v1 | Traefik | Ingress API fundamentals (rules, paths, backends, path types, host-based routing, IngressClass) | `services/assignment-1` |
+| assignment-2 | Ingress v1 | HAProxy Ingress | Advanced Ingress patterns with a second implementation (annotations, rewrite-target, TLS termination, multi-host and multi-path rules, default backends) | assignment-1 |
+| assignment-3 | Gateway API | Envoy Gateway | Gateway API fundamentals (GatewayClass, Gateway, HTTPRoute, ReferenceGrant, per-path routing) | `services/assignment-1`, assignment-2 recommended |
+| assignment-4 | Gateway API | NGINX Gateway Fabric | Advanced Gateway API routing with a second implementation (header and query-parameter matching, traffic splitting via weighted HTTPRoute backends, request/response filters) | assignment-3 |
+| assignment-5 | Both | Uses installations from assignments 1 and 3; introduces the `Ingress2Gateway` CLI | Migration from Ingress to Gateway API (translating Ingress resources, gap analysis, side-by-side running during migration) | assignments 1 and 3 |
 
 ## Scope Boundaries
 
-This topic covers L7 traffic routing into the cluster. The following related areas are handled by other topics:
+This topic covers L7 traffic routing into the cluster. The following related areas are handled by other topics.
 
-- **Services** (the backends that Ingress/Gateway routes point to): covered in `services/`
+- **Services** (the backends that Ingress and HTTPRoute point to): covered in `services/`
 - **CoreDNS** (DNS for ingress hostnames): covered in `coredns/`
-- **TLS certificate creation** (creating certs for TLS termination): covered in `tls-and-certificates/`
+- **TLS certificate creation** (creating certs for TLS termination, as opposed to consuming them): covered in `tls-and-certificates/`
 - **Network Policies** (L3/L4 traffic filtering, not L7 routing): covered in `network-policies/`
 
-Assignment-1 focuses on basic Ingress resources and controllers. Assignment-2 focuses on advanced Ingress patterns with TLS. Assignment-3 focuses on Gateway API as the next-generation approach.
+Assignments 1 and 2 focus on the Ingress v1 API across two controllers. Assignments 3 and 4 focus on the Gateway API across two implementations. Assignment 5 focuses specifically on migration and is the only place the `Ingress2Gateway` CLI appears.
 
 ## Cluster Requirements
 
-Multi-node kind cluster for all three assignments. Assignment-1 tutorial must include nginx-ingress installation instructions for kind. Assignment-3 requires Gateway API CRD installation if the kind version does not include them by default.
+Multi-node kind cluster for all five assignments, with kind's extraPortMappings for ports 80 and 443 so that ingress traffic from the host reaches the controller. Each assignment installs a different controller; the tutorial for each assignment documents the controller install. See `docs/cluster-setup.md#multi-node-kind-cluster` for the base cluster and `docs/cluster-setup.md#gateway-api-crds` for the Gateway API CRD install that assignments 3 through 5 need.
+
+Gateway API CRDs must be installed before any controller that consumes them. CRDs are installed once per cluster and shared across all Gateway API implementations.
 
 ## Recommended Order
 
-1. Complete `services/assignment-1` first (Ingress and Gateway API route traffic to backend Services)
-2. Work through assignments 1, 2, 3 sequentially
-3. Assignment-2 assumes understanding of basic Ingress mechanics from assignment-1
-4. Assignment-3 assumes understanding of Ingress patterns from assignments 1 and 2, providing context for Gateway API improvements
+1. Complete `services/assignment-1` first. Ingress and Gateway API route traffic to backend Services, which must be understood first.
+2. Work through assignments 1 through 5 in order. Each builds on the vocabulary of the previous assignment.
+3. Assignment 5 requires that assignments 1 and 3 have been completed because it uses the Traefik and Envoy Gateway installations from those assignments to demonstrate side-by-side running during migration.
+
+## Controller Versions
+
+Each controller is pinned per assignment in the tutorial file of that assignment. The docs/cluster-setup.md version matrix tracks the pinned versions centrally. As of the 2026-04-18 scoping:
+
+| Assignment | Controller | Pinned Version |
+|---|---|---|
+| assignment-1 | Traefik | v3.6.13 (verified against `github.com/traefik/traefik/releases`) |
+| assignment-2 | HAProxy Ingress | v3.2.6 (verified against `github.com/haproxytech/kubernetes-ingress/releases`) |
+| assignment-3 | Envoy Gateway | v1.7.2 (verified against `github.com/envoyproxy/gateway/releases`) |
+| assignment-4 | NGINX Gateway Fabric | v2.5.1 (verified against `github.com/nginx/nginx-gateway-fabric/releases`) |
+| assignment-5 | Ingress2Gateway CLI | v1.0.0 (verified against `github.com/kubernetes-sigs/ingress2gateway/releases`) |
+
+Version verification date: 2026-04-18. Before generating content, re-verify each version against the upstream project per decision D7 in `docs/remediation-plan.md`.
+
+---
+
+## Current Status
+
+Topic scoped and ingress assignments 1-5 prompt.md files updated or created on 2026-04-18 as part of Phase 3 of `docs/remediation-plan.md`. The existing content files in assignments 1-3 still reference the previous `ingress-nginx controller-v1.15.1` pin as a transitional state; Phase 4 content regeneration produces content files aligned with the new per-assignment controllers.

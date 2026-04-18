@@ -25,8 +25,8 @@ This topic covers runtime security settings on pods and containers. The followin
 
 - **RBAC** (who can create pods with specific security contexts): covered in `rbac/`
 - **Network Policies** (network-level security, distinct from process-level security): covered in `network-policies/`
-- **Pod Security Standards/Admission** (namespace-level enforcement of security baselines): may be added as a future assignment if exam coverage warrants it
-- **Admission controllers** (validating security configurations at admission time): covered in the pod series scheduling material
+- **Pod Security Standards/Admission** (namespace-level enforcement of security baselines): covered in `pod-security/`
+- **Admission controllers** (validating security configurations at admission time): covered in `admission-controllers/`
 
 Assignment-1 focuses on identity and file permissions. Assignment-2 focuses on process capabilities and privilege escalation. Assignment-3 focuses on filesystem constraints and syscall filtering.
 

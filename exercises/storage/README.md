@@ -26,7 +26,7 @@ This topic covers persistent data in Kubernetes. The following related areas are
 - **ConfigMap and Secret volumes** (in-memory, not persistent): covered in `pods/assignment-2`
 - **emptyDir for inter-container sharing** (ephemeral, not persistent): covered in `pods/assignment-6`
 - **fsGroup and volume permissions** (security contexts affecting mounted volumes): covered in `security-contexts/assignment-1`
-- **StatefulSets** (controllers with stable storage identity): not currently in scope for CKA assignments, may be added if exam coverage warrants it
+- **StatefulSets** (controllers with stable storage identity): covered in `statefulsets/`
 
 Assignment-1 focuses on PersistentVolume resources and static provisioning. Assignment-2 focuses on PVC binding and consumption. Assignment-3 focuses on StorageClass automation and dynamic provisioning.
 

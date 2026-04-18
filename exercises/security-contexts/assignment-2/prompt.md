@@ -56,7 +56,7 @@ This assignment covers Linux capabilities in Kubernetes: adding and dropping cap
 - supplementalGroups (exercises/security-contexts/assignment-1)
 - readOnlyRootFilesystem (exercises/security-contexts/assignment-3)
 - seccomp profiles (exercises/security-contexts/assignment-3)
-- Pod Security Standards/Admission (not in current CKA scope)
+- Pod Security Standards/Admission (exercises/pod-security/assignment-1)
 - Network Policies (exercises/network-policies/)
 
 ASSIGNMENT REQUIREMENTS:

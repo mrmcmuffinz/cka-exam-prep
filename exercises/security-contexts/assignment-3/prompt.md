@@ -62,7 +62,7 @@ This assignment covers filesystem constraints (readOnlyRootFilesystem) and secco
 - runAsUser, runAsGroup, fsGroup (exercises/security-contexts/assignment-1)
 - Capabilities (exercises/security-contexts/assignment-2)
 - allowPrivilegeEscalation (exercises/security-contexts/assignment-2)
-- Pod Security Standards/Admission (not in current CKA scope)
+- Pod Security Standards/Admission (exercises/pod-security/assignment-1)
 - Network Policies (exercises/network-policies/)
 
 ASSIGNMENT REQUIREMENTS:

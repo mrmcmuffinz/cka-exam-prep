@@ -266,15 +266,18 @@ for reference.
 
 | Assignment | Controller | Version | API |
 |---|---|---|---|
-| `ingress-and-gateway-api/assignment-1` | Traefik | (pinned at regeneration time) | Ingress v1 |
-| `ingress-and-gateway-api/assignment-2` | HAProxy Ingress | (pinned at regeneration time) | Ingress v1 |
-| `ingress-and-gateway-api/assignment-3` | Envoy Gateway | (pinned at regeneration time) | Gateway API |
-| `ingress-and-gateway-api/assignment-4` | NGINX Gateway Fabric | (pinned at regeneration time) | Gateway API |
-| `ingress-and-gateway-api/assignment-5` | Traefik and Envoy Gateway from prior assignments, plus the `Ingress2Gateway` CLI | (pinned at regeneration time) | Both (migration) |
+| `ingress-and-gateway-api/assignment-1` | Traefik | v3.6.13 | Ingress v1 |
+| `ingress-and-gateway-api/assignment-2` | HAProxy Ingress | v3.2.6 | Ingress v1 |
+| `ingress-and-gateway-api/assignment-3` | Envoy Gateway | v1.7.2 | Gateway API |
+| `ingress-and-gateway-api/assignment-4` | NGINX Gateway Fabric | v2.5.1 | Gateway API |
+| `ingress-and-gateway-api/assignment-5` | Traefik and Envoy Gateway from prior assignments, plus the `Ingress2Gateway` CLI v1.0.0 | n/a (reuses prior installs) | Both (migration) |
 
-Controllers are pinned when each assignment is regenerated (see
-`remediation-plan.md` tasks P4.9-P4.13). Until then, the existing content
-pins `ingress-nginx controller-v1.15.1` as a transitional state.
+All controller versions verified against each project's official releases page
+on 2026-04-18. The per-assignment tutorial produced in Phase 4 will contain the
+exact Helm or manifest install command for each controller. Until Phase 4
+regeneration, the existing content files in assignments 1-3 pin
+`ingress-nginx controller-v1.15.1` as a transitional state that still works
+with Kubernetes 1.35 per the pre-retirement support matrix.
 
 ---
 
@@ -309,6 +312,11 @@ source for each pin so future maintenance can re-verify efficiently.
 | MetalLB | v0.15.3 | `metallb.io/installation/`, `github.com/metallb/metallb/releases` | 2026-04-18 |
 | metrics-server | v0.8.1 | `github.com/kubernetes-sigs/metrics-server` compatibility table | 2026-04-18 |
 | Gateway API CRDs | v1.5.1 | `github.com/kubernetes-sigs/gateway-api/releases/tag/v1.5.1` (latest standard-channel release, March 2025) | 2026-04-18 |
+| Traefik (ingress-and-gateway-api/assignment-1) | v3.6.13 | `github.com/traefik/traefik/releases` | 2026-04-18 |
+| HAProxy Kubernetes Ingress (assignment-2) | v3.2.6 | `github.com/haproxytech/kubernetes-ingress/releases` | 2026-04-18 |
+| Envoy Gateway (assignment-3) | v1.7.2 | `github.com/envoyproxy/gateway/releases` | 2026-04-18 |
+| NGINX Gateway Fabric (assignment-4) | v2.5.1 | `github.com/nginx/nginx-gateway-fabric/releases` | 2026-04-18 |
+| Ingress2Gateway CLI (assignment-5) | v1.0.0 | `github.com/kubernetes-sigs/ingress2gateway/releases` | 2026-04-18 |
 
 When updating a pin, verify against the project's official source and update
 both the pin and the verification date in this table. Do not rely on general

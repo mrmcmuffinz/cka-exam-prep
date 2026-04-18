@@ -1,165 +1,97 @@
-I need you to create a comprehensive Kubernetes homework assignment to help me practice **Gateway API**.
+# Prompt: Gateway API Fundamentals with Envoy Gateway (assignment-3)
 
-CONTEXT:
-- I'm studying for the CKA (Certified Kubernetes Administrator) exam
-- I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed ingress-and-gateway-api/assignment-1 and assignment-2
-- I want to build real-world skills, not just pass the exam
+## Header
 
-SCOPE (IMPORTANT):
-This assignment covers Gateway API resources (GatewayClass, Gateway, HTTPRoute), comparing Gateway API to Ingress, traffic routing with HTTPRoute, and Gateway API troubleshooting. Ingress fundamentals are assumed from assignments 1 and 2.
+- **Series:** Ingress and Gateway API (3 of 5)
+- **CKA domain:** Services & Networking (20%)
+- **Competencies covered:** Use the Gateway API to manage Ingress traffic (primary emphasis of the 2026 CKA exam)
+- **Course sections referenced:** S9 (lectures 238-240, Gateway API)
+- **Prerequisites:** `services/assignment-1`, `ingress-and-gateway-api/assignment-2` recommended (for the Ingress-vs-Gateway contrast)
 
-**In scope for this assignment:**
+## Scope declaration
 
-*Gateway API Resources*
-- GatewayClass: defines controller implementation
-- Gateway: defines listener and entry point
-- HTTPRoute: defines HTTP routing rules
-- Resource hierarchy: GatewayClass -> Gateway -> HTTPRoute
-- Standard channel vs experimental
+### In scope for this assignment
 
-*GatewayClass*
-- Defines which controller handles Gateways
-- controllerName: identifies the controller
-- parametersRef: controller-specific configuration
-- Multiple GatewayClasses in a cluster
+*Gateway API resources*
+- `apiVersion: gateway.networking.k8s.io/v1`, `kind: GatewayClass`
+- `apiVersion: gateway.networking.k8s.io/v1`, `kind: Gateway`
+- `apiVersion: gateway.networking.k8s.io/v1`, `kind: HTTPRoute`
+- `apiVersion: gateway.networking.k8s.io/v1beta1`, `kind: ReferenceGrant` (cross-namespace references)
 
-*Gateway*
-- References GatewayClass via gatewayClassName
-- spec.listeners: ports, protocols, hostnames
-- TLS configuration in listeners
-- Gateway status and conditions
+*Role separation (the persona model)*
+- GatewayClass typically owned by the cluster operator
+- Gateway owned by the platform/application owner
+- HTTPRoute owned by the application team
+- Why this separation matters (and how it differs from the single-resource Ingress model)
 
-*HTTPRoute*
-- References Gateway via parentRefs
-- spec.rules: list of routing rules
-- spec.rules[].matches: path, headers, query params
-- spec.rules[].backendRefs: services to route to
-- Weights for traffic splitting
+*Envoy Gateway as the implementation*
+- Installing Envoy Gateway v1.7.2 via Helm (see the tutorial for the exact install command)
+- Envoy Gateway's default GatewayClass name
+- Verifying the Gateway API CRDs are installed (`docs/cluster-setup.md#gateway-api-crds`)
 
-*Gateway API vs Ingress Comparison*
-- Role separation (infra vs app team)
-- More expressive routing
-- Better multi-tenancy support
-- TLS configuration location
-- Portability across implementations
+*Gateway spec*
+- `spec.gatewayClassName` linking to a GatewayClass
+- `spec.listeners[]` with `protocol`, `port`, `hostname`, `allowedRoutes`
+- `spec.listeners[].allowedRoutes.namespaces.from` (same, selector, all)
+- Gateway status fields (`status.addresses`, `status.listeners[].conditions`)
 
-*Traffic Routing with HTTPRoute*
-- Path matching (PathPrefix, Exact)
-- Header-based routing
-- Query parameter matching
-- Traffic splitting with weights
+*HTTPRoute spec*
+- `spec.parentRefs[]` attaching the route to one or more Gateways
+- `spec.hostnames[]` for host-based routing
+- `spec.rules[]` with `matches`, `filters`, `backendRefs`
+- Match types: path (with `type: PathPrefix` or `Exact`), method
+- `backendRefs[]` with `name`, `port`, `weight`
 
-*Gateway API Path Matching*
-- PathPrefix: matches path prefix
-- Exact: matches exact path
-- RegularExpression: regex matching
-- Matching priority
+*Per-path routing*
+- Multiple `rules[]` on one HTTPRoute routing different paths to different Services
+- Route conflict resolution (more specific match wins)
 
-*Gateway API Troubleshooting*
-- Gateway not ready: controller issue
-- HTTPRoute not attached: parentRef wrong
-- Backend not found: service issue
-- Status conditions and events
+*Status and condition reading*
+- `kubectl get gateway` shows ready status
+- `kubectl get httproute` shows parent acceptance status
+- Reading `status.conditions[]` on both resources
 
-**Out of scope (covered in other assignments, do not include):**
+*Basic diagnostic workflow*
+- HTTPRoute stuck in `Accepted: False` because of namespace restrictions on the Gateway
+- Gateway listener without a matching route (no 404, traffic just drops)
+- Envoy Gateway configuration translation failures (visible in controller logs)
 
-- Ingress basics (exercises/ingress-and-gateway-api/assignment-1)
-- Ingress TLS (exercises/ingress-and-gateway-api/assignment-2)
-- TCPRoute, UDPRoute, GRPCRoute (beyond CKA scope)
+### Out of scope (covered in other assignments, do not include)
 
-ASSIGNMENT REQUIREMENTS:
+- Advanced Gateway API features (header/query matching, traffic splitting, filters): covered in assignment-4 with NGINX Gateway Fabric
+- Ingress API resources: covered in assignments 1 and 2
+- Migration from Ingress to Gateway API: covered in assignment-5
+- Experimental Gateway API routes (TCPRoute, TLSRoute, UDPRoute, GRPCRoute): out of CKA scope for 2026
+- Service mesh features available through Gateway API (Istio's extensions, for example): out of CKA scope
 
-1. **Tutorial File (Separate from Exercises)**
-   - Create a standalone tutorial file: ingress-and-gateway-api-tutorial.md (section 3)
-   - Explain Gateway API architecture
-   - Install Gateway API CRDs
-   - Install a Gateway controller (e.g., nginx-gateway-fabric or Envoy)
-   - Walk through GatewayClass, Gateway, HTTPRoute
-   - Demonstrate traffic routing
-   - Compare with Ingress
-   - Use tutorial-ingress namespace
+## Environment requirements
 
-2. **Homework Exercises File (15 Progressive Exercises)**
-   - Create the exercises file: ingress-and-gateway-api-homework.md
-   - 15 exercises across 5 difficulty levels (3 exercises per level)
+- Multi-node kind cluster with extraPortMappings for 80 and 443
+- Gateway API CRDs v1.5.1 installed per `docs/cluster-setup.md#gateway-api-crds`
+- Envoy Gateway v1.7.2 installed via its Helm chart
+- Previous Ingress controllers from assignments 1 and 2 are optional; the assignment focuses on Gateway API alone
 
-   **Level 1 (Exercises 1.1-1.3): Gateway API Basics**
-   - List GatewayClasses in cluster
-   - Create Gateway resource
-   - Create HTTPRoute with simple path
+## Resource gate
 
-   **Level 2 (Exercises 2.1-2.3): HTTPRoute Routing**
-   - Configure path-based routing
-   - Configure header-based routing
-   - Route to multiple backends
+All CKA resources are in scope. Exercises primarily use GatewayClass, Gateway, HTTPRoute, Service, Deployment, Pod, and optionally ReferenceGrant for cross-namespace exercises.
 
-   **Level 3 (Exercises 3.1-3.3): Debugging Gateway API**
-   - Three debugging exercises
-   - Exercise headings are bare (### Exercise 3.1)
-   - Scenarios: HTTPRoute not attached, Gateway not ready, backend not found
+## Topic-specific conventions
 
-   **Level 4 (Exercises 4.1-4.3): Advanced Routing**
-   - Configure traffic splitting
-   - Use multiple matches in rule
-   - Configure TLS on Gateway
+- Every Gateway exercise must create a matching HTTPRoute. A Gateway without any routes attached is a common source of confusion and should be explained explicitly in the tutorial.
+- Verification of HTTPRoute attachment: `kubectl get httproute <name> -o jsonpath='{.status.parents[0].conditions[?(@.type=="Accepted")].status}'` should return `True`.
+- The tutorial must explicitly contrast the three-resource Gateway API model against the single-resource Ingress model, using side-by-side YAML examples.
+- Persona separation exercises should use different namespaces for GatewayClass/Gateway (cluster-infra namespace) and HTTPRoute (application namespace), with `ReferenceGrant` where needed.
+- Debugging exercises must include at least one scenario involving `allowedRoutes.namespaces` misconfiguration (a valid HTTPRoute that cannot attach because of namespace restriction).
 
-   **Level 5 (Exercises 5.1-5.3): Migration and Design**
-   - Exercise 5.1: Migrate Ingress to Gateway API
-   - Exercise 5.2: Debug complex routing issue
-   - Exercise 5.3: Design Gateway API architecture for organization
+## Cross-references
 
-3. **Answer Key File**
-   - Create the answer key: ingress-and-gateway-api-homework-answers.md
-   - Full solutions with explanations
-   - Common mistakes section covering:
-     - Gateway API CRDs not installed
-     - Wrong GatewayClass name
-     - HTTPRoute parentRef wrong namespace
-     - Backend service port mismatch
-     - Controller not supporting feature
-   - Gateway API cheat sheet
+**Prerequisites (must be completed first):**
+- `exercises/services/assignment-1`: Services are the backends for HTTPRoute
+- `exercises/ingress-and-gateway-api/assignment-2` (recommended, not strict): provides the Ingress-API context for appreciating Gateway API improvements
 
-4. **README File for the Assignment**
-   - Create: README.md
-   - Overview of Gateway API assignment
-   - Prerequisites: ingress-and-gateway-api/assignment-1, assignment-2
-   - Estimated time commitment: 4-6 hours
-   - Cluster requirements: multi-node kind with Gateway controller
-   - Gateway API CRD installation instructions
-   - Recommended workflow
+**Adjacent topics:**
+- `exercises/ingress-and-gateway-api/assignment-4`: advanced Gateway API routing with NGINX Gateway Fabric
+- `exercises/ingress-and-gateway-api/assignment-5`: migration from Ingress to Gateway API
 
-ENVIRONMENT REQUIREMENTS:
-- Multi-node kind cluster
-- Gateway API CRDs installed
-- Gateway controller (nginx-gateway-fabric or similar)
-- kubectl client
-
-KIND CLUSTER NOTE:
-Gateway API requires CRD installation and a controller. The tutorial should include installation steps for both.
-
-RESOURCE GATE:
-All CKA resources are in scope (generation order 28):
-- GatewayClass, Gateway, HTTPRoute
-- Services, Deployments, Pods
-- Namespaces
-
-CONVENTIONS:
-- No em dashes anywhere.
-- Narrative paragraph flow in prose sections.
-- Exercise namespaces follow `ex-<level>-<exercise>` pattern.
-- Tutorial namespace is `tutorial-ingress`.
-- Debugging exercise headings are bare.
-- Container images use explicit version tags.
-- Full file replacements when generating.
-
-CROSS-REFERENCES:
-- **Prerequisites:**
-  - exercises/ingress-and-gateway-api/assignment-1: Ingress fundamentals
-  - exercises/ingress-and-gateway-api/assignment-2: Advanced Ingress and TLS
-
-- **Follow-up assignments:**
-  - exercises/troubleshooting/assignment-4: Network troubleshooting
-
-COURSE MATERIAL REFERENCE:
-- S9 (Lectures 238-240): Gateway API
+**Forward references:**
+- `exercises/troubleshooting/assignment-4`: network troubleshooting including Gateway API failures
