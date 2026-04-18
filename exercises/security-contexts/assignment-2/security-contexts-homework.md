@@ -1,6 +1,8 @@
-# Security Contexts Homework: Capabilities and Privilege Control
+# Capabilities and Privilege Control Homework
 
-This homework contains 15 progressive exercises to practice Linux capabilities and privilege escalation controls in Kubernetes. Complete the tutorial before attempting these exercises.
+Fifteen exercises on `capabilities.add`, `capabilities.drop`, `allowPrivilegeEscalation`, and their interactions with identity from assignment 1. Work through the tutorial first. Every debugging exercise in Level 3 and Level 5 expects you to read `/proc/self/status` for the current capability set and to decode it with `capsh`.
+
+Exercise namespaces follow `ex-<level>-<exercise>`. The global cleanup block at the bottom removes every namespace.
 
 ---
 
@@ -8,7 +10,7 @@ This homework contains 15 progressive exercises to practice Linux capabilities a
 
 ### Exercise 1.1
 
-**Objective:** Examine the default capabilities granted to a container.
+**Objective:** Run a pod with no explicit capabilities configuration, read its effective capability set from `/proc/self/status`, and decode it.
 
 **Setup:**
 
@@ -16,29 +18,27 @@ This homework contains 15 progressive exercises to practice Linux capabilities a
 kubectl create namespace ex-1-1
 ```
 
-**Task:**
-
-Create a pod named `inspect-caps` in namespace `ex-1-1` using the `busybox:1.36` image with command `["sleep", "3600"]`. Do not configure any security context settings. Then examine the capabilities granted to the container.
+**Task:** In namespace `ex-1-1`, create a pod named `inspector` running image `alpine:3.20` with command `["sleep", "3600"]`. Do not set `securityContext`. Install `libcap` inside the container (`apk add --no-cache libcap`) so that `capsh` is available for decoding.
 
 **Verification:**
 
 ```bash
-# Check the pod is running
-kubectl get pod -n ex-1-1 inspect-caps
+kubectl wait --for=condition=Ready pod/inspector -n ex-1-1 --timeout=60s
 
-# Expected: Running
+kubectl exec -n ex-1-1 inspector -- apk add --no-cache libcap > /dev/null 2>&1
 
-# Examine capabilities
-kubectl exec -n ex-1-1 inspect-caps -- cat /proc/1/status | grep -i cap
+kubectl exec -n ex-1-1 inspector -- grep "^CapEff" /proc/self/status
+# Expected: CapEff: 00000000a80425fb
 
-# Expected: CapPrm and CapEff should show non-zero values (default capabilities)
+kubectl exec -n ex-1-1 inspector -- capsh --decode=00000000a80425fb | tr -d '\n'
+# Expected (substring): cap_chown,cap_dac_override,cap_fowner,cap_fsetid,cap_kill,cap_setgid,cap_setuid,cap_setpcap,cap_net_bind_service,cap_net_raw,cap_sys_chroot,cap_mknod,cap_audit_write,cap_setfcap
 ```
 
 ---
 
 ### Exercise 1.2
 
-**Objective:** Compare capabilities between a regular container and a privileged container.
+**Objective:** Run a pod with `privileged: true`, read `/proc/self/status`, and confirm the full capability set.
 
 **Setup:**
 
@@ -46,33 +46,25 @@ kubectl exec -n ex-1-1 inspect-caps -- cat /proc/1/status | grep -i cap
 kubectl create namespace ex-1-2
 ```
 
-**Task:**
-
-Create two pods in namespace `ex-1-2`:
-1. A pod named `regular-container` using busybox:1.36 with no special security settings
-2. A pod named `privileged-container` using busybox:1.36 with privileged: true
-
-Both should run `["sleep", "3600"]`. Compare their capability sets.
+**Task:** In namespace `ex-1-2`, create a pod named `super-user` running image `alpine:3.20` with command `["sleep", "3600"]` and `privileged: true` at container level.
 
 **Verification:**
 
 ```bash
-# Check both pods are running
-kubectl get pods -n ex-1-2
+kubectl wait --for=condition=Ready pod/super-user -n ex-1-2 --timeout=60s
 
-# Compare capabilities
-kubectl exec -n ex-1-2 regular-container -- cat /proc/1/status | grep CapEff
-kubectl exec -n ex-1-2 privileged-container -- cat /proc/1/status | grep CapEff
+kubectl exec -n ex-1-2 super-user -- grep "^CapEff" /proc/self/status
+# Expected: CapEff: 000001ffffffffff (every bit set)
 
-# Expected: privileged container shows CapEff: 000001ffffffffff (all capabilities)
-# Expected: regular container shows a subset like CapEff: 00000000a80425fb
+kubectl get pod -n ex-1-2 super-user -o jsonpath='{.spec.containers[0].securityContext.privileged}'
+# Expected: true
 ```
 
 ---
 
 ### Exercise 1.3
 
-**Objective:** Verify capability sets using /proc/self/status.
+**Objective:** Drop all capabilities, read `/proc/self/status`, and confirm the effective capability set is empty.
 
 **Setup:**
 
@@ -80,25 +72,18 @@ kubectl exec -n ex-1-2 privileged-container -- cat /proc/1/status | grep CapEff
 kubectl create namespace ex-1-3
 ```
 
-**Task:**
-
-Create a pod named `cap-details` in namespace `ex-1-3` using alpine:3.20 with command `["sleep", "3600"]`. Examine all five capability sets (CapInh, CapPrm, CapEff, CapBnd, CapAmb) and understand what each represents.
+**Task:** In namespace `ex-1-3`, create a pod named `no-caps` running image `alpine:3.20` with command `["sleep", "3600"]` and `capabilities.drop: ["ALL"]`.
 
 **Verification:**
 
 ```bash
-# Check the pod is running
-kubectl get pod -n ex-1-3 cap-details
+kubectl wait --for=condition=Ready pod/no-caps -n ex-1-3 --timeout=60s
 
-# View all capability sets
-kubectl exec -n ex-1-3 cap-details -- cat /proc/1/status | grep -i cap
+kubectl exec -n ex-1-3 no-caps -- grep "^CapEff" /proc/self/status
+# Expected: CapEff: 0000000000000000
 
-# Expected output shows five lines:
-# CapInh: Inheritable - capabilities inherited across execve
-# CapPrm: Permitted - maximum capabilities the process can use
-# CapEff: Effective - capabilities currently in effect
-# CapBnd: Bounding - upper limit on capabilities that can be gained
-# CapAmb: Ambient - capabilities preserved across execve for non-privileged programs
+kubectl exec -n ex-1-3 no-caps -- grep "^CapBnd" /proc/self/status
+# Expected: CapBnd: 0000000000000000
 ```
 
 ---
@@ -107,7 +92,7 @@ kubectl exec -n ex-1-3 cap-details -- cat /proc/1/status | grep -i cap
 
 ### Exercise 2.1
 
-**Objective:** Add NET_ADMIN capability to enable network configuration.
+**Objective:** Add `NET_ADMIN` to a container and prove it can now bring a network interface down.
 
 **Setup:**
 
@@ -115,33 +100,28 @@ kubectl exec -n ex-1-3 cap-details -- cat /proc/1/status | grep -i cap
 kubectl create namespace ex-2-1
 ```
 
-**Task:**
-
-Create a pod named `net-configurator` in namespace `ex-2-1` using busybox:1.36 with command `["sleep", "3600"]`. Add the NET_ADMIN capability so the container can configure network interfaces.
+**Task:** In namespace `ex-2-1`, create a pod named `net-admin` running image `nicolaka/netshoot:v0.13` with command `["sleep", "3600"]`. Add the `NET_ADMIN` capability at container level.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-2-1 net-configurator
+kubectl wait --for=condition=Ready pod/net-admin -n ex-2-1 --timeout=60s
 
-# Test network administration capability
-kubectl exec -n ex-2-1 net-configurator -- ip link show
+kubectl exec -n ex-2-1 net-admin -- ip link set lo down
+kubectl exec -n ex-2-1 net-admin -- ip link show lo | grep -o 'state DOWN'
+# Expected: state DOWN
 
-# Expected: Command succeeds showing network interfaces
+kubectl exec -n ex-2-1 net-admin -- ip link set lo up
 
-# Test modifying interface (should succeed with NET_ADMIN)
-kubectl exec -n ex-2-1 net-configurator -- ip link set lo down
-kubectl exec -n ex-2-1 net-configurator -- ip link set lo up
-
-# Expected: Both commands succeed without error
+kubectl get pod -n ex-2-1 net-admin -o jsonpath='{.spec.containers[0].securityContext.capabilities.add[0]}'
+# Expected: NET_ADMIN
 ```
 
 ---
 
 ### Exercise 2.2
 
-**Objective:** Drop NET_RAW capability to disable raw socket operations.
+**Objective:** Drop `NET_RAW` from a container and confirm that `ping` (which uses raw sockets) now fails.
 
 **Setup:**
 
@@ -149,32 +129,25 @@ kubectl exec -n ex-2-1 net-configurator -- ip link set lo up
 kubectl create namespace ex-2-2
 ```
 
-**Task:**
-
-Create a pod named `no-raw-sockets` in namespace `ex-2-2` using busybox:1.36 with command `["sleep", "3600"]`. Drop the NET_RAW capability to prevent raw socket operations like ping.
+**Task:** In namespace `ex-2-2`, create a pod named `no-ping` running image `nicolaka/netshoot:v0.13` with command `["sleep", "3600"]`. Drop the `NET_RAW` capability at container level.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-2-2 no-raw-sockets
+kubectl wait --for=condition=Ready pod/no-ping -n ex-2-2 --timeout=60s
 
-# Test that ping fails (requires NET_RAW)
-kubectl exec -n ex-2-2 no-raw-sockets -- ping -c 1 127.0.0.1
+kubectl exec -n ex-2-2 no-ping -- sh -c 'ping -c 1 -W 2 127.0.0.1 2>&1 || true' | grep -o 'Operation not permitted'
+# Expected: Operation not permitted
 
-# Expected: ping fails with "Operation not permitted"
-
-# Verify other network operations still work
-kubectl exec -n ex-2-2 no-raw-sockets -- wget -q -O - http://kubernetes.default.svc 2>&1 | head -1
-
-# Expected: Some response (may be an error page, but the connection attempt works)
+kubectl get pod -n ex-2-2 no-ping -o jsonpath='{.spec.containers[0].securityContext.capabilities.drop[0]}'
+# Expected: NET_RAW
 ```
 
 ---
 
 ### Exercise 2.3
 
-**Objective:** Implement the "drop all, add specific" pattern.
+**Objective:** Apply the Restricted-profile pattern: drop ALL, add only `NET_BIND_SERVICE`, and confirm the effective set contains only that one capability.
 
 **Setup:**
 
@@ -182,170 +155,162 @@ kubectl exec -n ex-2-2 no-raw-sockets -- wget -q -O - http://kubernetes.default.
 kubectl create namespace ex-2-3
 ```
 
-**Task:**
-
-Create a pod named `minimal-privileges` in namespace `ex-2-3` using busybox:1.36 with command `["sleep", "3600"]`. Configure the container to:
-1. Drop ALL capabilities
-2. Add back only NET_BIND_SERVICE (allows binding to ports below 1024)
+**Task:** In namespace `ex-2-3`, create a pod named `minimal` running image `alpine:3.20` with command `["sleep", "3600"]`. At container level, drop ALL capabilities and add only `NET_BIND_SERVICE`.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-2-3 minimal-privileges
+kubectl wait --for=condition=Ready pod/minimal -n ex-2-3 --timeout=60s
 
-# Check capabilities (should only show NET_BIND_SERVICE)
-kubectl exec -n ex-2-3 minimal-privileges -- cat /proc/1/status | grep CapEff
+kubectl exec -n ex-2-3 minimal -- apk add --no-cache libcap > /dev/null 2>&1
 
-# Expected: CapEff should show only NET_BIND_SERVICE bit set (0000000000000400)
+kubectl exec -n ex-2-3 minimal -- sh -c 'capsh --decode=$(awk "/^CapEff/ {print \$2}" /proc/self/status)'
+# Expected (trailing substring): cap_net_bind_service
+# (CapEff value will be 0000000000000400; the decoded output names only cap_net_bind_service)
 
-# Verify ping fails (NET_RAW is dropped)
-kubectl exec -n ex-2-3 minimal-privileges -- ping -c 1 127.0.0.1
-
-# Expected: Operation not permitted
+kubectl get pod -n ex-2-3 minimal -o jsonpath='{.spec.containers[0].securityContext.capabilities.add[0]}'
+# Expected: NET_BIND_SERVICE
 ```
 
 ---
 
-## Level 3: Debugging Capability Issues
+## Level 3: Debugging
 
 ### Exercise 3.1
 
-**Objective:** A container cannot perform network configuration. Find and fix the issue.
+**Objective:** The container below is expected to change the system hostname on startup but is crashing. Diagnose the failure and make the container able to complete that operation.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-3-1
-
-kubectl apply -f - <<EOF
+kubectl apply -n ex-3-1 -f - <<'EOF'
 apiVersion: v1
 kind: Pod
 metadata:
-  name: network-manager
-  namespace: ex-3-1
+  name: broken-host
 spec:
   containers:
-  - name: manager
-    image: busybox:1.36
-    command: ["sh", "-c", "ip addr add 10.200.0.1/24 dev lo && sleep 3600"]
+  - name: app
+    image: alpine:3.20
+    command: ["sh", "-c", "hostname pod-custom && exec sleep 3600"]
 EOF
 ```
 
-**Task:**
-
-The pod above is failing because the container cannot add an IP address to an interface. Diagnose why this operation is failing and fix the pod configuration.
+**Task:** Modify the pod so it reaches `Running` and `hostname` reports `pod-custom`. Do not use `privileged: true`; grant only the specific capability the operation requires.
 
 **Verification:**
 
 ```bash
-# After fixing, verify the pod is running
-kubectl get pod -n ex-3-1 network-manager
+kubectl wait --for=condition=Ready pod/broken-host -n ex-3-1 --timeout=60s
 
-# Expected: Running (not CrashLoopBackOff)
+kubectl exec -n ex-3-1 broken-host -- hostname
+# Expected: pod-custom
 
-# Verify the IP was added
-kubectl exec -n ex-3-1 network-manager -- ip addr show lo
+kubectl get pod -n ex-3-1 broken-host -o jsonpath='{.status.containerStatuses[0].restartCount}'
+# Expected: 0 (or very low and not increasing)
 
-# Expected: Should show 10.200.0.1/24 on the lo interface
+kubectl get pod -n ex-3-1 broken-host -o jsonpath='{.spec.containers[0].securityContext.privileged}'
+# Expected: (empty)
 ```
 
 ---
 
 ### Exercise 3.2
 
-**Objective:** A security-hardened container cannot run its application. Find and fix the issue.
+**Objective:** The container below is trying to run a `sudo` command on startup but the command keeps failing. Diagnose and fix by adjusting the security context so the command the container runs reaches completion. Do not change the command line.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-3-2
-
-kubectl apply -f - <<EOF
+kubectl apply -n ex-3-2 -f - <<'EOF'
 apiVersion: v1
 kind: Pod
 metadata:
-  name: ping-service
-  namespace: ex-3-2
+  name: sudo-user
 spec:
   containers:
-  - name: pinger
-    image: busybox:1.36
-    command: ["sh", "-c", "ping -c 5 127.0.0.1 && sleep 3600"]
+  - name: app
+    image: alpine:3.20
+    command:
+    - sh
+    - -c
+    - |
+      apk add --no-cache sudo shadow > /dev/null
+      adduser -D worker
+      echo "worker ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+      su worker -c 'sudo id' > /id.out
+      cat /id.out
+      exec sleep 3600
     securityContext:
-      capabilities:
-        drop: ["ALL"]
+      allowPrivilegeEscalation: false
 EOF
 ```
 
-**Task:**
-
-The pod above is configured with maximum security (all capabilities dropped) but the application requires ping functionality. Fix the configuration to allow ping while maintaining the drop-all approach for other capabilities.
+**Task:** Get the pod to `Running` with `id.out` containing `uid=0(root)`. Keep the command as-is.
 
 **Verification:**
 
 ```bash
-# After fixing, verify the pod is running
-kubectl get pod -n ex-3-2 ping-service
+kubectl wait --for=condition=Ready pod/sudo-user -n ex-3-2 --timeout=120s
 
-# Expected: Running
+kubectl exec -n ex-3-2 sudo-user -- cat /id.out | head -n1
+# Expected: starts with uid=0(root)
 
-# Verify ping works
-kubectl exec -n ex-3-2 ping-service -- ping -c 1 127.0.0.1
-
-# Expected: Successful ping response
+kubectl exec -n ex-3-2 sudo-user -- grep "^NoNewPrivs" /proc/self/status | awk '{print $2}'
+# Expected: 0
 ```
 
 ---
 
 ### Exercise 3.3
 
-**Objective:** An application using setuid binaries is failing. Find and fix the issue.
+**Objective:** The pod below is crashing trying to execute a simple chown across UIDs in its container. Diagnose the failure and grant only the minimal capability required without loosening any other security control.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-3-3
-
-kubectl apply -f - <<EOF
+kubectl apply -n ex-3-3 -f - <<'EOF'
 apiVersion: v1
 kind: Pod
 metadata:
-  name: setuid-app
-  namespace: ex-3-3
+  name: chowner
 spec:
-  securityContext:
-    runAsUser: 1000
   containers:
   - name: app
-    image: busybox:1.36
-    command: ["sleep", "3600"]
+    image: alpine:3.20
+    command:
+    - sh
+    - -c
+    - |
+      touch /tmp/evidence
+      chown 2000:2000 /tmp/evidence
+      stat -c "%u:%g" /tmp/evidence
+      exec sleep 3600
     securityContext:
-      allowPrivilegeEscalation: false
+      runAsUser: 1000
       capabilities:
         drop: ["ALL"]
-        add: ["SETUID", "SETGID"]
 EOF
 ```
 
-**Task:**
-
-The pod above is configured to allow SETUID and SETGID capabilities, but privilege escalation is blocked. The application needs to use setuid binaries. However, there is a conflict in the configuration. Analyze the configuration to understand why setuid functionality may not work as expected, and explain the interaction between allowPrivilegeEscalation and capabilities.
+**Task:** Modify the pod so the `chown` succeeds. Do not raise the UID to 0, do not remove `runAsUser`, do not remove the `drop: ALL`; the only accepted change is to add a single specific capability.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-3-3 setuid-app
+kubectl wait --for=condition=Ready pod/chowner -n ex-3-3 --timeout=60s
 
-# Check the no_new_privs flag
-kubectl exec -n ex-3-3 setuid-app -- cat /proc/1/status | grep NoNewPrivs
+kubectl logs -n ex-3-3 chowner | tail -n1
+# Expected: 2000:2000
 
-# Expected: NoNewPrivs: 1
+kubectl get pod -n ex-3-3 chowner -o jsonpath='{.spec.containers[0].securityContext.capabilities.add[0]}'
+# Expected: CHOWN
 
-# The key insight: even though SETUID capability is added,
-# allowPrivilegeEscalation: false prevents privilege escalation.
-# This is a documentation/understanding exercise.
+kubectl get pod -n ex-3-3 chowner -o jsonpath='{.spec.containers[0].securityContext.capabilities.drop[0]}'
+# Expected: ALL
 ```
 
 ---
@@ -354,7 +319,7 @@ kubectl exec -n ex-3-3 setuid-app -- cat /proc/1/status | grep NoNewPrivs
 
 ### Exercise 4.1
 
-**Objective:** Configure a container to prevent privilege escalation.
+**Objective:** Set `allowPrivilegeEscalation: false` on a pod and verify the `NoNewPrivs` kernel flag is set.
 
 **Setup:**
 
@@ -362,40 +327,25 @@ kubectl exec -n ex-3-3 setuid-app -- cat /proc/1/status | grep NoNewPrivs
 kubectl create namespace ex-4-1
 ```
 
-**Task:**
-
-Create a pod named `no-escalation` in namespace `ex-4-1` using busybox:1.36 with command `["sleep", "3600"]`. Configure the container to:
-1. Run as user 1000
-2. Prevent privilege escalation
-3. Keep default capabilities (do not drop any)
+**Task:** In namespace `ex-4-1`, create a pod named `no-escalate` running image `alpine:3.20` with command `["sleep", "3600"]`, `runAsUser: 1000`, and `allowPrivilegeEscalation: false` at container level.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-4-1 no-escalation
+kubectl wait --for=condition=Ready pod/no-escalate -n ex-4-1 --timeout=60s
 
-# Check user identity
-kubectl exec -n ex-4-1 no-escalation -- id
+kubectl exec -n ex-4-1 no-escalate -- grep "^NoNewPrivs" /proc/self/status | awk '{print $2}'
+# Expected: 1
 
-# Expected: uid=1000
-
-# Check no_new_privs flag
-kubectl exec -n ex-4-1 no-escalation -- cat /proc/1/status | grep NoNewPrivs
-
-# Expected: NoNewPrivs: 1
-
-# Verify capabilities are still present
-kubectl exec -n ex-4-1 no-escalation -- cat /proc/1/status | grep CapEff
-
-# Expected: Non-zero value showing default capabilities
+kubectl exec -n ex-4-1 no-escalate -- id -u
+# Expected: 1000
 ```
 
 ---
 
 ### Exercise 4.2
 
-**Objective:** Combine multiple security controls for defense in depth.
+**Objective:** Apply the defense-in-depth hardening pattern as a single pod spec and prove every control is in effect at once.
 
 **Setup:**
 
@@ -403,42 +353,31 @@ kubectl exec -n ex-4-1 no-escalation -- cat /proc/1/status | grep CapEff
 kubectl create namespace ex-4-2
 ```
 
-**Task:**
-
-Create a pod named `defense-in-depth` in namespace `ex-4-2` using busybox:1.36 with command `["sleep", "3600"]`. Configure the pod with all recommended security controls:
-1. Run as non-root user (UID 1000)
-2. Run as non-root group (GID 1000)
-3. Enforce runAsNonRoot validation
-4. Prevent privilege escalation
-5. Drop all capabilities
+**Task:** In namespace `ex-4-2`, create a pod named `hardened-baseline` running image `alpine:3.20` with command `["sleep", "3600"]`. Apply all of: `runAsNonRoot: true` at pod level, `runAsUser: 1000` at pod level, `allowPrivilegeEscalation: false` at container level, `capabilities.drop: ["ALL"]` at container level.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-4-2 defense-in-depth
+kubectl wait --for=condition=Ready pod/hardened-baseline -n ex-4-2 --timeout=60s
 
-# Check user identity
-kubectl exec -n ex-4-2 defense-in-depth -- id
+kubectl exec -n ex-4-2 hardened-baseline -- id -u
+# Expected: 1000
 
-# Expected: uid=1000 gid=1000
+kubectl exec -n ex-4-2 hardened-baseline -- grep "^CapEff" /proc/self/status | awk '{print $2}'
+# Expected: 0000000000000000
 
-# Check no_new_privs
-kubectl exec -n ex-4-2 defense-in-depth -- cat /proc/1/status | grep NoNewPrivs
+kubectl exec -n ex-4-2 hardened-baseline -- grep "^NoNewPrivs" /proc/self/status | awk '{print $2}'
+# Expected: 1
 
-# Expected: NoNewPrivs: 1
-
-# Check all capabilities are dropped
-kubectl exec -n ex-4-2 defense-in-depth -- cat /proc/1/status | grep CapEff
-
-# Expected: CapEff: 0000000000000000
+kubectl get pod -n ex-4-2 hardened-baseline -o jsonpath='{.spec.securityContext.runAsNonRoot}'
+# Expected: true
 ```
 
 ---
 
 ### Exercise 4.3
 
-**Objective:** Test privilege escalation behavior with different configurations.
+**Objective:** Demonstrate that `allowPrivilegeEscalation: false` prevents a setuid binary from elevating privileges.
 
 **Setup:**
 
@@ -446,36 +385,29 @@ kubectl exec -n ex-4-2 defense-in-depth -- cat /proc/1/status | grep CapEff
 kubectl create namespace ex-4-3
 ```
 
-**Task:**
+**Task:** In namespace `ex-4-3`, create two pods `with-elevation` and `without-elevation`, each running image `alpine:3.20` with command `["sleep", "3600"]` and `runAsUser: 1000`. Set `allowPrivilegeEscalation: true` on the first and `false` on the second. Install `shadow` (`apk add --no-cache shadow`) and create a fake setuid binary in each by copying `/bin/id` to `/tmp/myid` and setting `chmod u+s /tmp/myid`, but do this from an init step that runs as root by also setting `runAsUser: 0` on a separate initContainer (if needed to set the setuid bit). Run `/tmp/myid` as UID 1000 in each pod's main container. The pod with `true` runs the setuid binary as UID 0; the pod with `false` runs it as UID 1000.
 
-Create two pods in namespace `ex-4-3` to compare privilege escalation behavior:
-
-1. Pod named `with-escalation`: runs as user 1000, allowPrivilegeEscalation: true (or not specified)
-2. Pod named `without-escalation`: runs as user 1000, allowPrivilegeEscalation: false
-
-Both use busybox:1.36 with command `["sleep", "3600"]`.
+**Hint:** Use an `initContainer` with `runAsUser: 0` to prepare `/tmp/myid` on a shared `emptyDir`, then the main container (running as UID 1000) exec the setuid binary.
 
 **Verification:**
 
 ```bash
-# Verify both pods are running
-kubectl get pods -n ex-4-3
+kubectl wait --for=condition=Ready pod/with-elevation pod/without-elevation -n ex-4-3 --timeout=120s
 
-# Check NoNewPrivs for both containers
-kubectl exec -n ex-4-3 with-escalation -- cat /proc/1/status | grep NoNewPrivs
-# Expected: NoNewPrivs: 0 (privilege escalation allowed)
+kubectl exec -n ex-4-3 with-elevation -c main -- /shared/myid -u
+# Expected: 0 (the setuid bit elevated to root)
 
-kubectl exec -n ex-4-3 without-escalation -- cat /proc/1/status | grep NoNewPrivs
-# Expected: NoNewPrivs: 1 (privilege escalation blocked)
+kubectl exec -n ex-4-3 without-elevation -c main -- /shared/myid -u
+# Expected: 1000 (NoNewPrivs blocked the elevation)
 ```
 
 ---
 
-## Level 5: Complex Scenarios
+## Level 5: Advanced and Comprehensive
 
 ### Exercise 5.1
 
-**Objective:** Configure minimal capabilities for a network monitoring application.
+**Objective:** Design a minimal capability set for an application that must bind to port 80, change ownership of log files across UIDs, and nothing else.
 
 **Setup:**
 
@@ -483,118 +415,95 @@ kubectl exec -n ex-4-3 without-escalation -- cat /proc/1/status | grep NoNewPriv
 kubectl create namespace ex-5-1
 ```
 
-**Task:**
-
-Create a pod named `network-monitor` in namespace `ex-5-1` that simulates a network monitoring application. The application needs to:
-1. Use ping to check host availability (requires NET_RAW)
-2. Inspect network interfaces (requires NET_ADMIN)
-3. Run as non-root user 1000
-4. Have privilege escalation disabled
-5. Drop all other capabilities
-
-Use busybox:1.36 with a command that pings localhost and shows interface info: `["sh", "-c", "ping -c 2 127.0.0.1 && ip link show && sleep 3600"]`
+**Task:** In namespace `ex-5-1`, create a pod named `network-app` running image `alpine:3.20` with a command that installs `libcap`, writes a small TCP echo script with `nc -l -p 80`, and sleeps. The container must run as a non-root UID (`runAsUser: 1000`), drop all capabilities, and add only those needed to bind to port 80 and change ownership across UIDs. Include `allowPrivilegeEscalation: false` and `runAsNonRoot: true`.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running (not in CrashLoopBackOff)
-kubectl get pod -n ex-5-1 network-monitor
+kubectl wait --for=condition=Ready pod/network-app -n ex-5-1 --timeout=60s
 
-# Check logs for successful ping and ip output
-kubectl logs -n ex-5-1 network-monitor
+kubectl exec -n ex-5-1 network-app -- id -u
+# Expected: 1000
 
-# Expected: Successful ping output and interface list
+kubectl exec -n ex-5-1 network-app -- apk add --no-cache libcap > /dev/null 2>&1
 
-# Verify capabilities are minimal
-kubectl exec -n ex-5-1 network-monitor -- cat /proc/1/status | grep CapEff
+kubectl exec -n ex-5-1 network-app -- sh -c 'capsh --decode=$(awk "/^CapEff/ {print \$2}" /proc/self/status)' | tr -d '\n'
+# Expected (substring): cap_chown,cap_net_bind_service
 
-# Expected: Only NET_RAW and NET_ADMIN bits should be set
-
-# Verify user is non-root
-kubectl exec -n ex-5-1 network-monitor -- id
-
-# Expected: uid=1000
+kubectl exec -n ex-5-1 network-app -- grep "^NoNewPrivs" /proc/self/status | awk '{print $2}'
+# Expected: 1
 ```
 
 ---
 
 ### Exercise 5.2
 
-**Objective:** Debug an application failing due to multiple security constraints.
+**Objective:** The pod below is failing to start. There are multiple interacting misconfigurations spanning identity and capabilities. Diagnose every problem, fix them, and reach a working `hardened-baseline`-style configuration.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-5-2
-
-kubectl apply -f - <<EOF
+kubectl apply -n ex-5-2 -f - <<'EOF'
 apiVersion: v1
 kind: Pod
 metadata:
-  name: constrained-app
-  namespace: ex-5-2
+  name: compound-failure
 spec:
   securityContext:
-    runAsUser: 1000
     runAsNonRoot: true
-    fsGroup: 2000
   containers:
   - name: app
-    image: busybox:1.36
-    command: ["sh", "-c", "ping -c 1 127.0.0.1 && ip link show && echo 'data' > /data/output.txt && sleep 3600"]
+    image: alpine:3.20
+    command:
+    - sh
+    - -c
+    - |
+      apk add --no-cache libcap > /dev/null
+      nc -l -p 80 &
+      sleep 1
+      chown 2000:2000 /work/data 2>&1 || echo "chown failed"
+      exec sleep 3600
     securityContext:
-      allowPrivilegeEscalation: false
       capabilities:
+        add: ["CAP_CHOWN", "CAP_NET_BIND_SERVICE"]
         drop: ["ALL"]
     volumeMounts:
-    - name: data
-      mountPath: /data
+    - name: work
+      mountPath: /work
   volumes:
-  - name: data
+  - name: work
     emptyDir: {}
 EOF
 ```
 
-**Task:**
+**Task:** Get the pod to `Running` with the `chown` succeeding and the `nc -l -p 80` process listening. Preserve `runAsNonRoot: true`, `drop: ALL`, and keep the command unchanged.
 
-The pod above has multiple security constraints configured but is failing to run its command. The application needs to:
-1. Ping localhost
-2. Show network interfaces
-3. Write data to /data
-
-Diagnose all issues and fix the configuration while maintaining as much security as possible.
+**Hints:** There are three problems to find and fix: one with identity (no `runAsUser`), one with capability names (the `CAP_` prefix), and one with volume ownership (`/work` is not writable by the non-root user without `fsGroup`).
 
 **Verification:**
 
 ```bash
-# After fixing, verify the pod is running
-kubectl get pod -n ex-5-2 constrained-app
+kubectl wait --for=condition=Ready pod/compound-failure -n ex-5-2 --timeout=90s
 
-# Expected: Running
+kubectl exec -n ex-5-2 compound-failure -- id -u
+# Expected: a non-zero UID
 
-# Verify all commands succeeded
-kubectl logs -n ex-5-2 constrained-app
+kubectl logs -n ex-5-2 compound-failure | grep -v "chown failed"
+# Expected: no "chown failed" line
 
-# Expected: Ping output, interface list
+kubectl exec -n ex-5-2 compound-failure -- stat -c "%u:%g" /work/data
+# Expected: 2000:2000
 
-# Verify file was written
-kubectl exec -n ex-5-2 constrained-app -- cat /data/output.txt
-
-# Expected: data
-
-# Verify security constraints are still in place
-kubectl exec -n ex-5-2 constrained-app -- id
-# Expected: uid=1000
-
-kubectl exec -n ex-5-2 constrained-app -- cat /proc/1/status | grep NoNewPrivs
-# Expected: NoNewPrivs: 1
+kubectl exec -n ex-5-2 compound-failure -- sh -c 'capsh --decode=$(awk "/^CapEff/ {print \$2}" /proc/self/status)' | tr -d '\n'
+# Expected (substring): cap_chown,cap_net_bind_service
 ```
 
 ---
 
 ### Exercise 5.3
 
-**Objective:** Design a capability strategy for a multi-container pod.
+**Objective:** Design and apply a multi-container pod with three containers, each with a different minimum capability set. Prove each container has only its intended capabilities.
 
 **Setup:**
 
@@ -602,76 +511,43 @@ kubectl exec -n ex-5-2 constrained-app -- cat /proc/1/status | grep NoNewPrivs
 kubectl create namespace ex-5-3
 ```
 
-**Task:**
-
-Design and implement a pod named `multi-service` in namespace `ex-5-3` with three containers, each with different capability requirements:
-
-1. Container `web-server` (nginx:1.25):
-   - Needs NET_BIND_SERVICE to bind to privileged ports (though running as non-root user 101)
-   - Should drop all other capabilities
-   - Runs as user 101
-
-2. Container `network-probe` (busybox:1.36):
-   - Needs NET_RAW for ping operations
-   - Should drop all other capabilities
-   - Runs as user 1000
-   - Command: `["sh", "-c", "while true; do ping -c 1 127.0.0.1 > /dev/null && echo 'probe ok'; sleep 30; done"]`
-
-3. Container `file-processor` (busybox:1.36):
-   - Needs no special capabilities
-   - Should drop ALL capabilities
-   - Runs as user 2000
-   - Writes to shared volume
-   - Command: `["sh", "-c", "echo 'processed' > /shared/status.txt && sleep 3600"]`
-
-All containers should:
-- Have privilege escalation disabled
-- Share a volume at /shared
+**Task:** In namespace `ex-5-3`, create a pod named `three-sets`. All three containers use image `alpine:3.20` with command `["sleep", "3600"]` and run as `runAsUser: 1000` with `runAsNonRoot: true` at pod level. Container `web` drops ALL and adds `NET_BIND_SERVICE`. Container `log-rotator` drops ALL and adds `CHOWN` and `FOWNER`. Container `noop` drops ALL. Set `allowPrivilegeEscalation: false` at pod level.
 
 **Verification:**
 
 ```bash
-# Verify all containers are running
-kubectl get pod -n ex-5-3 multi-service
-# Expected: All 3 containers Running
+kubectl wait --for=condition=Ready pod/three-sets -n ex-5-3 --timeout=60s
 
-# Verify web-server user
-kubectl exec -n ex-5-3 multi-service -c web-server -- id
-# Expected: uid=101
+for c in web log-rotator noop; do
+  kubectl exec -n ex-5-3 three-sets -c "$c" -- apk add --no-cache libcap > /dev/null 2>&1
+done
 
-# Verify network-probe can ping
-kubectl exec -n ex-5-3 multi-service -c network-probe -- ping -c 1 127.0.0.1
-# Expected: Successful ping
+kubectl exec -n ex-5-3 three-sets -c web -- sh -c 'capsh --decode=$(awk "/^CapEff/ {print \$2}" /proc/self/status)' | tr -d '\n'
+# Expected (substring): cap_net_bind_service
 
-# Verify file-processor wrote to shared volume
-kubectl exec -n ex-5-3 multi-service -c file-processor -- cat /shared/status.txt
-# Expected: processed
+kubectl exec -n ex-5-3 three-sets -c log-rotator -- sh -c 'capsh --decode=$(awk "/^CapEff/ {print \$2}" /proc/self/status)' | tr -d '\n'
+# Expected (substring): cap_chown,cap_fowner
 
-# Verify all containers have NoNewPrivs set
-kubectl exec -n ex-5-3 multi-service -c web-server -- cat /proc/1/status | grep NoNewPrivs
-kubectl exec -n ex-5-3 multi-service -c network-probe -- cat /proc/1/status | grep NoNewPrivs
-kubectl exec -n ex-5-3 multi-service -c file-processor -- cat /proc/1/status | grep NoNewPrivs
-# Expected: All show NoNewPrivs: 1
+kubectl exec -n ex-5-3 three-sets -c noop -- grep "^CapEff" /proc/self/status | awk '{print $2}'
+# Expected: 0000000000000000
+
+kubectl exec -n ex-5-3 three-sets -c web -- grep "^NoNewPrivs" /proc/self/status | awk '{print $2}'
+# Expected: 1
 ```
 
 ---
 
 ## Cleanup
 
-Delete all exercise namespaces:
+Remove every exercise namespace.
 
 ```bash
-kubectl delete namespace ex-1-1 ex-1-2 ex-1-3 ex-2-1 ex-2-2 ex-2-3 ex-3-1 ex-3-2 ex-3-3 ex-4-1 ex-4-2 ex-4-3 ex-5-1 ex-5-2 ex-5-3
+for ns in ex-1-1 ex-1-2 ex-1-3 ex-2-1 ex-2-2 ex-2-3 ex-3-1 ex-3-2 ex-3-3 \
+         ex-4-1 ex-4-2 ex-4-3 ex-5-1 ex-5-2 ex-5-3; do
+  kubectl delete namespace "$ns" --ignore-not-found
+done
 ```
-
----
 
 ## Key Takeaways
 
-1. **Capabilities** provide fine-grained control over privileges, replacing all-or-nothing root access
-2. **Default capabilities** depend on the container runtime and are typically a restricted subset
-3. **Privileged containers** have all capabilities and should be avoided in production
-4. **Drop ALL, add specific** is the recommended pattern for production containers
-5. **allowPrivilegeEscalation: false** prevents processes from gaining new privileges via setuid binaries
-6. **Defense in depth** combines runAsNonRoot, allowPrivilegeEscalation: false, and capabilities.drop
-7. Capability names in Kubernetes do not include the CAP_ prefix
+Kubernetes accepts capability names without the `CAP_` prefix; writing `CAP_NET_ADMIN` in a spec silently fails. `capabilities` is container-level only. The Restricted-profile baseline is `drop: [ALL]` plus a minimal `add` list. `allowPrivilegeEscalation: false` sets `no_new_privs`, blocking setuid elevation. `privileged: true` is almost never right for application workloads. Debugging a capability failure starts with `grep "^CapEff" /proc/self/status` and a lookup against the syscall's required capability; this is a faster path than guessing.

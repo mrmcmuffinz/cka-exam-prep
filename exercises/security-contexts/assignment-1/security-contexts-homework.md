@@ -1,6 +1,8 @@
-# Security Contexts Homework: User and Group Security
+# User and Group Security Contexts Homework
 
-This homework contains 15 progressive exercises to practice user and group identity controls in Kubernetes security contexts. Complete the tutorial before attempting these exercises.
+Fifteen exercises covering the identity fields of `spec.securityContext`: `runAsUser`, `runAsGroup`, `runAsNonRoot`, `supplementalGroups`, and `fsGroup`. Work through the tutorial first, since every debugging exercise assumes you can diagnose a permission-denied error by running `id` inside the container and checking volume ownership with `ls -ld`.
+
+Every exercise lives in its own namespace named `ex-<level>-<exercise>` (for example, `ex-3-2`). A cleanup block at the bottom removes all of them.
 
 ---
 
@@ -8,7 +10,7 @@ This homework contains 15 progressive exercises to practice user and group ident
 
 ### Exercise 1.1
 
-**Objective:** Run a container as a specific non-root user and verify the identity.
+**Objective:** Run a long-lived container as a specific non-root UID and confirm the effective UID from inside.
 
 **Setup:**
 
@@ -16,27 +18,27 @@ This homework contains 15 progressive exercises to practice user and group ident
 kubectl create namespace ex-1-1
 ```
 
-**Task:**
-
-Create a pod named `app-runner` in namespace `ex-1-1` using the `nginx:1.25` image. Configure the pod to run as user ID 1001. The pod should run continuously.
+**Task:** In namespace `ex-1-1`, create a pod named `uid-only` running image `busybox:1.36` with command `["sleep", "3600"]`. Configure the pod spec so the container runs as UID 1001. Do not set a group; leave `runAsGroup` unset.
 
 **Verification:**
 
 ```bash
-# Check the user ID inside the container
-kubectl exec -n ex-1-1 app-runner -- id
+kubectl wait --for=condition=Ready pod/uid-only -n ex-1-1 --timeout=60s
+kubectl exec -n ex-1-1 uid-only -- id -u
+# Expected: 1001
 
-# Expected: uid=1001
+kubectl exec -n ex-1-1 uid-only -- id -g
+# Expected: 0
 
-# Verify the pod is running
-kubectl get pod -n ex-1-1 app-runner
+kubectl get pod -n ex-1-1 uid-only -o jsonpath='{.spec.securityContext.runAsUser}'
+# Expected: 1001
 ```
 
 ---
 
 ### Exercise 1.2
 
-**Objective:** Configure both user and group identity for a container.
+**Objective:** Set both the effective UID and the primary GID for a container and verify both from inside.
 
 **Setup:**
 
@@ -44,27 +46,27 @@ kubectl get pod -n ex-1-1 app-runner
 kubectl create namespace ex-1-2
 ```
 
-**Task:**
-
-Create a pod named `group-runner` in namespace `ex-1-2` using the `busybox:1.36` image with command `["sleep", "3600"]`. Configure the pod to run as user ID 1002 and primary group ID 3002.
+**Task:** In namespace `ex-1-2`, create a pod named `uid-and-gid` running image `busybox:1.36` with command `["sleep", "3600"]`. Configure the pod so the container runs as UID 1002 and primary GID 3002.
 
 **Verification:**
 
 ```bash
-# Check both user and group IDs
-kubectl exec -n ex-1-2 group-runner -- id
+kubectl wait --for=condition=Ready pod/uid-and-gid -n ex-1-2 --timeout=60s
+kubectl exec -n ex-1-2 uid-and-gid -- id -u
+# Expected: 1002
 
-# Expected: uid=1002 gid=3002 groups=3002
+kubectl exec -n ex-1-2 uid-and-gid -- id -g
+# Expected: 3002
 
-# Verify the pod is running
-kubectl get pod -n ex-1-2 group-runner
+kubectl exec -n ex-1-2 uid-and-gid -- sh -c 'echo hello > /tmp/probe && stat -c "%u:%g" /tmp/probe'
+# Expected: 1002:3002
 ```
 
 ---
 
 ### Exercise 1.3
 
-**Objective:** Use runAsNonRoot to enforce non-root execution.
+**Objective:** Pair `runAsUser` with `runAsNonRoot: true` so that the pod fails closed if someone later removes the `runAsUser` override.
 
 **Setup:**
 
@@ -72,33 +74,30 @@ kubectl get pod -n ex-1-2 group-runner
 kubectl create namespace ex-1-3
 ```
 
-**Task:**
-
-Create a pod named `secure-app` in namespace `ex-1-3` using the `alpine:3.20` image with command `["sleep", "3600"]`. Configure the pod to:
-- Run as user ID 1003
-- Enforce that the container cannot run as root (runAsNonRoot)
+**Task:** In namespace `ex-1-3`, create a pod named `hardened-identity` running image `nginx:1.25`. Configure the pod to run as UID 101 (the non-root UID that the `nginx:1.25` image creates for the `nginx` user) and set `runAsNonRoot: true` at the pod level. The pod must reach `Running` and serve HTTP on port 80.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running (not stuck in error state)
-kubectl get pod -n ex-1-3 secure-app
+kubectl wait --for=condition=Ready pod/hardened-identity -n ex-1-3 --timeout=60s
 
-# Expected: STATUS should be Running
+kubectl get pod -n ex-1-3 hardened-identity -o jsonpath='{.status.phase}'
+# Expected: Running
 
-# Verify the user is non-root
-kubectl exec -n ex-1-3 secure-app -- id
+kubectl exec -n ex-1-3 hardened-identity -- id -u
+# Expected: 101
 
-# Expected: uid=1003 (not 0)
+kubectl get pod -n ex-1-3 hardened-identity -o jsonpath='{.spec.securityContext.runAsNonRoot}'
+# Expected: true
 ```
 
 ---
 
-## Level 2: fsGroup and Volumes
+## Level 2: Volumes, `fsGroup`, and Supplementary Groups
 
 ### Exercise 2.1
 
-**Objective:** Use fsGroup to set volume ownership for write access.
+**Objective:** Mount an `emptyDir` into a non-root container and use `fsGroup` so the container can write to it.
 
 **Setup:**
 
@@ -106,41 +105,29 @@ kubectl exec -n ex-1-3 secure-app -- id
 kubectl create namespace ex-2-1
 ```
 
-**Task:**
-
-Create a pod named `volume-writer` in namespace `ex-2-1` using the `busybox:1.36` image with command `["sleep", "3600"]`. Configure the pod to:
-- Run as user ID 1001
-- Run as group ID 2001
-- Use fsGroup 3001 for volume ownership
-- Mount an emptyDir volume at /data
-
-The container must be able to create files in /data.
+**Task:** In namespace `ex-2-1`, create a pod named `writable-scratch` running image `busybox:1.36` with command `["sleep", "3600"]`. The pod should run as UID 1000, primary GID 3000, and `fsGroup: 2000`. Mount an `emptyDir` at `/scratch`. The container must be able to create a file there.
 
 **Verification:**
 
 ```bash
-# Check the group memberships
-kubectl exec -n ex-2-1 volume-writer -- id
+kubectl wait --for=condition=Ready pod/writable-scratch -n ex-2-1 --timeout=60s
 
-# Expected: groups should include 3001
+kubectl exec -n ex-2-1 writable-scratch -- sh -c 'touch /scratch/ping && echo created'
+# Expected: created
 
-# Check the ownership of /data
-kubectl exec -n ex-2-1 volume-writer -- ls -la /data
+kubectl exec -n ex-2-1 writable-scratch -- stat -c "%u:%g %A" /scratch
+# Expected: 0:2000 drwxrwsrwx
+# (or similar; the key points are the group 2000 and the "s" in the group bits)
 
-# Expected: /data should be owned by group 3001
-
-# Verify write access
-kubectl exec -n ex-2-1 volume-writer -- touch /data/testfile
-kubectl exec -n ex-2-1 volume-writer -- ls -la /data/testfile
-
-# Expected: file created successfully, owned by user 1001 and group 3001
+kubectl exec -n ex-2-1 writable-scratch -- stat -c "%u:%g" /scratch/ping
+# Expected: 1000:2000
 ```
 
 ---
 
 ### Exercise 2.2
 
-**Objective:** Verify how fsGroup affects file ownership in volumes.
+**Objective:** Combine `fsGroupChangePolicy: OnRootMismatch` with `fsGroup` and observe that the mount-root group is still set correctly on first mount.
 
 **Setup:**
 
@@ -148,36 +135,29 @@ kubectl exec -n ex-2-1 volume-writer -- ls -la /data/testfile
 kubectl create namespace ex-2-2
 ```
 
-**Task:**
-
-Create a pod named `ownership-test` in namespace `ex-2-2` using the `busybox:1.36` image. Configure the pod to:
-- Run as user ID 1002
-- Use fsGroup 4002
-- Mount an emptyDir volume at /shared
-- Run a command that creates a file, then sleeps: `["sh", "-c", "echo hello > /shared/greeting.txt && sleep 3600"]`
+**Task:** In namespace `ex-2-2`, create a pod named `onrootmismatch` running image `busybox:1.36` with command `["sleep", "3600"]`, UID 1000, `fsGroup: 2500`, and `fsGroupChangePolicy: OnRootMismatch`. Mount an `emptyDir` at `/data`. Write one file inside `/data` before verifying.
 
 **Verification:**
 
 ```bash
-# Wait for the pod to be ready
-kubectl wait --for=condition=Ready pod/ownership-test -n ex-2-2 --timeout=60s
+kubectl wait --for=condition=Ready pod/onrootmismatch -n ex-2-2 --timeout=60s
+kubectl exec -n ex-2-2 onrootmismatch -- sh -c 'echo payload > /data/record'
 
-# Check the file ownership
-kubectl exec -n ex-2-2 ownership-test -- ls -la /shared/greeting.txt
+kubectl exec -n ex-2-2 onrootmismatch -- stat -c "%g" /data
+# Expected: 2500
 
-# Expected: file should be owned by user 1002 and group 4002
+kubectl exec -n ex-2-2 onrootmismatch -- stat -c "%g" /data/record
+# Expected: 2500
 
-# Verify the file content
-kubectl exec -n ex-2-2 ownership-test -- cat /shared/greeting.txt
-
-# Expected: hello
+kubectl get pod -n ex-2-2 onrootmismatch -o jsonpath='{.spec.securityContext.fsGroupChangePolicy}'
+# Expected: OnRootMismatch
 ```
 
 ---
 
 ### Exercise 2.3
 
-**Objective:** Configure supplementalGroups for additional group memberships.
+**Objective:** Add extra group memberships via `supplementalGroups` and verify the process belongs to every listed GID.
 
 **Setup:**
 
@@ -185,184 +165,170 @@ kubectl exec -n ex-2-2 ownership-test -- cat /shared/greeting.txt
 kubectl create namespace ex-2-3
 ```
 
-**Task:**
-
-Create a pod named `multi-group` in namespace `ex-2-3` using the `busybox:1.36` image with command `["sleep", "3600"]`. Configure the pod to:
-- Run as user ID 1003
-- Run as group ID 3003
-- Have supplemental groups 5001, 5002, and 5003
+**Task:** In namespace `ex-2-3`, create a pod named `many-groups` running image `busybox:1.36` with command `["sleep", "3600"]`. Configure it to run as UID 1010, primary GID 3010, and `supplementalGroups: [4000, 5000, 6000]`.
 
 **Verification:**
 
 ```bash
-# Check all group memberships
-kubectl exec -n ex-2-3 multi-group -- id
+kubectl wait --for=condition=Ready pod/many-groups -n ex-2-3 --timeout=60s
 
-# Expected: uid=1003 gid=3003 groups=3003,5001,5002,5003
+kubectl exec -n ex-2-3 many-groups -- id -G
+# Expected: 3010 4000 5000 6000
 
-# Verify the pod is running
-kubectl get pod -n ex-2-3 multi-group
+kubectl exec -n ex-2-3 many-groups -- id -u
+# Expected: 1010
 ```
 
 ---
 
-## Level 3: Debugging Permission Issues
+## Level 3: Debugging
 
 ### Exercise 3.1
 
-**Objective:** A pod is failing to write to its volume. Find and fix the issue.
+**Objective:** Find and fix whatever is preventing the pod below from writing to its mounted volume.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-3-1
-
-kubectl apply -f - <<EOF
+kubectl apply -n ex-3-1 -f - <<'EOF'
 apiVersion: v1
 kind: Pod
 metadata:
-  name: data-processor
-  namespace: ex-3-1
+  name: broken
 spec:
   securityContext:
     runAsUser: 1000
-    runAsGroup: 1000
+    runAsGroup: 3000
   containers:
-  - name: processor
+  - name: app
     image: busybox:1.36
-    command: ["sh", "-c", "echo 'processing data' > /data/output.txt && sleep 3600"]
+    command: ["sh", "-c", "while true; do date >> /work/log; sleep 2; done"]
     volumeMounts:
-    - name: data-volume
-      mountPath: /data
+    - name: work
+      mountPath: /work
   volumes:
-  - name: data-volume
+  - name: work
     emptyDir: {}
 EOF
 ```
 
-**Task:**
-
-The pod above is failing to start properly. Diagnose why the container cannot write to the /data directory and fix the pod configuration so it can write successfully.
+**Task:** Diagnose why the pod is restarting and adjust the pod spec so the loop writes to `/work/log` successfully without changing the image, the command, the mountPath, or the volume type.
 
 **Verification:**
 
 ```bash
-# After fixing, verify the pod is running
-kubectl get pod -n ex-3-1 data-processor
+kubectl wait --for=condition=Ready pod/broken -n ex-3-1 --timeout=60s
 
-# Expected: STATUS should be Running
+kubectl get pod -n ex-3-1 broken -o jsonpath='{.status.containerStatuses[0].restartCount}'
+# Expected: 0 (or low and not increasing)
 
-# Verify the file was created
-kubectl exec -n ex-3-1 data-processor -- cat /data/output.txt
+kubectl exec -n ex-3-1 broken -- test -s /work/log
+echo $?
+# Expected: 0
 
-# Expected: processing data
+kubectl exec -n ex-3-1 broken -- stat -c "%g" /work
+# Expected: a non-zero GID (the fsGroup you set)
 ```
 
 ---
 
 ### Exercise 3.2
 
-**Objective:** A pod with runAsNonRoot is failing to start. Find and fix the issue.
+**Objective:** The pod below is stuck at `CreateContainerConfigError`. Adjust the pod spec so it reaches `Running` without allowing it to run as root.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-3-2
-
-kubectl apply -f - <<EOF
+kubectl apply -n ex-3-2 -f - <<'EOF'
 apiVersion: v1
 kind: Pod
 metadata:
-  name: secure-worker
-  namespace: ex-3-2
+  name: blocked
 spec:
   securityContext:
     runAsNonRoot: true
   containers:
-  - name: worker
+  - name: app
     image: busybox:1.36
     command: ["sleep", "3600"]
 EOF
 ```
 
-**Task:**
-
-The pod above is stuck and not starting. Diagnose the issue and fix the pod configuration so it starts successfully while still enforcing non-root execution.
+**Task:** Get the pod to `Running` without removing `runAsNonRoot: true` and without changing the image.
 
 **Verification:**
 
 ```bash
-# After fixing, verify the pod is running
-kubectl get pod -n ex-3-2 secure-worker
+kubectl wait --for=condition=Ready pod/blocked -n ex-3-2 --timeout=60s
 
-# Expected: STATUS should be Running
+kubectl get pod -n ex-3-2 blocked -o jsonpath='{.status.phase}'
+# Expected: Running
 
-# Verify the user is non-root
-kubectl exec -n ex-3-2 secure-worker -- id
+kubectl exec -n ex-3-2 blocked -- id -u
+# Expected: a non-zero UID
 
-# Expected: uid should not be 0
+kubectl get pod -n ex-3-2 blocked -o jsonpath='{.spec.securityContext.runAsNonRoot}'
+# Expected: true
 ```
 
 ---
 
 ### Exercise 3.3
 
-**Objective:** A multi-container pod has permission issues with shared storage. Find and fix the issue.
+**Objective:** The multi-container pod below has two containers that need to share one volume, and one of the two cannot read the files the other writes. Adjust the pod spec so both can read and write the shared volume.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-3-3
-
-kubectl apply -f - <<EOF
+kubectl apply -n ex-3-3 -f - <<'EOF'
 apiVersion: v1
 kind: Pod
 metadata:
-  name: data-pipeline
-  namespace: ex-3-3
+  name: mismatch
 spec:
   containers:
-  - name: producer
+  - name: writer
     image: busybox:1.36
-    command: ["sh", "-c", "echo 'data payload' > /shared/data.txt && sleep 3600"]
+    command: ["sh", "-c", "echo content > /shared/file && sleep 3600"]
     securityContext:
-      runAsUser: 1001
+      runAsUser: 1000
+      runAsGroup: 3000
     volumeMounts:
-    - name: shared-data
+    - name: shared
       mountPath: /shared
-  - name: consumer
+  - name: reader
     image: busybox:1.36
-    command: ["sh", "-c", "sleep 10 && cat /shared/data.txt && sleep 3600"]
+    command: ["sh", "-c", "sleep 3 && cat /shared/file && sleep 3600"]
     securityContext:
-      runAsUser: 2001
+      runAsUser: 2000
+      runAsGroup: 4000
     volumeMounts:
-    - name: shared-data
+    - name: shared
       mountPath: /shared
   volumes:
-  - name: shared-data
+  - name: shared
     emptyDir: {}
 EOF
 ```
 
-**Task:**
-
-The pod above has two containers that need to share data through a volume. The producer writes data and the consumer reads it. However, the consumer may have trouble reading data written by the producer. Diagnose any permission issues and fix the configuration so both containers can reliably share data.
+**Task:** Adjust the pod so both containers can read and write the shared volume, without giving either container a UID of 0.
 
 **Verification:**
 
 ```bash
-# After fixing, verify the pod is running
-kubectl get pod -n ex-3-3 data-pipeline
+kubectl wait --for=condition=Ready pod/mismatch -n ex-3-3 --timeout=60s
 
-# Expected: Both containers should be Running
+kubectl logs -n ex-3-3 mismatch -c reader
+# Expected: content
 
-# Wait for the consumer to finish its sleep
-sleep 15
+kubectl exec -n ex-3-3 mismatch -c reader -- sh -c 'echo response > /shared/reply && cat /shared/reply'
+# Expected: response
 
-# Check consumer logs
-kubectl logs -n ex-3-3 data-pipeline -c consumer
-
-# Expected: should show "data payload"
+kubectl exec -n ex-3-3 mismatch -c writer -- cat /shared/reply
+# Expected: response
 ```
 
 ---
@@ -371,7 +337,7 @@ kubectl logs -n ex-3-3 data-pipeline -c consumer
 
 ### Exercise 4.1
 
-**Objective:** Override pod-level security settings at the container level.
+**Objective:** Override a pod-level identity for one of two containers.
 
 **Setup:**
 
@@ -379,34 +345,31 @@ kubectl logs -n ex-3-3 data-pipeline -c consumer
 kubectl create namespace ex-4-1
 ```
 
-**Task:**
-
-Create a pod named `mixed-users` in namespace `ex-4-1` with the following configuration:
-- Pod-level runAsUser: 1000
-- Pod-level runAsGroup: 2000
-- Two containers, both using `busybox:1.36` with command `["sleep", "3600"]`:
-  - Container named `default-user` that inherits the pod-level settings
-  - Container named `admin-user` that overrides to run as user 3000 and group 4000
+**Task:** In namespace `ex-4-1`, create a pod named `mixed-identity` with two containers, both image `busybox:1.36` with command `["sleep", "3600"]`. Container `one` must run with the pod-level settings (UID 1500, GID 2500). Container `two` must override to run as UID 7000, GID 8000.
 
 **Verification:**
 
 ```bash
-# Check identity in the default-user container
-kubectl exec -n ex-4-1 mixed-users -c default-user -- id
+kubectl wait --for=condition=Ready pod/mixed-identity -n ex-4-1 --timeout=60s
 
-# Expected: uid=1000 gid=2000 groups=2000
+kubectl exec -n ex-4-1 mixed-identity -c one -- id -u
+# Expected: 1500
 
-# Check identity in the admin-user container
-kubectl exec -n ex-4-1 mixed-users -c admin-user -- id
+kubectl exec -n ex-4-1 mixed-identity -c one -- id -g
+# Expected: 2500
 
-# Expected: uid=3000 gid=4000 groups=4000
+kubectl exec -n ex-4-1 mixed-identity -c two -- id -u
+# Expected: 7000
+
+kubectl exec -n ex-4-1 mixed-identity -c two -- id -g
+# Expected: 8000
 ```
 
 ---
 
 ### Exercise 4.2
 
-**Objective:** Configure a pod where different containers have different user identities but share a volume.
+**Objective:** Run three containers with three different UIDs, each producing a file into a shared `emptyDir` that all three can later read.
 
 **Setup:**
 
@@ -414,48 +377,31 @@ kubectl exec -n ex-4-1 mixed-users -c admin-user -- id
 kubectl create namespace ex-4-2
 ```
 
-**Task:**
-
-Create a pod named `collaborative-app` in namespace `ex-4-2` with:
-- fsGroup: 8000 (for shared volume access)
-- Two containers:
-  - Container `writer-a` running as user 1001, writes "message from A" to /shared/from-a.txt
-  - Container `writer-b` running as user 2002, writes "message from B" to /shared/from-b.txt (after a 5 second delay)
-- Both containers mount an emptyDir volume at /shared
-- Both containers sleep after writing
-
-Both containers must be able to read files written by the other container.
+**Task:** In namespace `ex-4-2`, create a pod named `three-writers`. All three containers use image `busybox:1.36`. Container `a` runs as UID 1000 and writes `hello-a` to `/shared/a.txt`, then sleeps. Container `b` runs as UID 2000 and writes `hello-b` to `/shared/b.txt`, then sleeps. Container `c` runs as UID 3000 and writes `hello-c` to `/shared/c.txt`, then sleeps. Use `fsGroup: 9000` so all three can access the shared volume, and verify that container `a` can read `c.txt`.
 
 **Verification:**
 
 ```bash
-# Wait for the pod to be ready
-kubectl wait --for=condition=Ready pod/collaborative-app -n ex-4-2 --timeout=60s
+kubectl wait --for=condition=Ready pod/three-writers -n ex-4-2 --timeout=60s
 
-# Wait for writer-b to finish
-sleep 10
+kubectl exec -n ex-4-2 three-writers -c a -- cat /shared/a.txt
+# Expected: hello-a
 
-# Verify writer-a can read writer-b's file
-kubectl exec -n ex-4-2 collaborative-app -c writer-a -- cat /shared/from-b.txt
+kubectl exec -n ex-4-2 three-writers -c a -- cat /shared/c.txt
+# Expected: hello-c
 
-# Expected: message from B
+kubectl exec -n ex-4-2 three-writers -c b -- cat /shared/a.txt
+# Expected: hello-a
 
-# Verify writer-b can read writer-a's file
-kubectl exec -n ex-4-2 collaborative-app -c writer-b -- cat /shared/from-a.txt
-
-# Expected: message from A
-
-# Check that files are owned by the fsGroup
-kubectl exec -n ex-4-2 collaborative-app -c writer-a -- ls -la /shared/
-
-# Expected: files should be owned by group 8000
+kubectl exec -n ex-4-2 three-writers -c c -- stat -c "%g" /shared/a.txt
+# Expected: 9000
 ```
 
 ---
 
 ### Exercise 4.3
 
-**Objective:** Combine fsGroup with supplementalGroups across multiple containers.
+**Objective:** Configure an `nginx:1.25` pod for the Restricted-compatible identity pattern (non-root, specific UID/GID, `runAsNonRoot: true` at pod level), and confirm the pod still serves HTTP on port 8080.
 
 **Setup:**
 
@@ -463,45 +409,32 @@ kubectl exec -n ex-4-2 collaborative-app -c writer-a -- ls -la /shared/
 kubectl create namespace ex-4-3
 ```
 
-**Task:**
+**Task:** In namespace `ex-4-3`, create a pod named `hardened-web` running the `nginx:1.25` image. Use a `ConfigMap` named `nginx-conf` to override the default nginx config so nginx listens on port 8080 (not 80, which requires privileged capability to bind as non-root) and serves a simple static response. Configure the pod with `runAsUser: 101`, `runAsGroup: 101`, `runAsNonRoot: true`, and `fsGroup: 101` at pod level. Mount the ConfigMap at `/etc/nginx/conf.d/` with key `default.conf`.
 
-Create a pod named `group-matrix` in namespace `ex-4-3` with:
-- Pod-level settings:
-  - fsGroup: 9000
-  - supplementalGroups: [9001, 9002]
-- Container `standard` using busybox:1.36 with command `["sleep", "3600"]`:
-  - runAsUser: 1000
-  - runAsGroup: 2000
-- Container `elevated` using busybox:1.36 with command `["sleep", "3600"]`:
-  - runAsUser: 3000
-  - runAsGroup: 4000
-  - Additional supplementalGroups are NOT specified at container level
-
-Both containers should inherit the pod-level supplementalGroups and fsGroup.
+**Hint:** The nginx:1.25 image's `nginx` user is UID 101.
 
 **Verification:**
 
 ```bash
-# Check identity in the standard container
-kubectl exec -n ex-4-3 group-matrix -c standard -- id
+kubectl wait --for=condition=Ready pod/hardened-web -n ex-4-3 --timeout=60s
 
-# Expected: uid=1000 gid=2000 groups=2000,9000,9001,9002
+kubectl exec -n ex-4-3 hardened-web -- id -u
+# Expected: 101
 
-# Check identity in the elevated container
-kubectl exec -n ex-4-3 group-matrix -c elevated -- id
+kubectl get pod -n ex-4-3 hardened-web -o jsonpath='{.spec.securityContext.runAsNonRoot}'
+# Expected: true
 
-# Expected: uid=3000 gid=4000 groups=4000,9000,9001,9002
-
-# Both should have 9000 (fsGroup), 9001, and 9002 in their groups
+kubectl exec -n ex-4-3 hardened-web -- wget -qO- http://localhost:8080
+# Expected: non-empty response body
 ```
 
 ---
 
-## Level 5: Complex Scenarios
+## Level 5: Advanced and Comprehensive
 
 ### Exercise 5.1
 
-**Objective:** Configure a pod for an application that requires a specific UID/GID and shared storage.
+**Objective:** Design a security context for an application with these documented requirements: effective UID 1042 (`app`), primary GID 2042 (`appgrp`), must belong to group 3042 (`shared-data`) for a shared NFS-style mount modeled here with an `emptyDir`, must fail to start if the image somehow switches to UID 0, and must not be able to accidentally create a file outside the shared group.
 
 **Setup:**
 
@@ -509,134 +442,97 @@ kubectl exec -n ex-4-3 group-matrix -c elevated -- id
 kubectl create namespace ex-5-1
 ```
 
-**Task:**
-
-Create a pod named `legacy-app` in namespace `ex-5-1` that simulates running a legacy application with specific requirements:
-- The application requires UID 1500 and GID 1500
-- It writes logs to /var/log/app (must be writable)
-- It reads configuration from /etc/app/config (you will use a ConfigMap for this)
-- It stores data in /data (must be writable and persist within the pod lifecycle)
-
-Configure:
-- A ConfigMap named `app-config` with a key `settings.conf` containing `debug=true`
-- A pod with appropriate security context
-- Appropriate volumes for logs (emptyDir), config (ConfigMap), and data (emptyDir)
-- Container using busybox:1.36 that runs: `["sh", "-c", "cat /etc/app/config/settings.conf && echo 'log entry' > /var/log/app/app.log && echo 'data written' > /data/store.txt && sleep 3600"]`
+**Task:** In namespace `ex-5-1`, create a pod named `appserver` running `busybox:1.36` with command `["sleep", "3600"]`. Meet every requirement above. Mount an `emptyDir` at `/shared`. Verify from inside that the effective UID is 1042, the effective primary GID is 2042, the process belongs to group 3042, and a file created in `/shared` is group-owned by 3042 even though the primary GID is 2042.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-5-1 legacy-app
+kubectl wait --for=condition=Ready pod/appserver -n ex-5-1 --timeout=60s
 
-# Expected: Running
+kubectl exec -n ex-5-1 appserver -- id -u
+# Expected: 1042
 
-# Verify the user identity
-kubectl exec -n ex-5-1 legacy-app -- id
+kubectl exec -n ex-5-1 appserver -- id -g
+# Expected: 2042
 
-# Expected: uid=1500 gid=1500
+kubectl exec -n ex-5-1 appserver -- id -G
+# Expected: 2042 3042 (in some order, must contain both)
 
-# Verify config was read
-kubectl logs -n ex-5-1 legacy-app
+kubectl exec -n ex-5-1 appserver -- sh -c 'echo test > /shared/f && stat -c "%g" /shared/f'
+# Expected: 3042
 
-# Expected: should show debug=true
-
-# Verify log was written
-kubectl exec -n ex-5-1 legacy-app -- cat /var/log/app/app.log
-
-# Expected: log entry
-
-# Verify data was written
-kubectl exec -n ex-5-1 legacy-app -- cat /data/store.txt
-
-# Expected: data written
-
-# Verify the app can write to log directory
-kubectl exec -n ex-5-1 legacy-app -- ls -la /var/log/app/
-
-# Expected: files owned by user 1500 and appropriate group
+kubectl get pod -n ex-5-1 appserver -o jsonpath='{.spec.securityContext.runAsNonRoot}'
+# Expected: true
 ```
 
 ---
 
 ### Exercise 5.2
 
-**Objective:** Debug a multi-container pod with complex permission issues.
+**Objective:** The pod below bundles an application, a logs sidecar, and a shared `emptyDir`. Both containers are reporting errors, the application cannot write logs, and the sidecar cannot read them. Diagnose and fix every problem so the application writes logs every 2 seconds and the sidecar reads and prints them continuously.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-5-2
-
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: pipeline-config
-  namespace: ex-5-2
-data:
-  input.txt: "initial data"
----
+kubectl apply -n ex-5-2 -f - <<'EOF'
 apiVersion: v1
 kind: Pod
 metadata:
-  name: data-pipeline
-  namespace: ex-5-2
+  name: app-plus-logs
 spec:
   securityContext:
+    runAsUser: 0
     runAsNonRoot: true
   containers:
-  - name: initializer
+  - name: app
     image: busybox:1.36
-    command: ["sh", "-c", "cp /config/input.txt /work/input.txt && sleep 3600"]
-    volumeMounts:
-    - name: config
-      mountPath: /config
-    - name: workdir
-      mountPath: /work
-  - name: processor
-    image: busybox:1.36
-    command: ["sh", "-c", "sleep 5 && cat /work/input.txt > /work/output.txt && sleep 3600"]
+    command: ["sh", "-c", "while true; do date >> /var/log/app.log; sleep 2; done"]
     securityContext:
-      runAsUser: 2000
+      runAsUser: 1500
     volumeMounts:
-    - name: workdir
-      mountPath: /work
+    - name: logs
+      mountPath: /var/log
+  - name: sidecar
+    image: busybox:1.36
+    command: ["sh", "-c", "sleep 4 && tail -f /var/log/app.log"]
+    securityContext:
+      runAsUser: 2500
+    volumeMounts:
+    - name: logs
+      mountPath: /var/log
   volumes:
-  - name: config
-    configMap:
-      name: pipeline-config
-  - name: workdir
+  - name: logs
     emptyDir: {}
 EOF
 ```
 
-**Task:**
-
-The data pipeline pod above has multiple issues preventing it from working correctly. The initializer container should copy input data to a work directory, and the processor container should read and process that data. Fix all issues so the pipeline works correctly.
+**Task:** Fix whatever needs fixing. The resulting pod must reach `Running`, both containers must keep `runAsNonRoot: true` effective identity (so no container should run as UID 0), the `app` container must write to `/var/log/app.log`, and the `sidecar` container must be able to tail it. Do not change image versions or commands.
 
 **Verification:**
 
 ```bash
-# After fixing, verify the pod is running
-kubectl get pod -n ex-5-2 data-pipeline
+kubectl wait --for=condition=Ready pod/app-plus-logs -n ex-5-2 --timeout=60s
 
-# Expected: Both containers Running
+kubectl exec -n ex-5-2 app-plus-logs -c app -- id -u
+# Expected: 1500
 
-# Wait for processor to complete its task
-sleep 10
+kubectl exec -n ex-5-2 app-plus-logs -c sidecar -- id -u
+# Expected: 2500
 
-# Verify the output file exists and has content
-kubectl exec -n ex-5-2 data-pipeline -c processor -- cat /work/output.txt
+kubectl get pod -n ex-5-2 app-plus-logs -o jsonpath='{.status.containerStatuses[?(@.name=="app")].restartCount}'
+# Expected: 0
 
-# Expected: initial data
+sleep 5
+kubectl logs -n ex-5-2 app-plus-logs -c sidecar --tail=2
+# Expected: two most recent date lines from the app
 ```
 
 ---
 
 ### Exercise 5.3
 
-**Objective:** Design a security context strategy for a microservice pod.
+**Objective:** Design and apply a security context strategy for a three-tier pod (a `frontend` container, a `backend` container, and an `exporter` sidecar) where every container runs as a different non-root UID, all three share one volume for metrics, and the pod satisfies the Restricted-profile identity rules (`runAsNonRoot: true`; every container has an explicit `runAsUser`).
 
 **Setup:**
 
@@ -644,77 +540,46 @@ kubectl exec -n ex-5-2 data-pipeline -c processor -- cat /work/output.txt
 kubectl create namespace ex-5-3
 ```
 
-**Task:**
-
-Design and implement a pod named `secure-microservice` in namespace `ex-5-3` that follows security best practices:
-
-1. The pod should have three containers:
-   - `api` (nginx:1.25): The main API server, runs as user 101 (nginx user)
-   - `sidecar` (busybox:1.36): A log shipper that reads from a shared log directory, runs as user 1000
-   - `metrics` (busybox:1.36): A metrics exporter, runs as user 2000
-
-2. Security requirements:
-   - All containers must run as non-root (enforce with runAsNonRoot)
-   - Shared log volume at /var/log/shared that all containers can write to
-   - Each container should have appropriate user and group settings
-   - Use fsGroup to enable shared volume access
-
-3. The api container should write "api started" to /var/log/shared/api.log
-4. The sidecar should sleep for 5 seconds then read the api log
-5. The metrics container should write "metrics: 100" to /var/log/shared/metrics.log
+**Task:** In namespace `ex-5-3`, create a pod named `three-tier`. `frontend` uses `nginx:1.25`, runs as UID 101, listens on 8080 via a mounted ConfigMap, and writes a heartbeat file every 5 seconds to `/metrics/frontend.ok`. `backend` uses `busybox:1.36`, runs as UID 1020, and writes a heartbeat file every 5 seconds to `/metrics/backend.ok`. `exporter` uses `busybox:1.36`, runs as UID 1030, reads both heartbeat files once per iteration, and prints a summary line. Use `fsGroup: 7000` on the pod so all three can write to `/metrics`. Set `runAsNonRoot: true` at pod level.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-5-3 secure-microservice
+kubectl wait --for=condition=Ready pod/three-tier -n ex-5-3 --timeout=60s
 
-# Expected: All containers Running
+kubectl exec -n ex-5-3 three-tier -c frontend -- id -u
+# Expected: 101
 
-# Verify each container is running as non-root
-kubectl exec -n ex-5-3 secure-microservice -c api -- id
-# Expected: uid=101 (not 0)
+kubectl exec -n ex-5-3 three-tier -c backend -- id -u
+# Expected: 1020
 
-kubectl exec -n ex-5-3 secure-microservice -c sidecar -- id
-# Expected: uid=1000 (not 0)
+kubectl exec -n ex-5-3 three-tier -c exporter -- id -u
+# Expected: 1030
 
-kubectl exec -n ex-5-3 secure-microservice -c metrics -- id
-# Expected: uid=2000 (not 0)
-
-# Wait for containers to write their files
 sleep 10
+kubectl exec -n ex-5-3 three-tier -c exporter -- ls /metrics
+# Expected: backend.ok  frontend.ok
 
-# Verify sidecar can read api log
-kubectl exec -n ex-5-3 secure-microservice -c sidecar -- cat /var/log/shared/api.log
-# Expected: api started
+kubectl logs -n ex-5-3 three-tier -c exporter --tail=1
+# Expected: a summary line mentioning both frontend.ok and backend.ok
 
-# Verify api can read metrics log
-kubectl exec -n ex-5-3 secure-microservice -c api -- cat /var/log/shared/metrics.log
-# Expected: metrics: 100
-
-# Verify all log files are owned by the fsGroup
-kubectl exec -n ex-5-3 secure-microservice -c sidecar -- ls -la /var/log/shared/
-# Expected: files should be owned by the fsGroup
+kubectl get pod -n ex-5-3 three-tier -o jsonpath='{.spec.securityContext.runAsNonRoot}'
+# Expected: true
 ```
 
 ---
 
 ## Cleanup
 
-Delete all exercise namespaces:
+Remove every exercise namespace.
 
 ```bash
-kubectl delete namespace ex-1-1 ex-1-2 ex-1-3 ex-2-1 ex-2-2 ex-2-3 ex-3-1 ex-3-2 ex-3-3 ex-4-1 ex-4-2 ex-4-3 ex-5-1 ex-5-2 ex-5-3
+for ns in ex-1-1 ex-1-2 ex-1-3 ex-2-1 ex-2-2 ex-2-3 ex-3-1 ex-3-2 ex-3-3 \
+         ex-4-1 ex-4-2 ex-4-3 ex-5-1 ex-5-2 ex-5-3; do
+  kubectl delete namespace "$ns" --ignore-not-found
+done
 ```
-
----
 
 ## Key Takeaways
 
-1. **runAsUser and runAsGroup** control the UID and GID of container processes
-2. **fsGroup** is essential for volume write access when running as non-root
-3. **runAsNonRoot** validates but does not set the user identity
-4. Container-level security contexts override pod-level settings
-5. **supplementalGroups** adds extra group memberships beyond the primary group
-6. When containers share volumes, use fsGroup to ensure all containers can access the data
-7. Always verify security settings with `kubectl exec -- id` inside the container
+The effective UID and primary GID control identity on the process level. Supplementary groups expand the permission surface for reads and writes to files owned by additional groups. `fsGroup` is the single field that makes a non-root container able to write to an `emptyDir`, a `configMap`, a `secret`, or any PVC-backed volume whose backend supports ownership change, because it chowns the mount to that group and sets the setgid bit on directories so created files inherit the group. `runAsNonRoot` is a validator, not a setter: it fails the container at start if the effective UID would be 0. Container-level security contexts override pod-level for the fields that exist at both scopes (`runAsUser`, `runAsGroup`, `runAsNonRoot`). `fsGroup` and `supplementalGroups` are pod-level only.

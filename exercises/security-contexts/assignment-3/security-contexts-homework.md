@@ -1,14 +1,16 @@
-# Security Contexts Homework: Filesystem and seccomp Profiles
+# Read-Only Root Filesystem and seccomp Profiles Homework
 
-This homework contains 15 progressive exercises to practice filesystem constraints and seccomp profiles in Kubernetes. Complete the tutorial before attempting these exercises.
+Fifteen exercises covering `readOnlyRootFilesystem`, `seccompProfile` (with `RuntimeDefault`, `Localhost`, and `Unconfined`), and the combination of every security-context field from assignments 1, 2, and 3 into the Restricted baseline. Work through the tutorial first, because the Level 4 custom-profile exercises and Level 5 comprehensive scenarios reuse its `nerdctl cp` workflow.
+
+Exercise namespaces follow `ex-<level>-<exercise>`. The global cleanup block at the bottom removes every namespace. Some exercises require copying JSON profile files to the kind node's `/var/lib/kubelet/seccomp/` directory; the setup blocks do that for you.
 
 ---
 
-## Level 1: Read-Only Filesystem
+## Level 1: Read-Only Root Filesystem
 
 ### Exercise 1.1
 
-**Objective:** Enable read-only root filesystem and observe the behavior.
+**Objective:** Enable `readOnlyRootFilesystem: true` and confirm writes to the rootfs fail with `Read-only file system`.
 
 **Setup:**
 
@@ -16,34 +18,25 @@ This homework contains 15 progressive exercises to practice filesystem constrain
 kubectl create namespace ex-1-1
 ```
 
-**Task:**
-
-Create a pod named `readonly-test` in namespace `ex-1-1` using busybox:1.36 with command `["sleep", "3600"]`. Enable readOnlyRootFilesystem in the security context.
+**Task:** In namespace `ex-1-1`, create a pod named `immutable` running image `alpine:3.20` with command `["sleep", "3600"]` and `readOnlyRootFilesystem: true`.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-1-1 readonly-test
+kubectl wait --for=condition=Ready pod/immutable -n ex-1-1 --timeout=60s
 
-# Expected: Running
+kubectl exec -n ex-1-1 immutable -- sh -c 'echo test > /tmp/file 2>&1 || true'
+# Expected: sh: can't create /tmp/file: Read-only file system
 
-# Try to write a file to the root filesystem
-kubectl exec -n ex-1-1 readonly-test -- touch /tmp/test
-
-# Expected: "Read-only file system" error
-
-# Try to write to another location
-kubectl exec -n ex-1-1 readonly-test -- touch /home/test
-
-# Expected: "Read-only file system" error
+kubectl get pod -n ex-1-1 immutable -o jsonpath='{.spec.containers[0].securityContext.readOnlyRootFilesystem}'
+# Expected: true
 ```
 
 ---
 
 ### Exercise 1.2
 
-**Objective:** Add an emptyDir volume for writable temporary storage.
+**Objective:** Enable `readOnlyRootFilesystem` and provide a writable `/tmp` via `emptyDir`.
 
 **Setup:**
 
@@ -51,35 +44,25 @@ kubectl exec -n ex-1-1 readonly-test -- touch /home/test
 kubectl create namespace ex-1-2
 ```
 
-**Task:**
-
-Create a pod named `readonly-with-tmp` in namespace `ex-1-2` using busybox:1.36 with command `["sleep", "3600"]`. Configure the pod to:
-- Enable readOnlyRootFilesystem
-- Mount an emptyDir volume at /tmp
+**Task:** In namespace `ex-1-2`, create a pod named `immutable-tmp` running image `alpine:3.20` with command `["sleep", "3600"]`, `readOnlyRootFilesystem: true`, and an `emptyDir` mounted at `/tmp`. The container must be able to write to `/tmp/test-file`.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-1-2 readonly-with-tmp
+kubectl wait --for=condition=Ready pod/immutable-tmp -n ex-1-2 --timeout=60s
 
-# Write to /tmp should succeed
-kubectl exec -n ex-1-2 readonly-with-tmp -- touch /tmp/testfile
-kubectl exec -n ex-1-2 readonly-with-tmp -- ls /tmp/testfile
+kubectl exec -n ex-1-2 immutable-tmp -- sh -c 'echo hello > /tmp/test-file && cat /tmp/test-file'
+# Expected: hello
 
-# Expected: /tmp/testfile
-
-# Write to root filesystem should fail
-kubectl exec -n ex-1-2 readonly-with-tmp -- touch /home/test
-
-# Expected: "Read-only file system" error
+kubectl exec -n ex-1-2 immutable-tmp -- sh -c 'echo blocked > /etc/blocker 2>&1 || true'
+# Expected (substring): Read-only file system
 ```
 
 ---
 
 ### Exercise 1.3
 
-**Objective:** Configure multiple writable directories for an application.
+**Objective:** Identify every writable path an application needs and supply all of them via `emptyDir` mounts.
 
 **Setup:**
 
@@ -87,36 +70,18 @@ kubectl exec -n ex-1-2 readonly-with-tmp -- touch /home/test
 kubectl create namespace ex-1-3
 ```
 
-**Task:**
-
-Create a pod named `app-container` in namespace `ex-1-3` using nginx:1.25. Configure the pod to:
-- Enable readOnlyRootFilesystem
-- Provide writable directories for:
-  - /tmp (temporary files)
-  - /var/cache/nginx (nginx cache)
-  - /var/run (PID files and sockets)
-
-The nginx container should start successfully.
+**Task:** In namespace `ex-1-3`, run nginx. The stock `nginx:1.25` image needs write access to `/var/cache/nginx` (proxy cache), `/var/run` (pidfile), and `/tmp` (temporary files). Create a pod named `nginx-immutable` running `nginx:1.25` with `readOnlyRootFilesystem: true` and three `emptyDir` volumes mounted at those three paths.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-1-3 app-container
+kubectl wait --for=condition=Ready pod/nginx-immutable -n ex-1-3 --timeout=60s
 
-# Expected: Running
+kubectl exec -n ex-1-3 nginx-immutable -- wget -qO- http://localhost/ | head -c 15
+# Expected: <!DOCTYPE html
 
-# Verify writable directories work
-kubectl exec -n ex-1-3 app-container -- touch /tmp/test
-kubectl exec -n ex-1-3 app-container -- touch /var/cache/nginx/test
-kubectl exec -n ex-1-3 app-container -- touch /var/run/test
-
-# Expected: All commands succeed
-
-# Verify root filesystem is read-only
-kubectl exec -n ex-1-3 app-container -- touch /etc/test
-
-# Expected: "Read-only file system" error
+kubectl get pod -n ex-1-3 nginx-immutable -o jsonpath='{.status.containerStatuses[0].restartCount}'
+# Expected: 0
 ```
 
 ---
@@ -125,7 +90,7 @@ kubectl exec -n ex-1-3 app-container -- touch /etc/test
 
 ### Exercise 2.1
 
-**Objective:** Apply RuntimeDefault seccomp profile explicitly.
+**Objective:** Apply `RuntimeDefault` at pod level and confirm it is active.
 
 **Setup:**
 
@@ -133,34 +98,28 @@ kubectl exec -n ex-1-3 app-container -- touch /etc/test
 kubectl create namespace ex-2-1
 ```
 
-**Task:**
-
-Create a pod named `seccomp-runtime` in namespace `ex-2-1` using busybox:1.36 with command `["sleep", "3600"]`. Explicitly set the seccomp profile to RuntimeDefault.
+**Task:** In namespace `ex-2-1`, create a pod named `runtimedefault` running image `alpine:3.20` with command `["sleep", "3600"]` and `seccompProfile.type: RuntimeDefault` at pod level.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-2-1 seccomp-runtime
+kubectl wait --for=condition=Ready pod/runtimedefault -n ex-2-1 --timeout=60s
 
-# Expected: Running
+kubectl exec -n ex-2-1 runtimedefault -- grep "^Seccomp:" /proc/self/status | awk '{print $2}'
+# Expected: 2
 
-# Verify the seccomp profile is set
-kubectl get pod -n ex-2-1 seccomp-runtime -o yaml | grep -A 3 seccompProfile
+kubectl exec -n ex-2-1 runtimedefault -- grep "^Seccomp_filters:" /proc/self/status | awk '{print $2}'
+# Expected: 1
 
-# Expected: type: RuntimeDefault
-
-# Basic operations should work
-kubectl exec -n ex-2-1 seccomp-runtime -- ls /
-
-# Expected: Directory listing succeeds
+kubectl get pod -n ex-2-1 runtimedefault -o jsonpath='{.spec.securityContext.seccompProfile.type}'
+# Expected: RuntimeDefault
 ```
 
 ---
 
 ### Exercise 2.2
 
-**Objective:** Compare RuntimeDefault with Unconfined profile.
+**Objective:** Demonstrate that `Unconfined` disables filtering by reading the Seccomp line in `/proc/self/status`.
 
 **Setup:**
 
@@ -168,41 +127,28 @@ kubectl exec -n ex-2-1 seccomp-runtime -- ls /
 kubectl create namespace ex-2-2
 ```
 
-**Task:**
-
-Create two pods in namespace `ex-2-2`:
-1. Pod named `with-seccomp` using RuntimeDefault seccomp profile
-2. Pod named `without-seccomp` using Unconfined seccomp profile
-
-Both should use busybox:1.36 with command `["sleep", "3600"]`.
+**Task:** In namespace `ex-2-2`, create a pod named `unconfined` running image `alpine:3.20` with command `["sleep", "3600"]` and `seccompProfile.type: Unconfined`.
 
 **Verification:**
 
 ```bash
-# Verify both pods are running
-kubectl get pods -n ex-2-2
+kubectl wait --for=condition=Ready pod/unconfined -n ex-2-2 --timeout=60s
 
-# Expected: Both Running
+kubectl exec -n ex-2-2 unconfined -- grep "^Seccomp:" /proc/self/status | awk '{print $2}'
+# Expected: 0
 
-# Check seccomp profiles
-kubectl get pod -n ex-2-2 with-seccomp -o jsonpath='{.spec.containers[0].securityContext.seccompProfile.type}'
-# Expected: RuntimeDefault
+kubectl exec -n ex-2-2 unconfined -- grep "^Seccomp_filters:" /proc/self/status | awk '{print $2}'
+# Expected: 0
 
-kubectl get pod -n ex-2-2 without-seccomp -o jsonpath='{.spec.containers[0].securityContext.seccompProfile.type}'
+kubectl get pod -n ex-2-2 unconfined -o jsonpath='{.spec.containers[0].securityContext.seccompProfile.type}'
 # Expected: Unconfined
-
-# Both should execute commands normally
-kubectl exec -n ex-2-2 with-seccomp -- echo "test"
-kubectl exec -n ex-2-2 without-seccomp -- echo "test"
-
-# Expected: Both output "test"
 ```
 
 ---
 
 ### Exercise 2.3
 
-**Objective:** Apply seccomp profile at pod level vs container level.
+**Objective:** Observe that `RuntimeDefault` blocks `clock_settime` even when `CAP_SYS_TIME` is granted, and understand why.
 
 **Setup:**
 
@@ -210,206 +156,163 @@ kubectl exec -n ex-2-2 without-seccomp -- echo "test"
 kubectl create namespace ex-2-3
 ```
 
-**Task:**
-
-Create a pod named `seccomp-levels` in namespace `ex-2-3` with:
-- Pod-level seccomp profile: RuntimeDefault
-- Two containers using busybox:1.36 with command `["sleep", "3600"]`:
-  - Container `default-profile` that inherits pod-level seccomp
-  - Container `unconfined-profile` that overrides with Unconfined
+**Task:** In namespace `ex-2-3`, create a pod named `no-clock-change` running image `alpine:3.20` with command `["sleep", "3600"]`, `capabilities.add: ["SYS_TIME"]`, and `seccompProfile.type: RuntimeDefault`.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-2-3 seccomp-levels
+kubectl wait --for=condition=Ready pod/no-clock-change -n ex-2-3 --timeout=60s
 
-# Expected: Running with 2 containers
+kubectl exec -n ex-2-3 no-clock-change -- sh -c 'date -s "2030-01-01" 2>&1 || true' | grep -o 'Operation not permitted'
+# Expected: Operation not permitted
 
-# Check that pod-level profile is RuntimeDefault
-kubectl get pod -n ex-2-3 seccomp-levels -o jsonpath='{.spec.securityContext.seccompProfile.type}'
-
-# Expected: RuntimeDefault
-
-# Check container-level override for unconfined-profile
-kubectl get pod -n ex-2-3 seccomp-levels -o jsonpath='{.spec.containers[?(@.name=="unconfined-profile")].securityContext.seccompProfile.type}'
-
-# Expected: Unconfined
+kubectl exec -n ex-2-3 no-clock-change -- grep "^Seccomp:" /proc/self/status | awk '{print $2}'
+# Expected: 2
 ```
 
 ---
 
-## Level 3: Debugging Filesystem and seccomp Issues
+## Level 3: Debugging
 
 ### Exercise 3.1
 
-**Objective:** An application fails to start due to filesystem issues. Find and fix the problem.
+**Objective:** The container below is crashing because the application cannot write its PID file. Find and fix the problem without disabling `readOnlyRootFilesystem`.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-3-1
-
-kubectl apply -f - <<EOF
+kubectl apply -n ex-3-1 -f - <<'EOF'
 apiVersion: v1
 kind: Pod
 metadata:
-  name: logger-app
-  namespace: ex-3-1
+  name: pidfile-fail
 spec:
   containers:
-  - name: logger
-    image: busybox:1.36
-    command: ["sh", "-c", "echo 'log entry' >> /var/log/app.log && sleep 3600"]
+  - name: app
+    image: alpine:3.20
+    command:
+    - sh
+    - -c
+    - |
+      echo $$ > /var/run/app.pid
+      exec sleep 3600
     securityContext:
       readOnlyRootFilesystem: true
 EOF
 ```
 
-**Task:**
-
-The pod above is failing because it cannot write to /var/log. Diagnose the issue and fix the configuration so the application can write logs while maintaining a read-only root filesystem.
+**Task:** Modify the pod so the PID file write succeeds and the pod reaches `Running`. Keep `readOnlyRootFilesystem: true`; add the minimum writable mount needed.
 
 **Verification:**
 
 ```bash
-# After fixing, verify the pod is running
-kubectl get pod -n ex-3-1 logger-app
+kubectl wait --for=condition=Ready pod/pidfile-fail -n ex-3-1 --timeout=60s
 
-# Expected: Running
+kubectl exec -n ex-3-1 pidfile-fail -- test -s /var/run/app.pid
+echo $?
+# Expected: 0
 
-# Verify the log file was created
-kubectl exec -n ex-3-1 logger-app -- cat /var/log/app.log
+kubectl get pod -n ex-3-1 pidfile-fail -o jsonpath='{.status.containerStatuses[0].restartCount}'
+# Expected: 0
 
-# Expected: log entry
+kubectl get pod -n ex-3-1 pidfile-fail -o jsonpath='{.spec.containers[0].securityContext.readOnlyRootFilesystem}'
+# Expected: true
 ```
 
 ---
 
 ### Exercise 3.2
 
-**Objective:** A pod is not starting due to seccomp restrictions. Find and fix the issue.
+**Objective:** The container below is failing to start. Identify whether the cause is seccomp, capabilities, or filesystem, and apply the minimal fix.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-3-2
-
-# First, create a restrictive seccomp profile on the kind node
-KIND_NODE=$(nerdctl ps --format '{{.Names}}' | grep kind-control-plane)
-nerdctl exec $KIND_NODE mkdir -p /var/lib/kubelet/seccomp/profiles
-
-cat > /tmp/restrictive.json << 'EOF'
+cat <<'EOF' > /tmp/deny-unshare.json
 {
-  "defaultAction": "SCMP_ACT_ERRNO",
-  "architectures": ["SCMP_ARCH_X86_64"],
+  "defaultAction": "SCMP_ACT_ALLOW",
   "syscalls": [
     {
-      "names": ["exit", "exit_group"],
-      "action": "SCMP_ACT_ALLOW"
+      "names": ["unshare", "setns", "clone"],
+      "action": "SCMP_ACT_ERRNO"
     }
   ]
 }
 EOF
+nerdctl cp /tmp/deny-unshare.json kind-control-plane:/var/lib/kubelet/seccomp/deny-unshare.json
 
-nerdctl cp /tmp/restrictive.json $KIND_NODE:/var/lib/kubelet/seccomp/profiles/restrictive.json
-
-kubectl apply -f - <<EOF
+kubectl apply -n ex-3-2 -f - <<'EOF'
 apiVersion: v1
 kind: Pod
 metadata:
-  name: restricted-pod
-  namespace: ex-3-2
+  name: blocked-syscall
 spec:
   containers:
   - name: app
-    image: busybox:1.36
+    image: alpine:3.20
     command: ["sleep", "3600"]
     securityContext:
       seccompProfile:
         type: Localhost
-        localhostProfile: profiles/restrictive.json
+        localhostProfile: deny-unshare.json
 EOF
 ```
 
-**Task:**
-
-The pod above uses a very restrictive custom seccomp profile that only allows exit syscalls. The pod cannot run because essential syscalls are blocked. Fix the pod configuration to use a less restrictive profile that allows the application to run.
+**Task:** The pod never reaches Ready; it fails with a container-create error. Identify the reason and adjust the seccomp profile field so the pod starts successfully while still blocking `unshare`. The minimal correct answer is not to remove the profile; adjust the profile JSON (on the node) so that the kernel-level clone operation required to start an `alpine:3.20` process is allowed, then reapply. Hint: container start uses `clone` heavily.
 
 **Verification:**
 
 ```bash
-# After fixing, verify the pod is running
-kubectl get pod -n ex-3-2 restricted-pod
+kubectl wait --for=condition=Ready pod/blocked-syscall -n ex-3-2 --timeout=90s
 
-# Expected: Running (not Error or CrashLoopBackOff)
+kubectl get pod -n ex-3-2 blocked-syscall -o jsonpath='{.status.phase}'
+# Expected: Running
 
-# Verify commands work
-kubectl exec -n ex-3-2 restricted-pod -- echo "working"
+kubectl exec -n ex-3-2 blocked-syscall -- sh -c 'unshare --user echo hi 2>&1 || true' | grep -o 'Operation not permitted'
+# Expected: Operation not permitted
 
-# Expected: working
+kubectl get pod -n ex-3-2 blocked-syscall -o jsonpath='{.spec.containers[0].securityContext.seccompProfile.localhostProfile}'
+# Expected: deny-unshare.json
 ```
 
 ---
 
 ### Exercise 3.3
 
-**Objective:** A multi-container pod has filesystem issues. Find and fix them.
+**Objective:** The container below is stuck at `CreateContainerError`. Diagnose the reason and fix.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-3-3
-
-kubectl apply -f - <<EOF
+kubectl apply -n ex-3-3 -f - <<'EOF'
 apiVersion: v1
 kind: Pod
 metadata:
-  name: data-processor
-  namespace: ex-3-3
+  name: profile-missing
 spec:
   containers:
-  - name: writer
-    image: busybox:1.36
-    command: ["sh", "-c", "echo 'data' > /data/input.txt && sleep 3600"]
+  - name: app
+    image: alpine:3.20
+    command: ["sleep", "3600"]
     securityContext:
-      readOnlyRootFilesystem: true
-    volumeMounts:
-    - name: shared
-      mountPath: /data
-  - name: reader
-    image: busybox:1.36
-    command: ["sh", "-c", "sleep 5 && cat /data/input.txt && echo 'done' > /output/result.txt && sleep 3600"]
-    securityContext:
-      readOnlyRootFilesystem: true
-    volumeMounts:
-    - name: shared
-      mountPath: /data
-  volumes:
-  - name: shared
-    emptyDir: {}
+      seccompProfile:
+        type: Localhost
+        localhostProfile: nonexistent-profile.json
 EOF
 ```
 
-**Task:**
-
-The pod above has two containers sharing data. The writer can write to /data, but the reader cannot write its output to /output because it is on the read-only root filesystem. Fix the configuration so both containers can perform their tasks.
+**Task:** Adjust the pod spec so it reaches `Running`. You may keep the `Localhost` type (fix the profile reference or create the profile) or switch to a different type.
 
 **Verification:**
 
 ```bash
-# After fixing, verify the pod is running
-kubectl get pod -n ex-3-3 data-processor
+kubectl wait --for=condition=Ready pod/profile-missing -n ex-3-3 --timeout=60s
 
-# Expected: Both containers Running
-
-# Wait for data processing
-sleep 10
-
-# Verify the reader wrote output
-kubectl exec -n ex-3-3 data-processor -c reader -- cat /output/result.txt
-
-# Expected: done
+kubectl get pod -n ex-3-3 profile-missing -o jsonpath='{.status.phase}'
+# Expected: Running
 ```
 
 ---
@@ -418,184 +321,84 @@ kubectl exec -n ex-3-3 data-processor -c reader -- cat /output/result.txt
 
 ### Exercise 4.1
 
-**Objective:** Create and apply a custom seccomp profile that allows basic operations.
+**Objective:** Write a Localhost profile that blocks `chmod` and `chown`, copy it to the kind node, and apply it.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-4-1
-
-# Create a custom profile that allows common syscalls
-cat > /tmp/basic-profile.json << 'EOF'
-{
-  "defaultAction": "SCMP_ACT_ERRNO",
-  "architectures": ["SCMP_ARCH_X86_64", "SCMP_ARCH_X86", "SCMP_ARCH_X32"],
-  "syscalls": [
-    {
-      "names": [
-        "read", "write", "open", "close", "stat", "fstat", "lstat",
-        "poll", "lseek", "mmap", "mprotect", "munmap", "brk",
-        "rt_sigaction", "rt_sigprocmask", "rt_sigreturn", "ioctl",
-        "pread64", "pwrite64", "readv", "writev", "access", "pipe",
-        "select", "sched_yield", "mremap", "msync", "mincore", "madvise",
-        "dup", "dup2", "pause", "nanosleep", "getpid", "getuid", "getgid",
-        "geteuid", "getegid", "getppid", "getpgrp", "setsid", "getgroups",
-        "uname", "fcntl", "flock", "fsync", "fdatasync", "truncate",
-        "ftruncate", "getdents", "getcwd", "chdir", "mkdir", "rmdir",
-        "creat", "unlink", "readlink", "chmod", "fchmod", "chown", "fchown",
-        "umask", "gettimeofday", "getrlimit", "sysinfo", "times", "ptrace",
-        "syslog", "capget", "capset", "setuid", "setgid", "setpgid",
-        "setreuid", "setregid", "setgroups", "setresuid", "setresgid",
-        "getresuid", "getresgid", "getpgid", "setfsuid", "setfsgid",
-        "getsid", "prctl", "arch_prctl", "clock_gettime", "clock_getres",
-        "clock_nanosleep", "exit_group", "epoll_wait", "epoll_ctl",
-        "tgkill", "openat", "mkdirat", "fchownat", "newfstatat",
-        "unlinkat", "renameat", "fchmodat", "faccessat", "pselect6",
-        "ppoll", "set_robust_list", "get_robust_list", "epoll_pwait",
-        "eventfd2", "epoll_create1", "dup3", "pipe2", "getrandom",
-        "execve", "wait4", "clone", "fork", "vfork", "exit", "futex",
-        "set_tid_address", "getdents64", "restart_syscall", "prlimit64",
-        "mlock", "munlock", "getitimer", "setitimer", "alarm", "sigaltstack",
-        "statfs", "fstatfs", "kill"
-      ],
-      "action": "SCMP_ACT_ALLOW"
-    }
-  ]
-}
-EOF
-
-# Copy to kind node
-KIND_NODE=$(nerdctl ps --format '{{.Names}}' | grep kind-control-plane)
-nerdctl exec $KIND_NODE mkdir -p /var/lib/kubelet/seccomp/profiles
-nerdctl cp /tmp/basic-profile.json $KIND_NODE:/var/lib/kubelet/seccomp/profiles/basic.json
 ```
 
-**Task:**
-
-Create a pod named `custom-seccomp` in namespace `ex-4-1` using busybox:1.36 with command `["sleep", "3600"]`. Apply the custom seccomp profile at profiles/basic.json.
+**Task:** Create a JSON file named `no-perm-change.json` with `defaultAction: SCMP_ACT_ALLOW` and an entry denying `chmod`, `fchmod`, `fchmodat`, `chown`, `fchown`, `lchown`, `fchownat`. Copy it to `/var/lib/kubelet/seccomp/no-perm-change.json` on `kind-control-plane`. Then in namespace `ex-4-1`, create a pod named `perm-locked` running image `alpine:3.20` with command `["sleep", "3600"]` and `seccompProfile.type: Localhost` referencing your profile.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-4-1 custom-seccomp
+kubectl wait --for=condition=Ready pod/perm-locked -n ex-4-1 --timeout=60s
 
-# Expected: Running
+kubectl exec -n ex-4-1 perm-locked -- sh -c 'touch /tmp/probe && chmod 755 /tmp/probe 2>&1 || true' | grep -o 'Operation not permitted'
+# Expected: Operation not permitted
 
-# Verify basic operations work
-kubectl exec -n ex-4-1 custom-seccomp -- ls /
-kubectl exec -n ex-4-1 custom-seccomp -- echo "test"
+kubectl exec -n ex-4-1 perm-locked -- ls -la /tmp/probe
+# Expected: line with -rw-r--r-- (original umask, because chmod was blocked)
 
-# Expected: Both commands succeed
-
-# Check the seccomp profile is Localhost
-kubectl get pod -n ex-4-1 custom-seccomp -o jsonpath='{.spec.containers[0].securityContext.seccompProfile.type}'
-
-# Expected: Localhost
+kubectl get pod -n ex-4-1 perm-locked -o jsonpath='{.spec.containers[0].securityContext.seccompProfile.localhostProfile}'
+# Expected: no-perm-change.json
 ```
 
 ---
 
 ### Exercise 4.2
 
-**Objective:** Test a profile that blocks specific syscalls.
+**Objective:** Write a profile that denies by default but allows the syscalls needed to run `sleep`. Iterate until the pod stays `Running`.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-4-2
-
-# Create a profile that blocks network syscalls
-cat > /tmp/no-network.json << 'EOF'
-{
-  "defaultAction": "SCMP_ACT_ALLOW",
-  "architectures": ["SCMP_ARCH_X86_64", "SCMP_ARCH_X86", "SCMP_ARCH_X32"],
-  "syscalls": [
-    {
-      "names": ["socket", "connect", "accept", "bind", "listen", "sendto", "recvfrom", "sendmsg", "recvmsg"],
-      "action": "SCMP_ACT_ERRNO"
-    }
-  ]
-}
-EOF
-
-# Copy to kind node
-KIND_NODE=$(nerdctl ps --format '{{.Names}}' | grep kind-control-plane)
-nerdctl cp /tmp/no-network.json $KIND_NODE:/var/lib/kubelet/seccomp/profiles/no-network.json
 ```
 
-**Task:**
+**Task:** Create `sleep-only.json` on the kind node at `/var/lib/kubelet/seccomp/sleep-only.json` with `defaultAction: SCMP_ACT_ERRNO` and an `SCMP_ACT_ALLOW` list that is sufficient to run `alpine:3.20`'s `sleep 3600`. In namespace `ex-4-2`, create a pod named `sleep-only` using this profile and command `["sleep", "3600"]`.
 
-Create a pod named `no-network-pod` in namespace `ex-4-2` using busybox:1.36 with command `["sleep", "3600"]`. Apply the custom seccomp profile at profiles/no-network.json that blocks network syscalls.
+**Hint:** `sleep` is part of busybox under `alpine:3.20`. Typical syscalls needed include `read`, `write`, `close`, `openat`, `fstat`, `lstat`, `newfstatat`, `mmap`, `mprotect`, `munmap`, `brk`, `rt_sigaction`, `rt_sigprocmask`, `rt_sigreturn`, `arch_prctl`, `set_tid_address`, `set_robust_list`, `rseq`, `getrandom`, `execve`, `clone`, `clone3`, `wait4`, `exit`, `exit_group`, `nanosleep`, `clock_nanosleep`, `clock_gettime`, `prlimit64`, `fcntl`, `getpid`, `futex`, `uname`, `tgkill`.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-4-2 no-network-pod
+kubectl wait --for=condition=Ready pod/sleep-only -n ex-4-2 --timeout=90s
 
+kubectl get pod -n ex-4-2 sleep-only -o jsonpath='{.status.phase}'
 # Expected: Running
 
-# Non-network operations should work
-kubectl exec -n ex-4-2 no-network-pod -- ls /
-kubectl exec -n ex-4-2 no-network-pod -- echo "test"
-
-# Expected: Both succeed
-
-# Network operations should be blocked
-kubectl exec -n ex-4-2 no-network-pod -- wget -q -O - http://kubernetes.default.svc 2>&1 | head -1
-
-# Expected: Error related to network operation being blocked
+kubectl exec -n ex-4-2 sleep-only -- grep "^Seccomp_filters:" /proc/self/status | awk '{print $2}'
+# Expected: 1
 ```
 
 ---
 
 ### Exercise 4.3
 
-**Objective:** Iterate on a seccomp profile to add required syscalls.
+**Objective:** Apply a profile at pod level and observe that it applies to every container.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-4-3
-
-# Create an intentionally incomplete profile
-cat > /tmp/incomplete.json << 'EOF'
-{
-  "defaultAction": "SCMP_ACT_ERRNO",
-  "architectures": ["SCMP_ARCH_X86_64", "SCMP_ARCH_X86", "SCMP_ARCH_X32"],
-  "syscalls": [
-    {
-      "names": [
-        "read", "write", "close", "nanosleep", "exit_group"
-      ],
-      "action": "SCMP_ACT_ALLOW"
-    }
-  ]
-}
-EOF
-
-# Copy to kind node
-KIND_NODE=$(nerdctl ps --format '{{.Names}}' | grep kind-control-plane)
-nerdctl cp /tmp/incomplete.json $KIND_NODE:/var/lib/kubelet/seccomp/profiles/incomplete.json
 ```
 
-**Task:**
-
-The profile at profiles/incomplete.json is missing syscalls needed for the ls command. Create a new profile that includes the missing syscalls (at least: openat, getdents64, fstat, close, write, exit_group). Copy it to the kind node as profiles/fixed.json and create a pod named `fixed-profile` that uses it.
+**Task:** Reuse the `sleep-only.json` profile from 4.2. In namespace `ex-4-3`, create a pod named `multi-container` with two containers, both image `alpine:3.20` with command `["sleep", "3600"]`. Apply `seccompProfile.type: Localhost`, `localhostProfile: sleep-only.json` at the pod level so both containers inherit it.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-4-3 fixed-profile
+kubectl wait --for=condition=Ready pod/multi-container -n ex-4-3 --timeout=60s
 
-# Expected: Running
+kubectl exec -n ex-4-3 multi-container -c 0 -- grep "^Seccomp:" /proc/self/status | awk '{print $2}' 2>/dev/null || \
+  kubectl exec -n ex-4-3 multi-container -c "$(kubectl get pod -n ex-4-3 multi-container -o jsonpath='{.spec.containers[0].name}')" -- grep "^Seccomp:" /proc/self/status | awk '{print $2}'
+# Expected: 2
 
-# ls command should work
-kubectl exec -n ex-4-3 fixed-profile -- ls /
-
-# Expected: Directory listing
+kubectl get pod -n ex-4-3 multi-container -o jsonpath='{.spec.securityContext.seccompProfile.localhostProfile}'
+# Expected: sleep-only.json
 ```
 
 ---
@@ -604,7 +407,7 @@ kubectl exec -n ex-4-3 fixed-profile -- ls /
 
 ### Exercise 5.1
 
-**Objective:** Configure a pod with all recommended security controls.
+**Objective:** Construct a single pod spec that satisfies every security-context field in Pod Security Admission's Restricted profile: `runAsNonRoot: true`, explicit `runAsUser`/`runAsGroup`, `allowPrivilegeEscalation: false`, `capabilities.drop: [ALL]` with minimal `add`, `seccompProfile.type: RuntimeDefault`, `readOnlyRootFilesystem: true`, and every writable path explicitly mounted.
 
 **Setup:**
 
@@ -612,127 +415,118 @@ kubectl exec -n ex-4-3 fixed-profile -- ls /
 kubectl create namespace ex-5-1
 ```
 
-**Task:**
-
-Create a pod named `fully-hardened` in namespace `ex-5-1` using busybox:1.36 with command `["sleep", "3600"]`. Apply all recommended security controls:
-
-1. Run as non-root user (UID 1000, GID 1000)
-2. Enforce runAsNonRoot validation
-3. Set fsGroup for volume access (GID 2000)
-4. Enable readOnlyRootFilesystem
-5. Prevent privilege escalation
-6. Drop all capabilities
-7. Apply RuntimeDefault seccomp profile
-8. Mount emptyDir at /tmp for writable storage
+**Task:** In namespace `ex-5-1`, create a pod named `fully-hardened` that runs `nginx:1.25` and serves HTTP on port 8080 using a ConfigMap-provided nginx config. Include every field listed above. The pod must reach `Running`, serve HTTP on port 8080 inside the container, and fail closed on any hardening-gate check.
 
 **Verification:**
 
 ```bash
-# Verify the pod is running
-kubectl get pod -n ex-5-1 fully-hardened
+kubectl wait --for=condition=Ready pod/fully-hardened -n ex-5-1 --timeout=60s
 
-# Expected: Running
+kubectl exec -n ex-5-1 fully-hardened -- wget -qO- http://localhost:8080
+# Expected: a non-empty response body
 
-# Check user identity
-kubectl exec -n ex-5-1 fully-hardened -- id
+kubectl exec -n ex-5-1 fully-hardened -- id -u
+# Expected: a non-zero UID
 
-# Expected: uid=1000 gid=1000 groups=1000,2000
+kubectl exec -n ex-5-1 fully-hardened -- grep "^NoNewPrivs:" /proc/self/status | awk '{print $2}'
+# Expected: 1
 
-# Check no capabilities
-kubectl exec -n ex-5-1 fully-hardened -- cat /proc/1/status | grep CapEff
+kubectl exec -n ex-5-1 fully-hardened -- grep "^Seccomp:" /proc/self/status | awk '{print $2}'
+# Expected: 2
 
-# Expected: CapEff: 0000000000000000
-
-# Check no_new_privs
-kubectl exec -n ex-5-1 fully-hardened -- cat /proc/1/status | grep NoNewPrivs
-
-# Expected: NoNewPrivs: 1
-
-# Test read-only root (should fail)
-kubectl exec -n ex-5-1 fully-hardened -- touch /home/test
-
+kubectl exec -n ex-5-1 fully-hardened -- sh -c 'echo blocked > /usr/share/nginx/blocker 2>&1 || true' | grep -o 'Read-only file system'
 # Expected: Read-only file system
 
-# Test writable /tmp (should succeed)
-kubectl exec -n ex-5-1 fully-hardened -- touch /tmp/test
-
-# Expected: Success
+kubectl get pod -n ex-5-1 fully-hardened -o jsonpath='{.spec.containers[0].securityContext.capabilities.drop[0]}'
+# Expected: ALL
 ```
 
 ---
 
 ### Exercise 5.2
 
-**Objective:** Debug an application failing due to multiple security constraints.
+**Objective:** Diagnose and fix a compound failure where multiple security-context layers interact.
 
 **Setup:**
 
 ```bash
 kubectl create namespace ex-5-2
 
-kubectl apply -f - <<EOF
+cat <<'EOF' > /tmp/restricted-demo.json
+{
+  "defaultAction": "SCMP_ACT_ALLOW",
+  "syscalls": [
+    {
+      "names": ["chmod", "fchmod", "fchmodat", "chown", "fchown", "lchown", "fchownat", "clock_settime"],
+      "action": "SCMP_ACT_ERRNO"
+    }
+  ]
+}
+EOF
+nerdctl cp /tmp/restricted-demo.json kind-control-plane:/var/lib/kubelet/seccomp/restricted-demo.json
+
+kubectl apply -n ex-5-2 -f - <<'EOF'
 apiVersion: v1
 kind: Pod
 metadata:
-  name: secure-app
-  namespace: ex-5-2
+  name: cascade
 spec:
   securityContext:
-    runAsUser: 1000
     runAsNonRoot: true
+    runAsUser: 1000
+    seccompProfile:
+      type: Localhost
+      localhostProfile: restricted-demo.json
   containers:
   - name: app
-    image: busybox:1.36
-    command: ["sh", "-c", "ping -c 1 127.0.0.1 && echo 'result' > /tmp/output.txt && sleep 3600"]
+    image: alpine:3.20
+    command:
+    - sh
+    - -c
+    - |
+      echo starting
+      chmod 600 /etc/passwd 2>&1 || echo "chmod failed"
+      echo $$ > /var/run/app.pid 2>&1 || echo "pid write failed"
+      touch /data/metric 2>&1 || echo "data write failed"
+      exec sleep 3600
     securityContext:
       readOnlyRootFilesystem: true
       allowPrivilegeEscalation: false
       capabilities:
         drop: ["ALL"]
-      seccompProfile:
-        type: RuntimeDefault
+    volumeMounts:
+    - name: data
+      mountPath: /data
+  volumes:
+  - name: data
+    emptyDir: {}
 EOF
 ```
 
-**Task:**
-
-The pod above has multiple security constraints that are causing it to fail. The application needs to:
-1. Ping localhost (requires NET_RAW capability)
-2. Write output to /tmp (blocked by read-only root filesystem)
-
-Fix the configuration while maintaining as much security as possible.
+**Task:** Make the pod reach `Running`, successfully write the PID file, successfully write `/data/metric`, and have the `chmod /etc/passwd` command fail (because that is the intended seccomp block). Preserve every hardening field. The intended failure is only the `chmod /etc/passwd`. Adjust mounts, identity, or other fields as needed so the other two writes succeed.
 
 **Verification:**
 
 ```bash
-# After fixing, verify the pod is running
-kubectl get pod -n ex-5-2 secure-app
+kubectl wait --for=condition=Ready pod/cascade -n ex-5-2 --timeout=90s
 
-# Expected: Running
+kubectl logs -n ex-5-2 cascade | head -n 5
+# Expected: starts with "starting", then "chmod failed", then NOT "pid write failed" or "data write failed"
 
-# Verify ping worked (check logs)
-kubectl logs -n ex-5-2 secure-app
+kubectl exec -n ex-5-2 cascade -- test -s /var/run/app.pid
+echo $?
+# Expected: 0
 
-# Expected: Ping output showing successful ping
-
-# Verify output was written
-kubectl exec -n ex-5-2 secure-app -- cat /tmp/output.txt
-
-# Expected: result
-
-# Verify security is still in place
-kubectl exec -n ex-5-2 secure-app -- id
-# Expected: uid=1000
-
-kubectl exec -n ex-5-2 secure-app -- cat /proc/1/status | grep NoNewPrivs
-# Expected: NoNewPrivs: 1
+kubectl exec -n ex-5-2 cascade -- test -e /data/metric
+echo $?
+# Expected: 0
 ```
 
 ---
 
 ### Exercise 5.3
 
-**Objective:** Design a comprehensive security strategy for a production-like deployment.
+**Objective:** Design a production-style, two-container pod that satisfies Restricted and has a shared metrics volume; write the seccomp profile, copy it to the node, and apply.
 
 **Setup:**
 
@@ -740,92 +534,52 @@ kubectl exec -n ex-5-2 secure-app -- cat /proc/1/status | grep NoNewPrivs
 kubectl create namespace ex-5-3
 ```
 
-**Task:**
-
-Design and implement a pod named `production-app` in namespace `ex-5-3` that represents a secure production deployment. The pod should have:
-
-1. A main container `api` using nginx:1.25 that:
-   - Runs as user 101 (nginx user)
-   - Has read-only root filesystem
-   - Has writable directories for /tmp, /var/cache/nginx, /var/run
-   - Drops all capabilities except NET_BIND_SERVICE
-   - Has RuntimeDefault seccomp profile
-   - Prevents privilege escalation
-
-2. A sidecar container `logger` using busybox:1.36 that:
-   - Runs as user 1000
-   - Has read-only root filesystem
-   - Writes logs to a shared volume at /logs
-   - Drops all capabilities
-   - Has RuntimeDefault seccomp profile
-   - Runs command: `["sh", "-c", "while true; do echo 'heartbeat' >> /logs/heartbeat.log; sleep 10; done"]`
-
-3. Both containers share a log volume with fsGroup for access
+**Task:** In namespace `ex-5-3`, create a pod named `service-and-metrics` with two containers. `service` runs `nginx:1.25` on port 8080, writes metrics to `/shared/service.ok` every 5 seconds, and satisfies Restricted. `exporter` runs `alpine:3.20`, reads from `/shared/service.ok` every 5 seconds and appends a timestamped summary to `/shared/export.log`, and satisfies Restricted. Both containers use a Localhost seccomp profile named `service-locked.json` you create (default allow, deny `clock_settime`, `unshare`, `bpf`, `kexec_load`). Write the profile to the kind node before applying the pod.
 
 **Verification:**
 
 ```bash
-# Verify both containers are running
-kubectl get pod -n ex-5-3 production-app
+kubectl wait --for=condition=Ready pod/service-and-metrics -n ex-5-3 --timeout=90s
 
-# Expected: 2/2 Running
+kubectl exec -n ex-5-3 service-and-metrics -c service -- id -u
+# Expected: non-zero
 
-# Verify api container security
-kubectl exec -n ex-5-3 production-app -c api -- id
-# Expected: uid=101
+kubectl exec -n ex-5-3 service-and-metrics -c exporter -- id -u
+# Expected: non-zero
 
-kubectl exec -n ex-5-3 production-app -c api -- cat /proc/1/status | grep NoNewPrivs
-# Expected: NoNewPrivs: 1
+sleep 10
+kubectl exec -n ex-5-3 service-and-metrics -c exporter -- wc -l /shared/export.log | awk '{print $1}'
+# Expected: >= 1
 
-# Verify api has only NET_BIND_SERVICE capability
-kubectl exec -n ex-5-3 production-app -c api -- cat /proc/1/status | grep CapEff
-# Expected: CapEff should show only NET_BIND_SERVICE bit
+kubectl exec -n ex-5-3 service-and-metrics -c service -- wget -qO- http://localhost:8080 | head -c 15
+# Expected: <!DOCTYPE html
 
-# Verify logger container security
-kubectl exec -n ex-5-3 production-app -c logger -- id
-# Expected: uid=1000
+kubectl exec -n ex-5-3 service-and-metrics -c service -- grep "^Seccomp_filters:" /proc/self/status | awk '{print $2}'
+# Expected: 1
 
-kubectl exec -n ex-5-3 production-app -c logger -- cat /proc/1/status | grep CapEff
-# Expected: CapEff: 0000000000000000
-
-# Wait for logger to write
-sleep 15
-
-# Verify shared log volume works
-kubectl exec -n ex-5-3 production-app -c api -- cat /logs/heartbeat.log
-# Expected: heartbeat entries
-
-# Verify read-only root
-kubectl exec -n ex-5-3 production-app -c api -- touch /etc/test
-# Expected: Read-only file system
+kubectl get pod -n ex-5-3 service-and-metrics -o jsonpath='{.spec.containers[0].securityContext.readOnlyRootFilesystem}'
+# Expected: true
 ```
 
 ---
 
 ## Cleanup
 
-Delete all exercise namespaces:
+Remove every exercise namespace and the custom profile files from the node.
 
 ```bash
-kubectl delete namespace ex-1-1 ex-1-2 ex-1-3 ex-2-1 ex-2-2 ex-2-3 ex-3-1 ex-3-2 ex-3-3 ex-4-1 ex-4-2 ex-4-3 ex-5-1 ex-5-2 ex-5-3
+for ns in ex-1-1 ex-1-2 ex-1-3 ex-2-1 ex-2-2 ex-2-3 ex-3-1 ex-3-2 ex-3-3 \
+         ex-4-1 ex-4-2 ex-4-3 ex-5-1 ex-5-2 ex-5-3; do
+  kubectl delete namespace "$ns" --ignore-not-found
+done
+
+nerdctl exec kind-control-plane sh -c 'rm -f /var/lib/kubelet/seccomp/deny-unshare.json \
+                                              /var/lib/kubelet/seccomp/no-perm-change.json \
+                                              /var/lib/kubelet/seccomp/sleep-only.json \
+                                              /var/lib/kubelet/seccomp/restricted-demo.json \
+                                              /var/lib/kubelet/seccomp/service-locked.json' || true
 ```
-
-Clean up custom seccomp profiles from the kind node:
-
-```bash
-KIND_NODE=$(nerdctl ps --format '{{.Names}}' | grep kind-control-plane)
-nerdctl exec $KIND_NODE rm -rf /var/lib/kubelet/seccomp/profiles
-```
-
----
 
 ## Key Takeaways
 
-1. **readOnlyRootFilesystem** prevents writes to the container filesystem, limiting attack impact
-2. **emptyDir volumes** provide writable storage when using read-only root
-3. **RuntimeDefault seccomp** is the recommended profile for most applications
-4. **Localhost seccomp profiles** allow custom syscall filtering using JSON files on the node
-5. Custom profiles live in /var/lib/kubelet/seccomp/ on the node
-6. **Defense in depth** combines user/group, capabilities, filesystem, and seccomp controls
-7. Always start with restrictive settings and add exceptions as needed
-8. Test security configurations thoroughly before deploying to production
+`readOnlyRootFilesystem: true` makes the rootfs immutable; `emptyDir` (or another writable volume type) provides any path that still needs to be writable. `Read-only file system` is the exact error when a write hits the protected rootfs. seccomp `RuntimeDefault` is the containerd-provided safe profile; `Localhost` uses a JSON file at `/var/lib/kubelet/seccomp/<name>` on the scheduled node; `Unconfined` disables filtering. A missing Localhost profile file blocks the pod from starting. The Restricted-compatible baseline combines identity from assignment 1 (`runAsNonRoot`, explicit UID/GID, `fsGroup`), capabilities from assignment 2 (`drop: ALL`, minimal `add`, `allowPrivilegeEscalation: false`), and filesystem/seccomp from this assignment (`readOnlyRootFilesystem: true`, `seccompProfile.type: RuntimeDefault`). Debugging order for "container won't start or operation fails": capabilities first (decode `CapEff`), filesystem second (try a write to the failing path, look for `EROFS`), seccomp third (read `Seccomp` mode, run the failing program under `strace` to find the blocked syscall).
