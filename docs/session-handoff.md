@@ -50,23 +50,14 @@ Look at `docs/remediation-plan.md` Phase 4. Tasks that are `Not started` are rea
 
 1. **Thin regenerations** (quality uplift; existing content works but does not meet new gates)
    - `security-contexts/assignment-1`, `-2`, `-3` (P4.2)
-   - `storage/assignment-1`, `-2`, `-3` (P4.3)
+   - `storage/assignment-1`, `-2`, `-3` (P4.3; also addresses the duplicated-YAML U7 finding)
 
 2. **Ingress controller swap** (P4.9 through P4.13; largest per-assignment, new controllers per D8)
-
-3. **Regenerate thin existing** (quality uplift; existing content works but does not meet new gates)
-   - `security-contexts/assignment-1,2,3` (P4.2)
-   - `storage/assignment-1,2,3` (P4.3)
-   - `cluster-lifecycle/assignment-1` homework only (P4.6)
-   - `crds-and-operators/assignment-1` Level 1 only (P4.7)
-   - `troubleshooting/assignment-1` Exercise 1.2 only (P4.8)
-
-4. **Ingress controller swap** (largest per-assignment; new controllers per D8)
-   - `ingress-and-gateway-api/assignment-1` with Traefik (P4.9)
-   - `ingress-and-gateway-api/assignment-2` with HAProxy Ingress (P4.10)
-   - `ingress-and-gateway-api/assignment-3` with Envoy Gateway (P4.11)
-   - `ingress-and-gateway-api/assignment-4` with NGINX Gateway Fabric (P4.12)
-   - `ingress-and-gateway-api/assignment-5` with Ingress2Gateway migration (P4.13)
+   - `ingress-and-gateway-api/assignment-1` with Traefik v3.6.13 (P4.9)
+   - `ingress-and-gateway-api/assignment-2` with HAProxy Ingress v3.2.6 (P4.10)
+   - `ingress-and-gateway-api/assignment-3` with Envoy Gateway v1.7.2 (P4.11)
+   - `ingress-and-gateway-api/assignment-4` with NGINX Gateway Fabric v2.5.1 (P4.12)
+   - `ingress-and-gateway-api/assignment-5` with Ingress2Gateway CLI v1.0.0 (P4.13)
 
 ### Step 3: Follow the generation workflow
 

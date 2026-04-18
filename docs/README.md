@@ -40,7 +40,7 @@ As of 2026-04-18:
   `autoscaling/`, `statefulsets/`, `admission-controllers/`, and
   `pod-security/`. The `ingress-and-gateway-api/` topic is restructured from
   three to five assignments.
-- **Phase 4 (Content generation and regeneration):** In progress (2 of ~19 assignments complete as of 2026-04-18). `jobs-and-cronjobs/assignment-1` and `pod-security/assignment-1` content generated as reference quality-bar examples for remaining Phase 4 work. See `session-handoff.md` for the priority queue and resume instructions.
+- **Phase 4 (Content generation and regeneration):** In progress. Eight full assignments content-complete (`jobs-and-cronjobs/assignment-1`, `pod-security/assignment-1`, `rbac/assignment-2`, `statefulsets/assignment-1`, `troubleshooting/assignment-2`, `autoscaling/assignment-1`, `admission-controllers/assignment-1`, `troubleshooting/assignment-4`). Three surgical regens complete (P4.6 cluster-lifecycle/assignment-1 homework, P4.7 crds-and-operators/assignment-1 Level 1, P4.8 troubleshooting/assignment-1 Exercise 1.2). All five new-topic curriculum gaps (G1, G2, G3, G5, G6) resolved; all stub READMEs (P4.1, P4.4, P4.5) regenerated. Remaining Phase 4 work: thin regens for `security-contexts/` (P4.2; three assignments) and `storage/` (P4.3; three assignments), plus the ingress controller swap (P4.9 through P4.13; five assignments). See `session-handoff.md` for the priority queue and resume instructions.
 - **Phase 5 (Technique weaving):** Not started.
 - **Phase 6 (Verification and housekeeping):** Not started.
 
