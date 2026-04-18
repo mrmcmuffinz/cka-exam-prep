@@ -10,8 +10,9 @@ being made and to track progress against a coherent plan.
 | File | Purpose |
 |---|---|
 | `README.md` | This index. |
-| `audit-findings.md` | Full audit of the repository across organization, usability, explainability, and CKA curriculum coverage. Captures the evidence behind each finding with file paths and line numbers. |
-| `remediation-plan.md` | Phased plan for addressing the audit findings. Every task has an explicit status that is updated as work progresses. Includes the key decisions made during planning. |
+| `audit-findings.md` | Full audit of the repository across organization, usability, explainability, and CKA curriculum coverage. Each finding has a status line showing whether it is resolved, partially resolved, or pending. |
+| `remediation-plan.md` | Phased plan for addressing the audit findings. Every task has an explicit status that is updated as work progresses. Includes the key decisions made during planning and a progress log. |
+| `cluster-setup.md` | Single source of truth for kind cluster configurations and the component version matrix. Every assignment README and tutorial references sections of this document by anchor rather than inlining cluster commands. |
 
 ## Origin
 
@@ -20,8 +21,28 @@ audit of the repository. The audit read the infrastructure files (devcontainer,
 skills, reference files), all 14 topic-level READMEs, both hand-crafted series
 (pods 1-7 and rbac/assignment-1) in depth, and representative assignments from
 each of the 13 skill-generated topics. The conversation that produced this
-plan is preserved in the two documents below in enough detail to resume work
+plan is preserved in the documents above in enough detail to resume work
 in a later session without losing context.
+
+## Phase completion status
+
+As of 2026-04-18:
+
+- **Phase 1 (Infrastructure fixes):** Complete.
+- **Phase 2 (Skill asset strengthening):** Complete. `base-template.md` and
+  `k8s-homework-generator/SKILL.md` now enforce hard gates for README shape,
+  narrative prose, resource documentation, debugging answer structure, Common
+  Mistakes, verification rigor, and no reading-only tasks.
+- **Phase 3 (Scope new topics and expand ingress):** Complete. Five new topic
+  READMEs plus one prompt each are in place for `jobs-and-cronjobs/`,
+  `autoscaling/`, `statefulsets/`, `admission-controllers/`, and
+  `pod-security/`. The `ingress-and-gateway-api/` topic is restructured from
+  three to five assignments.
+- **Phase 4 (Content generation and regeneration):** Not started.
+- **Phase 5 (Technique weaving):** Not started.
+- **Phase 6 (Verification and housekeeping):** Not started.
+
+See `remediation-plan.md` for task-level detail.
 
 ## How to use this
 

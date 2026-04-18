@@ -14,13 +14,15 @@ The assignments in this repository are organized to cover all five CKA exam doma
 
 | Domain | Weight | Exercise Directories |
 |---|---|---|
-| Cluster Architecture, Installation & Configuration | 25% | rbac, cluster-lifecycle, helm, kustomize, crds-and-operators, tls-and-certificates |
-| Workloads & Scheduling | 15% | pods (assignments 1-7), security-contexts |
-| Services & Networking | 20% | services, ingress-and-gateway-api, coredns, network-policies |
+| Cluster Architecture, Installation & Configuration | 25% | rbac, cluster-lifecycle, helm, kustomize, crds-and-operators, tls-and-certificates, admission-controllers |
+| Workloads & Scheduling | 15% | pods (1-7), security-contexts, jobs-and-cronjobs, autoscaling, statefulsets, admission-controllers, pod-security |
+| Services & Networking | 20% | services, ingress-and-gateway-api (1-5), coredns, network-policies |
 | Storage | 10% | storage |
-| Troubleshooting | 30% | troubleshooting (assignments 1-4) |
+| Troubleshooting | 30% | troubleshooting (1-4) |
 
-Security topics are distributed across domains rather than grouped into a single series, matching how the CKA exam tests them: RBAC and TLS under Cluster Architecture, security contexts under Workloads & Scheduling, network policies under Services & Networking, and certificate troubleshooting under Troubleshooting.
+Security topics are distributed across domains rather than grouped into a single series, matching how the CKA exam tests them: RBAC and TLS under Cluster Architecture, security contexts and Pod Security Admission under Workloads & Scheduling, network policies under Services & Networking, and certificate troubleshooting under Troubleshooting.
+
+The `cka-homework-plan.md` file at the repo root tracks the 38 currently generated assignments plus 7 planned (the ingress expansion from 3 to 5 assignments and five new topics: jobs-and-cronjobs, autoscaling, statefulsets, admission-controllers, pod-security). The `docs/` directory tracks the audit and remediation plan that drives this expansion.
 
 ## Repository Layout
 
@@ -31,74 +33,50 @@ cka-exam-prep/
 ├── LICENSE                            # Apache 2.0
 ├── cka-homework-plan.md               # Master plan: coverage matrix, generation sequence
 │
-├── skills/                            # Claude Code skills for assignment generation
-│   ├── cka-prompt-builder/            # Builds scoped prompt.md files for new topics
-│   │   ├── SKILL.md
-│   │   └── references/
-│   │       ├── cka-curriculum.md      # Official CKA domains and competencies
-│   │       ├── course-section-map.md  # Mumshad course sections mapped to competencies
-│   │       └── assignment-registry.md # Scope and status of all assignments
-│   │
-│   └── k8s-homework-generator/        # Generates tutorial, homework, and answers from a prompt
-│       ├── SKILL.md
-│       └── references/
-│           └── base-template.md       # Structural conventions for all assignments
+├── docs/                              # Audit, remediation plan, and cluster setup recipes
+│   ├── README.md                      # Index of docs files
+│   ├── audit-findings.md              # Full audit with resolution status per finding
+│   ├── remediation-plan.md            # Phased plan with task-level status tracking
+│   └── cluster-setup.md               # Single source of truth for kind cluster configs
+│
+├── .claude/                           # Claude Code configuration
+│   ├── settings.local.json
+│   └── skills/                        # Skills that drive the assignment generation pipeline
+│       ├── cka-prompt-builder/        # Produces topic READMEs and assignment prompts
+│       │   ├── SKILL.md
+│       │   └── references/
+│       │       ├── cka-curriculum.md      # Official CKA domains and competencies (v1.35)
+│       │       ├── course-section-map.md  # Mumshad course sections mapped to competencies
+│       │       └── assignment-registry.md # Scope and status of all assignments
+│       │
+│       └── k8s-homework-generator/    # Produces tutorial, homework, and answers from a prompt
+│           ├── SKILL.md
+│           └── references/
+│               └── base-template.md   # Structural conventions with hard gates
 │
 └── exercises/
-    ├── pods/                          # Pod-focused series (Assignments 1-7) ✓
-    │   ├── assignment-1/              # Pod Fundamentals
-    │   ├── assignment-2/              # Pod Configuration Injection
-    │   ├── assignment-3/              # Pod Health and Observability
-    │   ├── assignment-4/              # Pod Scheduling and Placement
-    │   ├── assignment-5/              # Pod Resources and QoS
-    │   ├── assignment-6/              # Multi-Container Patterns
-    │   └── assignment-7/              # Workload Controllers
-    │
-    ├── rbac/                          # RBAC series
-    │   ├── assignment-1/              # Namespace-scoped (Roles, RoleBindings) ✓
-    │   └── assignment-2/              # Cluster-scoped (ClusterRoles, ClusterRoleBindings)
-    │
-    ├── tls-and-certificates/          # K8s PKI, cert creation, Certificates API
-    │   └── assignment-1/
-    │
-    ├── security-contexts/             # runAsUser, capabilities, seccomp, fsGroup
-    │   └── assignment-1/
-    │
-    ├── cluster-lifecycle/             # kubeadm, upgrades, etcd backup/restore
-    │   └── assignment-1/
-    │
-    ├── helm/                          # Chart install, upgrade, rollback, values
-    │   └── assignment-1/
-    │
-    ├── kustomize/                     # Overlays, patches, transformers, components
-    │   └── assignment-1/
-    │
-    ├── crds-and-operators/            # CRDs, custom resources, operator pattern
-    │   └── assignment-1/
-    │
-    ├── services/                      # ClusterIP, NodePort, LoadBalancer, endpoints
-    │   └── assignment-1/
-    │
-    ├── ingress-and-gateway-api/       # Ingress controllers, Gateway API resources
-    │   └── assignment-1/
-    │
-    ├── coredns/                       # DNS resolution, CoreDNS config, debugging
-    │   └── assignment-1/
-    │
-    ├── network-policies/              # Ingress/egress rules, namespace isolation
-    │   └── assignment-1/
-    │
-    ├── storage/                       # PV, PVC, StorageClass, dynamic provisioning
-    │   └── assignment-1/
-    │
-    └── troubleshooting/               # Cross-domain capstone series
-        ├── assignment-1/              # Application failures
-        ├── assignment-2/              # Control plane failures
-        ├── assignment-3/              # Node and kubelet failures
-        └── assignment-4/              # Network and service failures
+    ├── pods/                          # Pod-focused series (Assignments 1-7, content complete)
+    ├── rbac/                          # RBAC namespace-scoped and cluster-scoped (1-2, content complete)
+    ├── tls-and-certificates/          # K8s PKI, cert creation, Certificates API (1-3, content complete)
+    ├── security-contexts/             # runAsUser, capabilities, seccomp, fsGroup (1-3, content complete)
+    ├── cluster-lifecycle/             # kubeadm, upgrades, etcd backup/restore (1-3, content complete)
+    ├── helm/                          # Chart install, upgrade, rollback, values (1-3, content complete)
+    ├── kustomize/                     # Overlays, patches, transformers, components (1-3, content complete)
+    ├── crds-and-operators/            # CRDs, custom resources, operator pattern (1-3, content complete)
+    ├── services/                      # ClusterIP, NodePort, LoadBalancer, endpoints (1-3, content complete)
+    ├── ingress-and-gateway-api/       # Ingress v1 and Gateway API with controller diversity (1-5; 1-3 content complete, 4-5 pending)
+    ├── coredns/                       # DNS resolution, CoreDNS config, debugging (1-3, content complete)
+    ├── network-policies/              # Ingress/egress rules, namespace isolation (1-3, content complete)
+    ├── storage/                       # PV, PVC, StorageClass, dynamic provisioning (1-3, content complete)
+    ├── troubleshooting/               # Cross-domain capstone series (1-4, content complete)
+    ├── jobs-and-cronjobs/             # Batch workloads (1, prompt in place, content pending)
+    ├── autoscaling/                   # HPA, VPA concepts, in-place pod resize (1, prompt in place, content pending)
+    ├── statefulsets/                  # Stateful workloads (1, prompt in place, content pending)
+    ├── admission-controllers/         # Built-ins and ValidatingAdmissionPolicy (1, prompt in place, content pending)
+    └── pod-security/                  # Pod Security Standards and Pod Security Admission (1, prompt in place, content pending)
 ```
 
-Directories marked with ✓ contain completed assignments. The remaining directories have planned assignments that are generated progressively as the corresponding course sections are studied.
+"Content complete" means the four content files (README, tutorial, homework, answers) exist. Some content-complete assignments are queued for regeneration against stricter quality gates per `docs/remediation-plan.md` Phase 4.
 
 Each topic directory contains a topic-level `README.md` that explains why the topic has its number of assignments, what each one covers, scope boundaries, cluster requirements, and recommended order. This is the scoping document that determines how a topic is decomposed before any assignment content is generated.
 
