@@ -68,6 +68,31 @@ target Kubernetes version by consulting the component's official documentation
 general knowledge. If the documentation is unavailable, flag the gap rather
 than guess.
 
+**D8. Ingress and Gateway API topic restructured for 2026 reality.**
+The `exercises/ingress-and-gateway-api/` topic expands from 3 assignments to 5
+and adopts a controller-diversity approach. Rationale: the CKA exam allowed
+documentation set as of 2026 lists `gateway-api.sigs.k8s.io/` as a dedicated
+URL but has removed the NGINX Ingress Controller documentation (now CKS-only).
+The Kubernetes project officially recommends Gateway API over the frozen
+Ingress API. The 2026 candidate exam reports confirm migration from Ingress to
+Gateway API is explicit exam content. The ingress-nginx project retires in
+March 2026. The new structure gives learners exposure to multiple controllers
+per API, aligning practice with the "API is universal across implementations"
+lesson:
+
+| # | API | Controller | Focus |
+|---|---|---|---|
+| 1 | Ingress v1 | Traefik | Ingress API fundamentals |
+| 2 | Ingress v1 | HAProxy Ingress | Advanced Ingress and TLS |
+| 3 | Gateway API | Envoy Gateway | Gateway API fundamentals |
+| 4 | Gateway API | NGINX Gateway Fabric | Advanced Gateway API routing |
+| 5 | Both | Ingress2Gateway CLI | Migration from Ingress to Gateway API |
+
+Sources consulted: `kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/`,
+`kubernetes.io/blog/2026/01/29/ingress-nginx-statement/`,
+`gateway-api.sigs.k8s.io/implementations/`,
+`docs.linuxfoundation.org/tc-docs/certification/certification-resources-allowed`.
+
 ---
 
 ## Phase 1: Infrastructure fixes
@@ -122,6 +147,12 @@ Use `cka-prompt-builder` to produce topic-level READMEs and prompts, then
 | P3.7 | Update `cka-homework-plan.md` to include the five new topics in the coverage matrix and generation sequence (ref O4) | Not started | |
 | P3.8 | Update `exercises/security-contexts/README.md` line 28 and `security-contexts/assignment-2/prompt.md` line 59 and `assignment-3/prompt.md` line 65 to point forward to `exercises/pod-security/` (ref G6) | Not started | |
 | P3.9 | Update `exercises/storage/README.md` line 29 to point forward to `exercises/statefulsets/` (ref G5) | Not started | |
+| P3.10 | Update `exercises/ingress-and-gateway-api/README.md` to reflect the 5-assignment multi-controller structure per D8 | Not started | Topic README produced by `cka-prompt-builder`. |
+| P3.11 | Update `exercises/ingress-and-gateway-api/assignment-1/prompt.md` to specify Traefik, Ingress API fundamentals | Not started | |
+| P3.12 | Update `exercises/ingress-and-gateway-api/assignment-2/prompt.md` to specify HAProxy Ingress, advanced Ingress + TLS | Not started | |
+| P3.13 | Update `exercises/ingress-and-gateway-api/assignment-3/prompt.md` to specify Envoy Gateway, Gateway API fundamentals (rename from "Gateway API" to reflect fundamentals scope) | Not started | |
+| P3.14 | Create `exercises/ingress-and-gateway-api/assignment-4/prompt.md` for NGINX Gateway Fabric, advanced Gateway API routing | Not started | New assignment directory. |
+| P3.15 | Create `exercises/ingress-and-gateway-api/assignment-5/prompt.md` for Ingress2Gateway migration | Not started | New assignment directory. |
 
 ---
 
@@ -140,6 +171,11 @@ under-deliver against the quality bar.
 | P4.6 | Regenerate `cluster-lifecycle/assignment-1` homework to replace reading-only exercises with build-or-fix tasks (ref U5, U8) | Not started | Acknowledge kind's kubeadm abstraction in the topic README explicitly. |
 | P4.7 | Regenerate `crds-and-operators/assignment-1` Level 1 exercises to remove trivially-easy tasks (ref U5) | Not started | |
 | P4.8 | Regenerate `troubleshooting/assignment-1` Exercise 1.2 with a single clear failure at Level 1 (ref U6) | Not started | Move the dual-failure scenario to Level 4 or 5 if retained. |
+| P4.9 | Regenerate `ingress-and-gateway-api/assignment-1` content files for Traefik | Not started | Existing `controller-v1.15.1` pin becomes obsolete here. Depends on P3.11. |
+| P4.10 | Regenerate `ingress-and-gateway-api/assignment-2` content files for HAProxy Ingress | Not started | Depends on P3.12. |
+| P4.11 | Regenerate `ingress-and-gateway-api/assignment-3` content files for Envoy Gateway | Not started | Depends on P3.13. |
+| P4.12 | Generate `ingress-and-gateway-api/assignment-4` content files for NGINX Gateway Fabric | Not started | Depends on P3.14. |
+| P4.13 | Generate `ingress-and-gateway-api/assignment-5` content files for Ingress2Gateway migration | Not started | Depends on P3.15. |
 
 ---
 
@@ -180,3 +216,4 @@ Record notable progress events here with date. Keep entries short.
 | 2026-04-18 | Audit and plan produced. All tasks at "Not started". |
 | 2026-04-18 | Phase 1 complete (P1.1-P1.5). Infrastructure fixes applied: typo corrected, tmux commit made, `ingress-nginx` pinned to `controller-v1.11.2`, Calico standardized at `v3.27.0`, empty `.claude/worktrees/` removed. |
 | 2026-04-18 | Version pins corrected after verifying against upstream documentation. K8s 1.35 is the exam target (confirmed by `CKA_Curriculum_v1.35.pdf` in github.com/cncf/curriculum). `ingress-nginx` re-pinned to `controller-v1.15.1`, Calico re-pinned to `v3.31.5`, `cka-curriculum.md` reference file updated from "v1.34+" to "v1.35". |
+| 2026-04-18 | Ingress topic restructured to 5 assignments with controller diversity per D8. Research confirmed CKA exam allowed docs include `gateway-api.sigs.k8s.io/` but dropped the NGINX Ingress Controller URL (now CKS-only). `cka-curriculum.md` Domain 3 entries for Gateway API and Ingress updated to reflect the 2026 reality (retirement, migration tool, Gateway-API-first recommendation, conformant implementations list). Plan tasks P3.10-P3.15 and P4.9-P4.13 added. |

@@ -124,16 +124,28 @@ and how traffic is managed and controlled.
    - Headless services (ClusterIP: None)
    - Service selectors and label matching
 
-4. **Use the Gateway API to manage Ingress traffic**
+4. **Use the Gateway API to manage Ingress traffic** (primary emphasis as of 2026)
    - GatewayClass, Gateway, HTTPRoute resources
    - Relationship to and differences from legacy Ingress
    - Traffic routing, path matching, header-based routing
+   - Migration from Ingress to Gateway API (including the `Ingress2Gateway` CLI)
+   - **Conformant implementations** (per gateway-api.sigs.k8s.io/implementations/):
+     Envoy Gateway, NGINX Gateway Fabric, Cilium, Istio, Traefik, HAProxy,
+     kgateway. Partially conformant: Contour, Kong, AWS Load Balancer Controller.
+   - The CKA exam's allowed documentation set includes `gateway-api.sigs.k8s.io/`
+     as a dedicated URL, which signals Gateway API is a major exam focus.
 
 5. **Know how to use Ingress controllers and Ingress resources**
    - Ingress resource structure (rules, paths, backends)
-   - Ingress controller deployment (nginx-ingress as the common example)
    - Annotations and rewrite-target
    - TLS termination
+   - **Important context (as of 2026):** The Ingress API is frozen; Kubernetes.io
+     officially recommends Gateway API for new work. The historically common
+     example controller, `ingress-nginx`, is retired as of March 2026. The CKA
+     allowed documentation set no longer includes the NGINX Ingress Controller
+     guide (that URL is CKS-only now). Ingress v1 resources are still tested,
+     but learners should practice with actively maintained controllers such as
+     Traefik, HAProxy Ingress, or Contour rather than ingress-nginx.
 
 6. **Understand and use CoreDNS**
    - Service DNS: `<service>.<namespace>.svc.cluster.local`

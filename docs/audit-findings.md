@@ -308,11 +308,19 @@ which publishes the curriculum as `CKA_Curriculum_v1.35.pdf`. Kubernetes 1.35.3 
 current stable patch (released 2026-03-19). Supported versions are 1.33, 1.34, and 1.35.
 
 **Ingress-nginx is being retired.** The project README states that best-effort maintenance
-continues until March 2026, after which updates and security patches cease. The repo pins
-`controller-v1.15.1`, which is the latest v1.15 release (2026-03-19) and supports K8s
-1.31-1.35. The ingress-and-gateway-api assignments may eventually need to switch to a
-different ingress controller (InGate, nginx-gateway-fabric, or Gateway API exclusively).
-Worth revisiting if the CKA exam material is updated to reflect this transition.
+continues until March 2026, after which updates and security patches cease. Per the
+January 2026 Kubernetes Steering and Security Response Committee statement, the
+intended successor InGate also never progressed far enough and is retired as well.
+Official migration recommendation: move to Gateway API or to an actively maintained
+Ingress controller. A migration tool (`Ingress2Gateway`) was released in March 2026.
+
+**CKA exam documentation set reflects the transition.** The Linux Foundation "resources
+allowed" page lists `gateway-api.sigs.k8s.io/` as a dedicated permitted URL for the
+CKA exam but has removed the NGINX Ingress Controller documentation (which now appears
+only on the CKS allowed-resources list). Third-party candidate exam reports from 2026
+confirm that migration from Ingress to Gateway API is explicit exam content. This drives
+the ingress-and-gateway-api topic restructure documented in `remediation-plan.md` under
+decision D8 and tasks P3.10-P3.15 / P4.9-P4.13.
 
 **Calico v3.31.5** (released 2026-04-15) is the current v3.31 patch. Supports K8s
 1.32-1.35. The repo pins this version across three install URLs.
