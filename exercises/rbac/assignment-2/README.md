@@ -1,31 +1,41 @@
 # Assignment 2: RBAC (Cluster-Scoped)
 
-This assignment is the second in the RBAC series for CKA exam preparation. It covers cluster-scoped RBAC: ClusterRoles, ClusterRoleBindings, permissions on cluster-scoped resources, aggregated ClusterRoles, and the pattern of using ClusterRole with RoleBinding. The assignment assumes you have completed rbac/assignment-1 (namespace-scoped RBAC) and tls-and-certificates/assignment-2 (certificate-based authentication).
+This is the second and final assignment in the RBAC series. It covers the cluster-scoped half of RBAC: ClusterRoles that grant permissions on cluster-scoped resources (nodes, namespaces, PersistentVolumes, StorageClasses, ClusterRoles themselves), ClusterRoleBindings that grant those permissions cluster-wide, the ClusterRole-plus-RoleBinding pattern that reuses a ClusterRole as a permission template inside a single namespace, aggregated ClusterRoles that compose permissions from many source ClusterRoles through label selection, the four default user-facing ClusterRoles (`cluster-admin`, `admin`, `edit`, `view`), non-resource URL rules for endpoints like `/healthz` and `/metrics`, and the privilege-escalation protections built into the API server (the `bind` and `escalate` verbs). Assignment 1 taught the namespace-scoped mechanics; this one extends the mental model to the cluster scope and the patterns built on top of it.
 
-## File Overview
+## Files
 
-The assignment is split across four files. `README.md` (this file) provides the overview. `rbac-tutorial.md` covers ClusterRoles, ClusterRoleBindings, cluster-scoped resources, aggregation, and default roles. `rbac-homework.md` contains 15 progressive exercises. `rbac-homework-answers.md` contains complete solutions.
+| File | Purpose |
+|---|---|
+| `prompt.md` | The generation prompt (input to the homework generator skill) |
+| `README.md` | This overview |
+| `rbac-tutorial.md` | Step-by-step tutorial teaching every cluster-scoped RBAC feature the CKA tests |
+| `rbac-homework.md` | 15 progressive exercises across five difficulty levels |
+| `rbac-homework-answers.md` | Complete solutions with diagnostic reasoning and common mistakes |
+
+## Recommended Workflow
+
+Work through the tutorial in your cluster before touching the exercises; each tutorial step produces an object you can inspect with `kubectl describe clusterrole` and a verification the walks you through `kubectl auth can-i` at both cluster and namespace scope. The tutorial uses one protagonist (`aria`, a platform operator) from the first section through aggregation and default roles, so the ClusterRole you build early keeps getting layered on, rather than each section creating disposable examples. Once the tutorial is finished, move through the 15 homework exercises in order. Levels 1 and 2 have straightforward build tasks. Level 3 has three debugging scenarios that each map to a classic cluster-scoped RBAC failure (wrong resource name, RoleBinding when a ClusterRoleBinding was needed, non-resource URL bound at the wrong scope). Level 4 exercises combine multiple concepts (ClusterRole-with-RoleBinding, aggregation, service-account subjects at cluster scope). Level 5 includes a real design exercise, a multi-bug debug scenario, and a least-privilege modeling task. Use the answer key only after a genuine attempt, and for debugging exercises read the Diagnosis section first before jumping to the Fix.
 
 ## Difficulty Progression
 
-Level 1: ClusterRole basics and ClusterRoleBindings. Level 2: Permissions on cluster-scoped resources (nodes, namespaces, PVs). Level 3: Debugging RBAC issues. Level 4: Advanced patterns (ClusterRole + RoleBinding, aggregation). Level 5: Complex scenarios designing least-privilege access.
+Level 1 practices the core mechanics of creating a ClusterRole and binding it with a ClusterRoleBinding. Level 2 moves to the three most important cluster-scoped resource families the CKA tests (namespaces, PersistentVolumes, StorageClasses), each with a realistic permission shape. Level 3 is debugging, with the anti-spoiler convention applied: the exercise headings are bare, the objectives state the desired end state rather than the location or count of bugs, and each exercise contains exactly one silently-failing problem to diagnose and fix. Level 4 layers concepts: the ClusterRole-plus-RoleBinding pattern for reusable namespace-scoped grants, ClusterRole aggregation for composed views, and service accounts as subjects in a ClusterRoleBinding. Level 5 is the hardest tier. Exercise 5.1 is a design task (build a cluster-operator role from requirements). Exercise 5.2 is advanced debugging with several problems in a single manifest. Exercise 5.3 asks you to model a least-privilege cluster-reader role against a realistic permission matrix.
 
 ## Prerequisites
 
-Completed rbac/assignment-1 and tls-and-certificates/assignment-2. Single-node kind cluster with users created via certificates.
+Complete `exercises/rbac/assignment-1` (namespace-scoped RBAC fundamentals) before this assignment. The object model, the subject forms (User, Group, ServiceAccount), and the diagnostic pattern built on `kubectl auth can-i` carry over unchanged; this assignment only adds the cluster-scoped objects on top of them. You should also have completed `exercises/tls-and-certificates/assignment-2` so that certificate-based authentication is familiar; the exercises here use `kubectl --as=USER` impersonation for verification (so cert creation is not repeated), but the mental model assumes you know how a username becomes an authenticated identity in the first place.
 
 ## Cluster Requirements
 
-Single-node kind cluster.
+A single-node kind cluster is sufficient for every exercise in this assignment. No extra components (MetalLB, Calico, metrics-server, Gateway API CRDs) are required because every test is an authorization decision made by the API server against RBAC objects, not a networking or workload test. See `docs/cluster-setup.md#single-node-kind-cluster` for the cluster creation command and verification.
 
-```bash
-KIND_EXPERIMENTAL_PROVIDER=nerdctl kind create cluster
-```
+## Estimated Time Commitment
 
-## Estimated Time
+Plan for about 45 to 60 minutes on the tutorial if you work through every step and read every command output carefully. The 15 exercises together take three to five hours, weighted toward Levels 3 and 5. Level 1 exercises each take about 5 minutes once the mental model is in place. Level 2 exercises are 10 to 15 minutes each because the cluster-scoped resources (nodes, PVs, StorageClasses) have slightly different API groups and you will be consulting `kubectl api-resources` to confirm them. Level 3 debugging averages 15 to 20 minutes per exercise because silent failures require you to read the RBAC objects directly rather than relying on error messages. Level 4 averages 20 to 30 minutes per exercise, since the ClusterRole-with-RoleBinding pattern and aggregation both require you to reason carefully about scope. Level 5 can take 30 to 45 minutes per exercise: the design task has no single right answer, the debug task has multiple problems, and the least-privilege task requires a full permission matrix.
 
-Tutorial: 45-60 minutes. Exercises: 4-6 hours.
+## Scope Boundary and What Comes Next
 
-## Key Takeaways
+This assignment covers cluster-scoped RBAC and the reusable-template patterns built on ClusterRoles. It does not cover authentication (certificate signing, `CertificateSigningRequest` objects, OIDC tokens, webhook authentication), which lives in `exercises/tls-and-certificates/`. It does not cover RBAC for custom resources, which lives in `exercises/crds-and-operators/assignment-2`. It does not cover admission controllers (`ValidatingAdmissionPolicy`, webhook admission), which live in `exercises/admission-controllers/`. It does not cover Pod Security Admission (`enforce`, `audit`, `warn` labels at namespace scope), which lives in `exercises/pod-security/`. It does not cover security contexts for running containers (`runAsUser`, `capabilities`, `seccompProfile`), which live in `exercises/security-contexts/`. Cross-domain RBAC troubleshooting reappears in `exercises/troubleshooting/assignment-3`.
 
-Create ClusterRoles for cluster-scoped resources, bind ClusterRoles cluster-wide with ClusterRoleBindings, use ClusterRole + RoleBinding pattern for namespace-scoped grants, understand aggregated ClusterRoles, verify permissions with kubectl auth can-i, and apply least-privilege principles.
+## Key Takeaways After Completing This Assignment
+
+By the time you finish all 15 exercises, you should be able to decide quickly whether a requirement calls for a Role or ClusterRole and whether it should be bound with a RoleBinding or a ClusterRoleBinding, knowing that the combination determines both where the permission applies and which resource types are reachable. You should be comfortable granting permissions on the cluster-scoped resources the CKA covers (nodes, namespaces, PersistentVolumes, StorageClasses, IngressClasses, PriorityClasses, and the RBAC resources themselves) by picking the right API group and verb set. You should be able to apply the ClusterRole-plus-RoleBinding pattern to grant a reusable permission template inside a specific namespace, and explain why that differs from the same ClusterRole bound with a ClusterRoleBinding. You should be able to aggregate ClusterRoles with a label selector and know that the control plane overwrites any rules you write manually on an aggregation target. You should know which default ClusterRoles exist (`cluster-admin`, `admin`, `edit`, `view`) and what subtle permissions each grants or withholds, in particular that `edit` can read Secrets and run pods as any ServiceAccount in the namespace while `view` cannot read Secrets. You should be able to grant access to non-resource URLs and know that such rules only take effect through a ClusterRole bound with a ClusterRoleBinding. You should be able to use the `bind` and `escalate` verbs to delegate the ability to grant or construct RBAC objects without giving the delegate those underlying permissions directly. Finally, you should be able to debug cluster-scoped RBAC confidently using `kubectl auth can-i --list --as=USER`, `kubectl describe clusterrolebinding`, and direct object inspection, because every RBAC failure in this assignment fails silently without a helpful error message.

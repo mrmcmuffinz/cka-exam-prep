@@ -2,7 +2,7 @@
 
 This document explains how to continue the remediation work across Claude Code sessions. It is intended for the repo maintainer (Abe) or any future assistant resuming Phase 4 content generation.
 
-**Last updated:** 2026-04-18 (after Phase 4 assignments 1 and 2 of ~19 complete)
+**Last updated:** 2026-04-18 (after Phase 4 assignments 1, 2, and 3 of ~19 complete)
 
 ---
 
@@ -15,7 +15,7 @@ As of 2026-04-18:
 | 1. Infrastructure fixes | Complete | typo, version pins, worktree dir, tmux commit |
 | 2. Skill asset strengthening | Complete | base-template.md, SKILL.md, cluster-setup.md, registry refresh |
 | 3. Topic scoping | Complete | 5 new topic READMEs + prompts; ingress restructured to 5 assignments with updated prompts |
-| 4. Content generation | In progress | 2 of ~19 assignments done: `jobs-and-cronjobs/assignment-1`, `pod-security/assignment-1` |
+| 4. Content generation | In progress | 3 of ~19 assignments done: `jobs-and-cronjobs/assignment-1`, `pod-security/assignment-1`, `rbac/assignment-2` |
 | 5. Technique weaving | Not started | kubectl debug, port-forward, scheduler profiles |
 | 6. Verification and housekeeping | Not started | cross-reference audit, final consistency sweep |
 
@@ -40,11 +40,11 @@ Look at `docs/remediation-plan.md` Phase 4. Tasks that are `Not started` are rea
 **Complete as of 2026-04-18:**
 - P3.6 partially: `jobs-and-cronjobs/assignment-1` content
 - P3.6 partially: `pod-security/assignment-1` content
+- P4.1: `rbac/assignment-2` content
 
 **Recommended next-up priority order (any can be done independently):**
 
 1. **Stub-to-full regenerations** (highest visual impact per assignment)
-   - `rbac/assignment-2` (P4.1)
    - `troubleshooting/assignment-2` (P4.4)
    - `troubleshooting/assignment-4` (P4.5)
 
@@ -137,10 +137,12 @@ Do not push through context exhaustion; the quality of later work degrades and m
 When generating new Phase 4 content, read one of the completed reference assignments first so the style is fresh in context. Both of these demonstrate the full set of Phase 2 hard gates:
 
 - `exercises/pods/assignment-1/` — the hand-crafted original; the narrative bar for tutorials
+- `exercises/rbac/assignment-1/` — hand-crafted; the narrative bar for RBAC and subject-oriented topics
 - `exercises/jobs-and-cronjobs/assignment-1/` — skill-generated under the new hard gates; workload-controller topic
 - `exercises/pod-security/assignment-1/` — skill-generated under the new hard gates; admission-style topic
+- `exercises/rbac/assignment-2/` — skill-generated under the new hard gates; cluster-scoped authorization topic; demonstrates the three-stage debugging structure on silent-failure RBAC bugs
 
-Pick whichever is most shape-adjacent to the assignment being generated. For ingress assignments, read a networking-style reference. For RBAC regeneration, read `exercises/rbac/assignment-1/` (also hand-crafted).
+Pick whichever is most shape-adjacent to the assignment being generated. For ingress assignments, read a networking-style reference. For RBAC-style authorization or admission topics, `rbac/assignment-2` now has the current Phase 4 exemplar.
 
 ---
 
@@ -190,8 +192,8 @@ Tick every item before marking a task Complete.
 
 ## Summary
 
-Two assignments complete out of roughly 19 in Phase 4. Each full assignment takes 20-30% of a 1M context window, so plan on 2-3 assignments per session with Opus 4.7 1M. Smaller fixes (Phase 5 technique weaving, targeted homework-only regenerations) fit comfortably on Sonnet 4.6 at 200k.
+Three assignments complete out of roughly 19 in Phase 4. Each full assignment takes 20-30% of a 1M context window, so plan on 2-3 assignments per session with Opus 4.7 1M. Smaller fixes (Phase 5 technique weaving, targeted homework-only regenerations) fit comfortably on Sonnet 4.6 at 200k.
 
-The reference quality bar is set by `jobs-and-cronjobs/assignment-1` and `pod-security/assignment-1`. Future Phase 4 output must meet the same bar.
+The reference quality bar is set by `jobs-and-cronjobs/assignment-1`, `pod-security/assignment-1`, and now `rbac/assignment-2`. Future Phase 4 output must meet the same bar.
 
 Doc sync is not optional: update `remediation-plan.md` and `audit-findings.md` in the same commit as each content task to avoid the drift that required the 2026-04-18 doc-sync pass.

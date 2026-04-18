@@ -1,7 +1,7 @@
 # Repository Audit Findings
 
 **Audit date:** 2026-04-18
-**Last status update:** 2026-04-18 (Phases 1-3 complete; resolution status reflected per finding below)
+**Last status update:** 2026-04-18 (Phases 1-3 complete; Phase 4 in progress, 3 of ~19 assignments content-complete including `rbac/assignment-2` which moves E1 and E4 further along)
 **Scope:** Full repository (infrastructure, skills, all 40 assignments across 14 topics)
 **Method:** Read the infrastructure files (`CLAUDE.md`, `README.md`, `cka-homework-plan.md`,
 devcontainer files, both `SKILL.md` files, all three reference files), all 14 topic-level
