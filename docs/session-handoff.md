@@ -2,7 +2,7 @@
 
 This document explains how to continue the remediation work across Claude Code sessions. It is intended for the repo maintainer (Abe) or any future assistant resuming Phase 4 content generation.
 
-**Last updated:** 2026-04-18 (after Phase 4 assignments 1-7 of ~19 complete)
+**Last updated:** 2026-04-18 (after Phase 4 assignments 1-8 of ~19 complete)
 
 ---
 
@@ -15,7 +15,7 @@ As of 2026-04-18:
 | 1. Infrastructure fixes | Complete | typo, version pins, worktree dir, tmux commit |
 | 2. Skill asset strengthening | Complete | base-template.md, SKILL.md, cluster-setup.md, registry refresh |
 | 3. Topic scoping | Complete | 5 new topic READMEs + prompts; ingress restructured to 5 assignments with updated prompts |
-| 4. Content generation | In progress | 7 of ~19 assignments done: `jobs-and-cronjobs/assignment-1`, `pod-security/assignment-1`, `rbac/assignment-2`, `statefulsets/assignment-1`, `troubleshooting/assignment-2`, `autoscaling/assignment-1`, `admission-controllers/assignment-1` |
+| 4. Content generation | In progress | 8 of ~19 assignments done: `jobs-and-cronjobs/assignment-1`, `pod-security/assignment-1`, `rbac/assignment-2`, `statefulsets/assignment-1`, `troubleshooting/assignment-2`, `autoscaling/assignment-1`, `admission-controllers/assignment-1`, `troubleshooting/assignment-4` |
 | 5. Technique weaving | Not started | kubectl debug, port-forward, scheduler profiles |
 | 6. Verification and housekeeping | Not started | cross-reference audit, final consistency sweep |
 
@@ -41,22 +41,20 @@ Look at `docs/remediation-plan.md` Phase 4. Tasks that are `Not started` are rea
 - P3.6 fully: all five new-topic assignments content complete
 - P4.1: `rbac/assignment-2` content
 - P4.4: `troubleshooting/assignment-2` content
+- P4.5: `troubleshooting/assignment-4` content
 
 **Recommended next-up priority order (any can be done independently):**
 
-1. **Stub-to-full regenerations** (highest visual impact per assignment)
-   - `troubleshooting/assignment-4` (P4.5; last stub)
-
-2. **Surgical fixes** (cheap, high value)
+1. **Surgical fixes** (cheap, high value)
    - `troubleshooting/assignment-1` Exercise 1.2 single-exercise fix (P4.8)
    - `crds-and-operators/assignment-1` Level 1 only (P4.7)
    - `cluster-lifecycle/assignment-1` homework only (P4.6)
 
-3. **Thin regenerations** (quality uplift)
+2. **Thin regenerations** (quality uplift)
    - `security-contexts/assignment-1`, `-2`, `-3` (P4.2)
    - `storage/assignment-1`, `-2`, `-3` (P4.3)
 
-4. **Ingress controller swap** (P4.9 through P4.13; largest per-assignment)
+3. **Ingress controller swap** (P4.9 through P4.13; largest per-assignment)
 
 3. **Regenerate thin existing** (quality uplift; existing content works but does not meet new gates)
    - `security-contexts/assignment-1,2,3` (P4.2)

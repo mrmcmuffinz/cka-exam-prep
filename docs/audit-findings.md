@@ -1,7 +1,7 @@
 # Repository Audit Findings
 
 **Audit date:** 2026-04-18
-**Last status update:** 2026-04-18 (Phases 1-3 complete; Phase 4 in progress, 7 of ~19 assignments content-complete; P3.6 fully complete with all five new-topic assignments done; G1, G2, G3, G5, G6 curriculum gaps all resolved; `rbac/assignment-2` and `troubleshooting/assignment-2` move E1 and E4 further along)
+**Last status update:** 2026-04-18 (Phases 1-3 complete; Phase 4 in progress, 8 of ~19 assignments content-complete; P3.6 fully complete with all five new-topic assignments done; G1, G2, G3, G5, G6 curriculum gaps all resolved; E4 now fully resolved with both troubleshooting stub READMEs regenerated)
 **Scope:** Full repository (infrastructure, skills, all 40 assignments across 14 topics)
 **Method:** Read the infrastructure files (`CLAUDE.md`, `README.md`, `cka-homework-plan.md`,
 devcontainer files, both `SKILL.md` files, all three reference files), all 14 topic-level
@@ -281,9 +281,12 @@ with no recommended workflow, no explanation of what makes control-plane trouble
 different from application troubleshooting, no motivation for the Kind-specific caveats.
 This is insufficient given Troubleshooting is 30% of the exam.
 
-**Status: Partially resolved (Phase 2 contract, Phase 4 rollout).** The canonical
-9-section README shape (P2.6) replaces the stub pattern. Specific files regenerate
-under Phase 4 (P4.4 for troubleshooting/2, P4.5 for troubleshooting/4).
+**Status: Resolved 2026-04-18.** The canonical 9-section README shape (P2.6)
+replaces the stub pattern. Both troubleshooting stub READMEs regenerated:
+troubleshooting/2 under P4.4 and troubleshooting/4 under P4.5. Additional
+non-stub READMEs continue to be regenerated under the remaining Phase 4
+tasks (P4.2, P4.3, P4.6, P4.7, P4.8 for thin regens; P4.9-P4.13 for ingress),
+but the specific "stub README" finding E4 is now closed.
 
 **E5. Common Mistakes sections are inconsistent.**
 Pod/assignment-1 has seven deeply-reasoned common mistakes (command vs args, restartPolicy
