@@ -106,7 +106,7 @@ exercises/                          All homework assignments (content state as o
   troubleshooting/1-4               Cross-domain capstone series (content complete, Phase 4 regen scheduled for /2 and /4)
   jobs-and-cronjobs/1               Batch workloads (content complete, 2026-04-18)
   autoscaling/1                     HPA, VPA, in-place pod resize (prompt in place, content pending)
-  statefulsets/1                    Stateful workloads (prompt in place, content pending)
+  statefulsets/1                    Stateful workloads (content complete, 2026-04-18)
   admission-controllers/1           Built-ins and ValidatingAdmissionPolicy (prompt in place, content pending)
   pod-security/1                    Pod Security Standards and PSA (content complete, 2026-04-18)
 

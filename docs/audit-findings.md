@@ -1,7 +1,7 @@
 # Repository Audit Findings
 
 **Audit date:** 2026-04-18
-**Last status update:** 2026-04-18 (Phases 1-3 complete; Phase 4 in progress, 3 of ~19 assignments content-complete including `rbac/assignment-2` which moves E1 and E4 further along)
+**Last status update:** 2026-04-18 (Phases 1-3 complete; Phase 4 in progress, 4 of ~19 assignments content-complete; `rbac/assignment-2` moves E1 and E4 further along, `statefulsets/assignment-1` resolves curriculum gap G5)
 **Scope:** Full repository (infrastructure, skills, all 40 assignments across 14 topics)
 **Method:** Read the infrastructure files (`CLAUDE.md`, `README.md`, `cka-homework-plan.md`,
 devcontainer files, both `SKILL.md` files, all three reference files), all 14 topic-level
@@ -369,7 +369,7 @@ Phase 4. G7 and G8 are technique-weaving items deferred to Phase 5.
 - StatefulSets appear on the CKA exam regularly (stable identity, `volumeClaimTemplates`,
   headless service, ordered deployment, PDB interaction).
 
-**Status:** Scoped in Phase 3 at `exercises/statefulsets/` (1 assignment). Content generation in Phase 4. `storage/README.md` forward reference updated in Phase 3.
+**Status:** Resolved 2026-04-18. Scoped in Phase 3 at `exercises/statefulsets/` (1 assignment); content generated under Phase 4 covering stable identity, headless Service pairing, `volumeClaimTemplates`, `podManagementPolicy`, `updateStrategy` (RollingUpdate with partition, OnDelete), scaling with PVC retention, ControllerRevision rollback, and the "Forced rollback" recovery for stuck `OrderedReady` updates. `storage/README.md` forward reference already updated in Phase 3.
 
 **G6. Pod Security Standards and Pod Security Admission.**
 - Explicitly deferred in `exercises/security-contexts/assignment-2/prompt.md` line 59 and

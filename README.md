@@ -71,7 +71,7 @@ cka-exam-prep/
     ├── troubleshooting/               # Cross-domain capstone series (1-4, content complete)
     ├── jobs-and-cronjobs/             # Batch workloads (1, content complete)
     ├── autoscaling/                   # HPA, VPA concepts, in-place pod resize (1, prompt in place, content pending)
-    ├── statefulsets/                  # Stateful workloads (1, prompt in place, content pending)
+    ├── statefulsets/                  # Stateful workloads (1, content complete)
     ├── admission-controllers/         # Built-ins and ValidatingAdmissionPolicy (1, prompt in place, content pending)
     └── pod-security/                  # Pod Security Standards and Pod Security Admission (1, content complete)
 ```
