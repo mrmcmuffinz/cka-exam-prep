@@ -217,10 +217,15 @@ files." Reasonable as exposure but does not build the muscle memory the CKA exam
 The prompt and README acknowledge this honestly, but the topic under-delivers on its
 domain regardless.
 
-**Status: Pending.** Scheduled for handling in Phase 4 (P4.6): either regenerate with
-build-or-fix exercises within kind's abstraction constraints, or acknowledge the
-limitation more loudly in the topic README and point to a VM-based lab for real
-kubeadm practice.
+**Status: Resolved 2026-04-18 (P4.6).** Homework regenerated with build-or-fix
+exercises scoped to what kind's abstraction allows: static-pod reconciliation
+via manifest touch, certificate chain verification with `openssl verify`, token
+lifecycle via `kubeadm token create`/`delete`, node recovery from cordon and
+from stopped kubelet, CNI connectivity probes across workers, and a cluster
+snapshot authoring task. Every verification uses `# Expected:` comments with
+specific expected outputs instead of `grep -q ... && echo SUCCESS` chains. The
+kind-abstraction caveat remains noted in the homework's opening paragraph and
+in the Key Takeaways.
 
 ---
 

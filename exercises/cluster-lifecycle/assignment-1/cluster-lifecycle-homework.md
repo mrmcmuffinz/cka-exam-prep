@@ -1,574 +1,443 @@
 # Cluster Lifecycle Homework: Cluster Installation with kubeadm
 
-This homework contains 15 progressive exercises covering cluster installation concepts and kubeadm artifacts. Since kind abstracts kubeadm operations, these exercises focus on examining artifacts, understanding workflows, and verifying cluster health.
+This homework contains 15 progressive exercises covering kubeadm artifacts, cluster health, and targeted lifecycle operations. Every exercise is a build-or-fix task with a verifiable end state. Because kind abstracts the bare-metal kubeadm workflow, these exercises focus on operations that are meaningful inside a kind control-plane container: editing manifests, running `kubeadm` subcommands, verifying certificates, and observing kubelet reconciliation.
 
-Before starting, ensure you have completed the cluster-lifecycle-tutorial.md file in this directory and have a multi-node kind cluster running.
+All exercises assume the multi-node kind cluster from `docs/cluster-setup.md#multi-node-kind-cluster`:
+
+```bash
+kubectl config current-context     # expect: kind-kind
+kubectl get nodes                  # expect: 4 nodes, all Ready
+nerdctl ps | grep kind-control-plane   # expect: one Up row
+```
+
+Every operation that modifies the control plane node runs inside the node via `nerdctl exec kind-control-plane bash -c '...'` or `nerdctl exec -it kind-control-plane bash`. Every exercise that breaks the cluster has an explicit recovery step.
+
+## Global Setup
+
+```bash
+for ns in ex-1-1 ex-1-2 ex-1-3 \
+          ex-2-1 ex-2-2 ex-2-3 \
+          ex-3-1 ex-3-2 ex-3-3 \
+          ex-4-1 ex-4-2 ex-4-3 \
+          ex-5-1 ex-5-2 ex-5-3; do
+  kubectl create namespace $ns
+done
+```
 
 ---
 
-## Level 1: Exploring kubeadm Artifacts
-
-These exercises cover examining the artifacts that kubeadm creates during cluster initialization.
+## Level 1: Static Pod Manifests and Certificates
 
 ### Exercise 1.1
 
-**Objective:** Examine static pod manifests on the control plane node.
-
-**Setup:**
-
-```bash
-kubectl create namespace ex-1-1
-```
+**Objective:** Confirm kubelet's static-pod reconciliation by restarting the scheduler via manifest touch, and verify the pod's Age resets.
 
 **Task:**
 
-1. Exec into the kind control plane container
-2. List all static pod manifests in /etc/kubernetes/manifests/
-3. For each manifest, identify:
-   - The component name
-   - The container image and version
-   - The key command-line arguments
-
-Document your findings.
+Inside the control plane node, capture the current scheduler pod's creationTimestamp, touch `/etc/kubernetes/manifests/kube-scheduler.yaml`, and wait for kubelet to reconcile. Confirm the pod has been recreated (new creationTimestamp).
 
 **Verification:**
 
 ```bash
-# Check that you identified all 4 control plane components
-nerdctl exec kind-control-plane ls /etc/kubernetes/manifests/ | wc -l | grep -q "4" && echo "Manifest count: SUCCESS" || echo "Manifest count: FAILED"
+BEFORE=$(kubectl get pod kube-scheduler-kind-control-plane -n kube-system \
+  -o jsonpath='{.metadata.creationTimestamp}')
+echo "Before: $BEFORE"
 
-# Verify API server manifest exists
-nerdctl exec kind-control-plane test -f /etc/kubernetes/manifests/kube-apiserver.yaml && echo "API server manifest: SUCCESS" || echo "API server manifest: FAILED"
+nerdctl exec kind-control-plane touch /etc/kubernetes/manifests/kube-scheduler.yaml
+sleep 15
+
+AFTER=$(kubectl get pod kube-scheduler-kind-control-plane -n kube-system \
+  -o jsonpath='{.metadata.creationTimestamp}')
+echo "After: $AFTER"
+
+# Expected: the After timestamp is later than the Before timestamp.
+
+kubectl get pod kube-scheduler-kind-control-plane -n kube-system \
+  -o jsonpath='{.status.containerStatuses[0].ready}{"\n"}'
+# Expected: true
 ```
 
 ---
 
 ### Exercise 1.2
 
-**Objective:** Explore the certificate directory structure.
-
-**Setup:**
-
-```bash
-kubectl create namespace ex-1-2
-```
+**Objective:** Verify the cluster's PKI chain of trust using `openssl verify`.
 
 **Task:**
 
-1. Exec into the kind control plane container
-2. List the contents of /etc/kubernetes/pki/
-3. Identify:
-   - The cluster CA certificate and key files
-   - The API server certificate files
-   - The etcd certificate directory
-   - The service account key pair
-
-For each file type, explain its purpose in the cluster.
+Run `openssl verify` inside the control plane node against `apiserver.crt` (signed by the cluster CA), `apiserver-etcd-client.crt` (signed by the etcd CA), and `front-proxy-client.crt` (signed by the front-proxy CA). Capture all three outputs to `/tmp/ex-1-2-verify.txt` inside the node.
 
 **Verification:**
 
 ```bash
-# CA files exist
-nerdctl exec kind-control-plane test -f /etc/kubernetes/pki/ca.crt && echo "CA cert: SUCCESS" || echo "CA cert: FAILED"
-nerdctl exec kind-control-plane test -f /etc/kubernetes/pki/ca.key && echo "CA key: SUCCESS" || echo "CA key: FAILED"
-
-# API server files exist
-nerdctl exec kind-control-plane test -f /etc/kubernetes/pki/apiserver.crt && echo "API server cert: SUCCESS" || echo "API server cert: FAILED"
-
-# etcd directory exists
-nerdctl exec kind-control-plane test -d /etc/kubernetes/pki/etcd && echo "etcd dir: SUCCESS" || echo "etcd dir: FAILED"
+nerdctl exec kind-control-plane cat /tmp/ex-1-2-verify.txt
+# Expected output (three lines):
+# /etc/kubernetes/pki/apiserver.crt: OK
+# /etc/kubernetes/pki/apiserver-etcd-client.crt: OK
+# /etc/kubernetes/pki/front-proxy-client.crt: OK
 ```
 
 ---
 
 ### Exercise 1.3
 
-**Objective:** Verify control plane component pods are running and healthy.
-
-**Setup:**
-
-```bash
-kubectl create namespace ex-1-3
-```
+**Objective:** Prove static-pod lifecycle management by removing the scheduler manifest and restoring it.
 
 **Task:**
 
-1. List all pods in the kube-system namespace
-2. Identify which pods are control plane components (hint: they have a node name suffix)
-3. Check the logs of each control plane component for errors
-4. Verify each component is in Running status with all containers ready
-
-Document any errors you find in the logs.
+Back up `/etc/kubernetes/manifests/kube-scheduler.yaml` to `/tmp/`, remove it from the manifests directory, confirm the scheduler pod disappears, then restore it from the backup and confirm the pod returns to Ready. During the scheduler-down interval, create a test pod in `ex-1-3` and observe that it stays `Pending` until the scheduler returns.
 
 **Verification:**
 
 ```bash
-# All control plane pods should be running
-kubectl get pods -n kube-system -l tier=control-plane --no-headers | grep -c "Running" | grep -q "4" && echo "Control plane pods: SUCCESS" || echo "Control plane pods: FAILED"
+# After restoration, scheduler is back:
+kubectl get pod kube-scheduler-kind-control-plane -n kube-system \
+  -o jsonpath='{.status.containerStatuses[0].ready}{"\n"}'
+# Expected: true
 
-# Specific components running
-kubectl get pods -n kube-system -l component=kube-apiserver --no-headers | grep -q "Running" && echo "API server: SUCCESS" || echo "API server: FAILED"
-kubectl get pods -n kube-system -l component=kube-scheduler --no-headers | grep -q "Running" && echo "Scheduler: SUCCESS" || echo "Scheduler: FAILED"
-kubectl get pods -n kube-system -l component=kube-controller-manager --no-headers | grep -q "Running" && echo "Controller manager: SUCCESS" || echo "Controller manager: FAILED"
-kubectl get pods -n kube-system -l component=etcd --no-headers | grep -q "Running" && echo "etcd: SUCCESS" || echo "etcd: FAILED"
+# The probe pod that was stuck Pending during the outage eventually reaches Ready:
+kubectl get pod probe -n ex-1-3 \
+  -o jsonpath='{.status.phase}{"\n"}'
+# Expected: Running
 ```
 
 ---
 
-## Level 2: Node and Cluster Verification
-
-These exercises cover verifying node prerequisites and cluster health.
+## Level 2: Node Prerequisites and Kubelet
 
 ### Exercise 2.1
 
-**Objective:** Check node prerequisites inside kind containers.
-
-**Setup:**
-
-```bash
-kubectl create namespace ex-2-1
-```
+**Objective:** Confirm the three kubeadm-required kernel modules and two sysctl settings.
 
 **Task:**
 
-1. Exec into the kind control plane container
-2. Verify the following prerequisites are met:
-   - br_netfilter and overlay kernel modules are loaded
-   - net.bridge.bridge-nf-call-iptables is set to 1
-   - net.ipv4.ip_forward is set to 1
-   - Swap is disabled or minimal
-
-Document the commands you use and the output.
+Inside the control plane node, verify the following using the expected outputs. Save the combined output of the five checks to `/tmp/ex-2-1-prereqs.txt` inside the node.
 
 **Verification:**
 
 ```bash
-# Kernel modules loaded
-nerdctl exec kind-control-plane lsmod | grep -q "br_netfilter" && echo "br_netfilter: SUCCESS" || echo "br_netfilter: FAILED"
-nerdctl exec kind-control-plane lsmod | grep -q "overlay" && echo "overlay: SUCCESS" || echo "overlay: FAILED"
-
-# Sysctl settings
-nerdctl exec kind-control-plane sysctl net.bridge.bridge-nf-call-iptables | grep -q "1" && echo "iptables: SUCCESS" || echo "iptables: FAILED"
-nerdctl exec kind-control-plane sysctl net.ipv4.ip_forward | grep -q "1" && echo "ip_forward: SUCCESS" || echo "ip_forward: FAILED"
+nerdctl exec kind-control-plane cat /tmp/ex-2-1-prereqs.txt
+# Expected output includes lines for:
+# - br_netfilter (lsmod output shows the module)
+# - overlay (lsmod output shows the module)
+# - net.bridge.bridge-nf-call-iptables = 1
+# - net.ipv4.ip_forward = 1
+# - swap disabled or minimal (/proc/swaps is empty beyond the header)
 ```
 
 ---
 
 ### Exercise 2.2
 
-**Objective:** Verify kubelet configuration and status.
-
-**Setup:**
-
-```bash
-kubectl create namespace ex-2-2
-```
+**Objective:** Read the kubelet configuration and confirm the three kubeadm-managed settings.
 
 **Task:**
 
-1. Exec into the kind control plane container
-2. Check kubelet service status using systemctl
-3. Examine the kubelet configuration file at /var/lib/kubelet/config.yaml
-4. Identify the following from the config:
-   - The static pod path
-   - The cluster DNS IP
-   - The cluster domain
+Inside the control plane node, read `/var/lib/kubelet/config.yaml` and confirm the values of `staticPodPath`, `clusterDNS`, and `clusterDomain`. Write the three values (one per line, in that order) to `/tmp/ex-2-2-kubelet.txt`.
 
 **Verification:**
 
 ```bash
-# Kubelet is running
-nerdctl exec kind-control-plane systemctl is-active kubelet | grep -q "active" && echo "Kubelet active: SUCCESS" || echo "Kubelet active: FAILED"
-
-# Config file exists
-nerdctl exec kind-control-plane test -f /var/lib/kubelet/config.yaml && echo "Config exists: SUCCESS" || echo "Config exists: FAILED"
-
-# Static pod path is correct
-nerdctl exec kind-control-plane grep -q "staticPodPath" /var/lib/kubelet/config.yaml && echo "Static pod path: SUCCESS" || echo "Static pod path: FAILED"
+nerdctl exec kind-control-plane cat /tmp/ex-2-2-kubelet.txt
+# Expected (three lines):
+# staticPodPath: /etc/kubernetes/manifests
+# clusterDNS: 10.96.0.10
+# clusterDomain: cluster.local
 ```
 
 ---
 
 ### Exercise 2.3
 
-**Objective:** Verify cluster health using kubectl commands.
-
-**Setup:**
-
-```bash
-kubectl create namespace ex-2-3
-```
+**Objective:** Verify cluster health end to end using a minimum probe.
 
 **Task:**
 
-1. Verify all nodes are in Ready state
-2. Use kubectl cluster-info to check cluster endpoints
-3. Create a test deployment and verify pods can be scheduled
-4. Verify DNS is working by checking CoreDNS pods
-5. Clean up the test deployment
+Run the probe sequence: confirm all four nodes are Ready; confirm the four control plane static pods are Ready; confirm CoreDNS is Ready; deploy a small nginx Deployment in namespace `ex-2-3`, wait for it to be Available, perform a `kubectl exec` into the pod to confirm DNS works (`nslookup kubernetes.default`), then delete the Deployment.
 
 **Verification:**
 
 ```bash
-# All nodes ready
-kubectl get nodes --no-headers | grep -v "NotReady" | wc -l | grep -q "4" && echo "All nodes ready: SUCCESS" || echo "All nodes ready: FAILED"
+kubectl get nodes -o jsonpath='{range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{"\n"}{end}' \
+  | sort | uniq -c
+# Expected: one line showing "4 True" (all four nodes Ready).
 
-# Cluster info works
-kubectl cluster-info 2>&1 | grep -q "Kubernetes control plane" && echo "Cluster info: SUCCESS" || echo "Cluster info: FAILED"
+kubectl get pods -n kube-system \
+  -l tier=control-plane -o jsonpath='{range .items[*]}{.status.containerStatuses[0].ready}{"\n"}{end}' \
+  | sort | uniq -c
+# Expected: "4 true" (all four control plane pods Ready).
 
-# CoreDNS running
-kubectl get pods -n kube-system -l k8s-app=kube-dns --no-headers | grep -q "Running" && echo "CoreDNS: SUCCESS" || echo "CoreDNS: FAILED"
+kubectl get pods -n kube-system -l k8s-app=kube-dns \
+  -o jsonpath='{.items[0].status.containerStatuses[0].ready}{"\n"}'
+# Expected: true
+
+kubectl run nslook -n ex-2-3 --rm -it --restart=Never --image=busybox:1.36 \
+  -- nslookup kubernetes.default
+# Expected: an Address line for the kubernetes Service (usually 10.96.0.1).
 ```
 
 ---
 
 ## Level 3: Debugging Cluster Issues
 
-These exercises present scenarios where you must diagnose problems. The setups simulate issues you might encounter in real clusters.
-
 ### Exercise 3.1
 
-**Objective:** Diagnose why a node might appear NotReady.
+**Objective:** Recover a cordoned worker node so it can schedule new pods again.
 
 **Setup:**
 
 ```bash
-kubectl create namespace ex-3-1
+kubectl cordon kind-worker
 ```
 
 **Task:**
 
-A worker node is showing as NotReady. In a real cluster, you would need to diagnose the issue. For this exercise:
-
-1. Check the current status of all nodes
-2. For each worker node, describe the node and examine its conditions
-3. Document what conditions would indicate:
-   - kubelet is not running
-   - CNI is not installed
-   - Network issues
-   - Disk pressure
+After the setup, the node `kind-worker` is marked unschedulable. Confirm this via `kubectl get nodes`, then uncordon the node so it can schedule pods again. Create a Deployment in `ex-3-1` with a pod affinity to `kind-worker` and confirm the pod is scheduled there.
 
 **Verification:**
 
 ```bash
-# Document the conditions you identified
-kubectl get nodes -o wide && echo "Nodes listed: SUCCESS"
+kubectl get node kind-worker \
+  -o jsonpath='{.spec.unschedulable}{"\n"}'
+# Expected: an empty string or "false" (node is no longer cordoned).
 
-# Describe a worker node
-kubectl describe node kind-worker | grep -A5 "Conditions:" && echo "Conditions found: SUCCESS"
+kubectl run pin-to-worker -n ex-3-1 \
+  --image=nginx:1.27 --restart=Never \
+  --overrides='{"spec":{"nodeName":"kind-worker"}}'
+kubectl wait --for=condition=Ready pod/pin-to-worker -n ex-3-1 --timeout=60s
+# Expected: pod/pin-to-worker condition met
+kubectl delete pod pin-to-worker -n ex-3-1
 ```
 
 ---
 
 ### Exercise 3.2
 
-**Objective:** Understand kubelet troubleshooting.
+**Objective:** Recover a worker node whose kubelet has been stopped.
 
 **Setup:**
 
 ```bash
-kubectl create namespace ex-3-2
+nerdctl exec kind-worker systemctl stop kubelet
+sleep 45
 ```
 
 **Task:**
 
-If kubelet were not running on a node, the node would be NotReady. For this exercise:
-
-1. Exec into a worker node (kind-worker)
-2. Check kubelet status using systemctl
-3. View recent kubelet logs using journalctl
-4. Identify what configuration kubelet uses
-5. Document the commands you would use to restart kubelet if needed
+After the setup, `kind-worker` is NotReady because its kubelet is stopped. Confirm the NotReady status, restart kubelet inside the worker, and wait for the node to return to Ready.
 
 **Verification:**
 
 ```bash
-# Kubelet is running on worker
-nerdctl exec kind-worker systemctl is-active kubelet | grep -q "active" && echo "Worker kubelet: SUCCESS" || echo "Worker kubelet: FAILED"
+# Wait for the Ready condition after restarting kubelet:
+kubectl wait --for=condition=Ready node/kind-worker --timeout=120s
 
-# Can view kubelet logs
-nerdctl exec kind-worker journalctl -u kubelet -n 5 && echo "Logs accessible: SUCCESS"
+kubectl get node kind-worker \
+  -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}{"\n"}'
+# Expected: True
+
+nerdctl exec kind-worker systemctl is-active kubelet
+# Expected: active
 ```
 
 ---
 
 ### Exercise 3.3
 
-**Objective:** Verify CNI is properly installed.
-
-**Setup:**
-
-```bash
-kubectl create namespace ex-3-3
-```
+**Objective:** Verify CNI is functional by testing pod-to-pod cross-node connectivity.
 
 **Task:**
 
-Without CNI, pods cannot get IP addresses and nodes stay NotReady. For this exercise:
-
-1. Exec into the control plane node
-2. List the CNI configuration files
-3. Examine the CNI configuration to identify the network plugin in use
-4. Verify pods can communicate by creating two pods and testing connectivity
+Create two pods in namespace `ex-3-3`: one pinned to `kind-worker` and one pinned to `kind-worker2`. From the first pod, ping the second pod's IP. Delete both pods on success.
 
 **Verification:**
 
 ```bash
-# CNI config exists
-nerdctl exec kind-control-plane ls /etc/cni/net.d/ | grep -q ".conf" && echo "CNI config: SUCCESS" || echo "CNI config: FAILED"
+# Pod-to-pod connectivity across nodes (the essence of a working CNI):
+SECOND_IP=$(kubectl get pod connectivity-b -n ex-3-3 \
+  -o jsonpath='{.status.podIP}')
+kubectl exec connectivity-a -n ex-3-3 -- ping -c 2 $SECOND_IP
+# Expected: "2 packets transmitted, 2 received" or similar success output.
 
-# Test pod connectivity
-kubectl run test-pod-1 --image=busybox:1.36 -n ex-3-3 --command -- sleep 3600
-kubectl run test-pod-2 --image=busybox:1.36 -n ex-3-3 --command -- sleep 3600
-sleep 10
-POD1_IP=$(kubectl get pod test-pod-1 -n ex-3-3 -o jsonpath='{.status.podIP}')
-kubectl exec test-pod-2 -n ex-3-3 -- ping -c 2 $POD1_IP && echo "Pod connectivity: SUCCESS" || echo "Pod connectivity: FAILED"
-kubectl delete pod test-pod-1 test-pod-2 -n ex-3-3 --force --grace-period=0
+kubectl delete pod connectivity-a connectivity-b -n ex-3-3
 ```
 
 ---
 
 ## Level 4: kubeadm Configuration and Tokens
 
-These exercises cover kubeadm configuration files and bootstrap token management.
-
 ### Exercise 4.1
 
-**Objective:** Examine kubeadm configuration.
-
-**Setup:**
-
-```bash
-kubectl create namespace ex-4-1
-```
+**Objective:** Produce the current cluster's ClusterConfiguration and use it to verify the pod and service CIDR.
 
 **Task:**
 
-1. Kubeadm stores its configuration in a ConfigMap. Find and examine it.
-2. Identify the following from the configuration:
-   - The Kubernetes version
-   - The cluster name
-   - The networking configuration (pod and service CIDRs)
-3. Document the structure of the kubeadm configuration
+Inside the control plane node, read the `kubeadm-config` ConfigMap in `kube-system` and extract the `ClusterConfiguration` YAML to `/tmp/ex-4-1-cluster-config.yaml` inside the node. Confirm the pod CIDR and service CIDR values are present in that file.
 
 **Verification:**
 
 ```bash
-# Find kubeadm config
-kubectl get configmap -n kube-system kubeadm-config -o yaml && echo "Config found: SUCCESS"
+nerdctl exec kind-control-plane test -f /tmp/ex-4-1-cluster-config.yaml
+# Expected: exit 0 (file exists).
 
-# Extract cluster name (may vary based on kind config)
-kubectl get configmap -n kube-system kubeadm-config -o jsonpath='{.data.ClusterConfiguration}' | grep -q "clusterName" && echo "Cluster name: SUCCESS" || echo "Cluster name: Check manually"
+nerdctl exec kind-control-plane grep -E 'podSubnet|serviceSubnet' /tmp/ex-4-1-cluster-config.yaml
+# Expected: two lines, one with podSubnet: and one with serviceSubnet:, each with
+# a CIDR value (the exact values depend on the kind cluster's networking config).
 ```
 
 ---
 
 ### Exercise 4.2
 
-**Objective:** Work with bootstrap tokens.
-
-**Setup:**
-
-```bash
-kubectl create namespace ex-4-2
-```
+**Objective:** Create a new bootstrap token, inspect it, and delete it.
 
 **Task:**
 
-1. List all bootstrap token secrets in the kube-system namespace
-2. Examine the structure of a bootstrap token secret
-3. Identify the following fields:
-   - Token ID
-   - Token secret (encoded)
-   - Expiration time
-   - Usages
-4. Document what each field means for the join process
+Inside the control plane node, create a new bootstrap token using `kubeadm token create`, capture the token ID from the output, inspect the token's Secret in `kube-system`, and then delete the token with `kubeadm token delete`. Write the token ID to `/tmp/ex-4-2-token-id.txt`.
 
 **Verification:**
 
 ```bash
-# Bootstrap tokens exist
-kubectl get secrets -n kube-system | grep -q "bootstrap-token" && echo "Tokens exist: SUCCESS" || echo "Tokens exist: FAILED"
+nerdctl exec kind-control-plane cat /tmp/ex-4-2-token-id.txt
+# Expected: a line with a 6-character token ID (the part before the colon in the
+# full token string abcdef.0123456789abcdef).
 
-# Can describe a token
-kubectl get secrets -n kube-system -o name | grep bootstrap-token | head -1 | xargs kubectl describe -n kube-system && echo "Token described: SUCCESS"
+# After deletion, the token is gone:
+TOKEN_ID=$(nerdctl exec kind-control-plane cat /tmp/ex-4-2-token-id.txt)
+nerdctl exec kind-control-plane kubeadm token list | grep -c "$TOKEN_ID" || true
+# Expected: 0 (no matching line; the token was deleted).
 ```
 
 ---
 
 ### Exercise 4.3
 
-**Objective:** Understand kubeadm init phases.
-
-**Setup:**
-
-```bash
-kubectl create namespace ex-4-3
-```
+**Objective:** Use `kubeadm config print` to generate a sample init configuration you could use on a new cluster.
 
 **Task:**
 
-Kubeadm init can be run in phases. For this exercise:
-
-1. Research and document the phases of kubeadm init
-2. For each phase, describe what it does
-3. Identify which phases create:
-   - Certificates
-   - kubeconfig files
-   - Static pod manifests
-   - Cluster configurations
-
-Note: You cannot run kubeadm in kind, but understanding the phases is important for the exam.
+Inside the control plane node, use `kubeadm config print init-defaults` to generate a default ClusterConfiguration. Save the output to `/tmp/ex-4-3-init.yaml` inside the node. Then modify that file in place to set `kubernetesVersion: v1.35.0` and `networking.podSubnet: 10.244.0.0/16`.
 
 **Verification:**
 
 ```bash
-# Document at least 5 phases (manually verify)
-echo "Phases to document:"
-echo "1. preflight - checks system requirements"
-echo "2. certs - generates certificates"
-echo "3. kubeconfig - generates kubeconfig files"
-echo "4. kubelet-start - starts kubelet"
-echo "5. control-plane - creates static pod manifests"
-echo "SUCCESS: Document all phases and their purposes"
+nerdctl exec kind-control-plane test -f /tmp/ex-4-3-init.yaml
+# Expected: exit 0.
+
+nerdctl exec kind-control-plane grep 'kubernetesVersion:' /tmp/ex-4-3-init.yaml
+# Expected: a line ending in v1.35.0
+
+nerdctl exec kind-control-plane grep 'podSubnet:' /tmp/ex-4-3-init.yaml
+# Expected: a line ending in 10.244.0.0/16
 ```
 
 ---
 
 ## Level 5: Complex Scenarios
 
-These exercises present complex, realistic scenarios.
-
 ### Exercise 5.1
 
-**Objective:** Trace a complete kubeadm init workflow by examining artifacts.
-
-**Setup:**
-
-```bash
-kubectl create namespace ex-5-1
-```
+**Objective:** Audit every certificate under `/etc/kubernetes/pki/` and confirm each one verifies against its correct CA.
 
 **Task:**
 
-Trace through the kubeadm init workflow by examining the artifacts it created:
-
-1. **Certificates:** List all certificates in /etc/kubernetes/pki/ and describe the chain of trust
-2. **kubeconfig files:** List all kubeconfig files in /etc/kubernetes/ and describe what each is for
-3. **Static pods:** Examine each static pod manifest and describe how they interact
-4. **Cluster configuration:** Find and document the cluster configuration
-
-Create a document describing how all these artifacts work together.
+Inside the control plane node, run `openssl verify` for each non-CA leaf certificate (`apiserver.crt`, `apiserver-kubelet-client.crt`, `apiserver-etcd-client.crt`, `front-proxy-client.crt`, `etcd/healthcheck-client.crt`, `etcd/peer.crt`, `etcd/server.crt`) against the correct CA (`ca.crt` for the first two, `etcd/ca.crt` for the etcd certs, `front-proxy-ca.crt` for the front-proxy client). Save all seven verifications to `/tmp/ex-5-1-audit.txt`.
 
 **Verification:**
 
 ```bash
-# All artifacts exist
-nerdctl exec kind-control-plane ls /etc/kubernetes/pki/ | wc -l | grep -E "^[1-9][0-9]+" && echo "Certs exist: SUCCESS"
-nerdctl exec kind-control-plane ls /etc/kubernetes/*.conf | wc -l | grep -E "^[1-9]+" && echo "Kubeconfigs exist: SUCCESS"
-nerdctl exec kind-control-plane ls /etc/kubernetes/manifests/*.yaml | wc -l | grep -q "4" && echo "Manifests exist: SUCCESS"
+nerdctl exec kind-control-plane cat /tmp/ex-5-1-audit.txt
+# Expected: seven lines, each ending in ": OK".
+
+nerdctl exec kind-control-plane grep -c ": OK$" /tmp/ex-5-1-audit.txt
+# Expected: 7
 ```
 
 ---
 
 ### Exercise 5.2
 
-**Objective:** Simulate the process of adding a new worker node.
-
-**Setup:**
-
-```bash
-kubectl create namespace ex-5-2
-```
+**Objective:** Renew a specific certificate and prove the new expiration is later than the old one.
 
 **Task:**
 
-You cannot actually add a node to a kind cluster, but you can simulate understanding the process:
-
-1. Document the prerequisites a new worker node would need
-2. Generate a new bootstrap token (examine how this would work)
-3. Document the join command that would be used
-4. Describe what happens on the worker node during join
-5. Describe how to verify the node joined successfully
+Inside the control plane node, capture the current expiration of `apiserver-kubelet-client.crt` (via `openssl x509 -enddate`) to `/tmp/ex-5-2-before.txt`. Run `kubeadm certs renew apiserver-kubelet-client`. Capture the new expiration to `/tmp/ex-5-2-after.txt`. Restart the API server (touch its manifest) so the new cert is in service.
 
 **Verification:**
 
 ```bash
-# Document exists (manual verification)
-echo "Document should include:"
-echo "1. Prerequisites (container runtime, network settings, etc.)"
-echo "2. How to generate a join token"
-echo "3. The structure of the kubeadm join command"
-echo "4. What happens during join (kubelet starts, node registers)"
-echo "5. How to verify (kubectl get nodes)"
-echo "SUCCESS: Verify documentation is complete"
+nerdctl exec kind-control-plane bash -c '
+  BEFORE=$(cat /tmp/ex-5-2-before.txt | cut -d= -f2)
+  AFTER=$(cat /tmp/ex-5-2-after.txt | cut -d= -f2)
+  echo "Before: $BEFORE"
+  echo "After:  $AFTER"
+'
+# Expected: the After date is later than the Before date.
+
+kubectl get nodes
+# Expected: four nodes Ready (confirming kubectl still works after the API server restart).
 ```
 
 ---
 
 ### Exercise 5.3
 
-**Objective:** Create a complete cluster state documentation for handoff.
-
-**Setup:**
-
-```bash
-kubectl create namespace ex-5-3
-```
+**Objective:** Produce a cluster-state snapshot file suitable for operator handoff.
 
 **Task:**
 
-Create documentation that captures the complete state of the cluster for handoff to another administrator:
+Build a small shell pipeline that writes a single text file at `/tmp/ex-5-3-snapshot.txt` containing the following sections, each separated by a header line of `==== <section> ====`:
 
-1. **Cluster overview:**
-   - Kubernetes version
-   - Number and role of nodes
-   - Network configuration (CNI, pod CIDR, service CIDR)
-
-2. **Control plane:**
-   - Components and their versions
-   - Certificate expiration dates (if visible)
-   - Configuration highlights
-
-3. **Node status:**
-   - Status of each node
-   - Key conditions
-   - Resources (CPU, memory)
-
-4. **System workloads:**
-   - Critical pods in kube-system
-   - Their status
+1. Kubernetes version (`kubectl version`).
+2. Node list with roles and versions (`kubectl get nodes -o wide`).
+3. All kube-system pods with status (`kubectl get pods -n kube-system`).
+4. Certificate expirations (`nerdctl exec kind-control-plane kubeadm certs check-expiration`).
+5. Cluster CIDR from kubeadm-config (the `podSubnet` and `serviceSubnet` lines from Exercise 4.1's output).
 
 **Verification:**
 
 ```bash
-# Gather cluster info
-kubectl version --short 2>/dev/null || kubectl version && echo "Version: SUCCESS"
-kubectl get nodes -o wide && echo "Nodes: SUCCESS"
-kubectl get pods -n kube-system && echo "System pods: SUCCESS"
-kubectl describe nodes | grep -E "^Name:|Allocatable:" && echo "Resources: SUCCESS"
+test -f /tmp/ex-5-3-snapshot.txt
+# Expected: exit 0.
+
+wc -l /tmp/ex-5-3-snapshot.txt
+# Expected: at least 30 lines.
+
+grep -c '^==== ' /tmp/ex-5-3-snapshot.txt
+# Expected: 5 (five section headers).
+
+for section in 'Kubernetes version' 'Node list' 'kube-system pods' 'Certificate' 'CIDR'; do
+  grep -c "$section" /tmp/ex-5-3-snapshot.txt
+done
+# Expected: each grep returns at least 1.
 ```
 
 ---
 
 ## Cleanup
 
-Delete all exercise namespaces:
-
 ```bash
-kubectl delete namespace ex-1-1 ex-1-2 ex-1-3 ex-2-1 ex-2-2 ex-2-3 ex-3-1 ex-3-2 ex-3-3 ex-4-1 ex-4-2 ex-4-3 ex-5-1 ex-5-2 ex-5-3
+for ns in ex-1-1 ex-1-2 ex-1-3 \
+          ex-2-1 ex-2-2 ex-2-3 \
+          ex-3-1 ex-3-2 ex-3-3 \
+          ex-4-1 ex-4-2 ex-4-3 \
+          ex-5-1 ex-5-2 ex-5-3; do
+  kubectl delete namespace $ns --ignore-not-found
+done
+
+# Remove temp files from the control plane node:
+nerdctl exec kind-control-plane bash -c 'rm -f /tmp/ex-*.txt /tmp/ex-*.yaml'
+rm -f /tmp/ex-5-3-snapshot.txt
 ```
 
 ---
 
 ## Key Takeaways
 
-After completing these exercises, you should be able to:
+Kubeadm places a small set of artifacts on disk in predictable locations: static pod manifests in `/etc/kubernetes/manifests/`, certificates and kubeconfig files in `/etc/kubernetes/pki/` and `/etc/kubernetes/*.conf`, and a kubeadm configuration ConfigMap in `kube-system`. Every lifecycle operation (node join, certificate renewal, config upgrade) reduces to editing or inspecting one of those artifacts, and every kubeadm subcommand (`kubeadm certs check-expiration`, `kubeadm certs renew`, `kubeadm token create`, `kubeadm config print`) targets one of them. Kind abstracts the installation step (the operator never runs `kubeadm init` on kind because kind does it on the image), but every on-disk artifact is the same shape as on a bare-metal kubeadm cluster.
 
-1. **Navigate kubeadm artifacts:** Static pod manifests, certificate directories, kubeconfig files
-2. **Verify node prerequisites:** Kernel modules, sysctl settings, container runtime, swap
-3. **Check kubelet status:** systemctl, journalctl, configuration files
-4. **Verify cluster health:** Node status, control plane pods, DNS, connectivity
-5. **Understand bootstrap tokens:** Purpose, structure, creation, expiration
-6. **Understand kubeadm phases:** What each phase does during init and join
-7. **Document cluster state:** Create comprehensive handoff documentation
+Kubelet is the static-pod supervisor. Touching a manifest causes kubelet to reconcile within a few seconds; removing a manifest causes kubelet to stop the pod cleanly; restoring the manifest causes kubelet to recreate it. Stopping kubelet itself (via `systemctl stop kubelet` inside the node) causes the node to go `NotReady` as the API server stops receiving heartbeats, and restarting kubelet returns the node to Ready within a node-status update cycle. These patterns are the essence of kubeadm-managed cluster life.
+
+Certificates in a kubeadm cluster fall into three CA chains: the cluster CA (`ca.crt`) signs most client certs and the API server cert; the etcd CA (`etcd/ca.crt`) signs etcd client and server certs; the front-proxy CA signs the front-proxy client cert. `openssl verify -CAfile <ca> <cert>` is the authoritative chain check, and `kubeadm certs check-expiration` summarizes all ten managed entries (seven bare certs plus three kubeconfigs) with their expiration dates and signing CAs. `kubeadm certs renew <name>` regenerates a single cert on disk; restarting the consuming static pod (by touching its manifest) puts the new cert into service.
+
+The health-check playbook for any kubeadm cluster condenses to four commands: `kubectl get nodes`, `kubectl get pods -n kube-system`, `kubeadm certs check-expiration`, and `kubeadm token list`. Running them in that order confirms node Ready status, control plane pod health, certificate freshness, and bootstrap token availability. The same commands apply on bare metal, VMs, and kind equally, which is why kind is an adequate practice environment for this topic even though the `kubeadm init` flow itself is abstracted away.
