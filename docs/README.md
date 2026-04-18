@@ -13,6 +13,7 @@ being made and to track progress against a coherent plan.
 | `audit-findings.md` | Full audit of the repository across organization, usability, explainability, and CKA curriculum coverage. Each finding has a status line showing whether it is resolved, partially resolved, or pending. |
 | `remediation-plan.md` | Phased plan for addressing the audit findings. Every task has an explicit status that is updated as work progresses. Includes the key decisions made during planning and a progress log. |
 | `cluster-setup.md` | Single source of truth for kind cluster configurations and the component version matrix. Every assignment README and tutorial references sections of this document by anchor rather than inlining cluster commands. |
+| `session-handoff.md` | How to continue Phase 4 content generation across Claude Code sessions: current status, next-task priority, model and context-size recommendations, reference quality bar, pre-commit checklist. |
 
 ## Origin
 
@@ -38,7 +39,7 @@ As of 2026-04-18:
   `autoscaling/`, `statefulsets/`, `admission-controllers/`, and
   `pod-security/`. The `ingress-and-gateway-api/` topic is restructured from
   three to five assignments.
-- **Phase 4 (Content generation and regeneration):** Not started.
+- **Phase 4 (Content generation and regeneration):** In progress (2 of ~19 assignments complete as of 2026-04-18). `jobs-and-cronjobs/assignment-1` and `pod-security/assignment-1` content generated as reference quality-bar examples for remaining Phase 4 work. See `session-handoff.md` for the priority queue and resume instructions.
 - **Phase 5 (Technique weaving):** Not started.
 - **Phase 6 (Verification and housekeeping):** Not started.
 
