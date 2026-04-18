@@ -34,12 +34,13 @@ We are mid-way through a large remediation effort captured in `docs/remediation-
   - `exercises/admission-controllers/assignment-1/` (closes curriculum gap G3; P3.6 complete)
   - `exercises/troubleshooting/assignment-4/` (closes P4.5; E4 fully resolved)
 - All five new-topic curriculum gaps (G1, G2, G3, G5, G6) resolved. All stub READMEs (P4.1, P4.4, P4.5) regenerated.
+- Surgical fixes complete: P4.6 (`cluster-lifecycle/assignment-1` homework), P4.7 (`crds-and-operators/assignment-1` Level 1 rewritten as build-or-fix), P4.8 (`troubleshooting/assignment-1` Exercise 1.2 single-failure simplification).
 - Kubernetes target version for all content: **v1.35** (per the CKA curriculum document on github.com/cncf/curriculum).
 - Component pins verified against upstream docs on 2026-04-18 and recorded in `docs/cluster-setup.md` version matrix.
 
 **What I need from you this session:**
 
-1. **Pick the next Phase 4 task from the priority queue in `docs/session-handoff.md`.** Top choices: surgical P4.6/P4.7/P4.8 fixes (cheap, high value), thin regens (security-contexts P4.2, storage P4.3), or the ingress controller swap (P4.9-P4.13, largest per-assignment). All curriculum gaps are closed; remaining work is quality uplift on existing content. Tell me which one you plan to generate and confirm you have read the four essential documents before writing anything.
+1. **Pick the next Phase 4 task from the priority queue in `docs/session-handoff.md`.** Top choices: thin regens (security-contexts P4.2 — three assignments; storage P4.3 — three assignments) or the ingress controller swap (P4.9-P4.13 — five assignments with per-controller installs). All curriculum gaps are closed and all surgical fixes are done; remaining work is quality uplift on existing thin-content assignments. Tell me which one you plan to generate and confirm you have read the four essential documents before writing anything.
 
 2. **Generate the four content files** (`README.md`, `<topic>-tutorial.md`, `<topic>-homework.md`, `<topic>-homework-answers.md`) that satisfy every hard gate in `base-template.md`. Use the 9-section canonical README shape, narrative paragraph flow in the tutorial, 15 build-or-fix exercises with RBAC-style verification, three-stage debugging answers for Level 3 and Level 5, and a Common Mistakes section with three or more entries.
 

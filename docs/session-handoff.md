@@ -2,7 +2,7 @@
 
 This document explains how to continue the remediation work across Claude Code sessions. It is intended for the repo maintainer (Abe) or any future assistant resuming Phase 4 content generation.
 
-**Last updated:** 2026-04-18 (after Phase 4 assignments 1-8 of ~19 complete)
+**Last updated:** 2026-04-18 (after Phase 4 assignments 1-8 of ~19 complete; surgical fixes P4.6, P4.7, P4.8 also complete)
 
 ---
 
@@ -42,19 +42,17 @@ Look at `docs/remediation-plan.md` Phase 4. Tasks that are `Not started` are rea
 - P4.1: `rbac/assignment-2` content
 - P4.4: `troubleshooting/assignment-2` content
 - P4.5: `troubleshooting/assignment-4` content
+- P4.6: `cluster-lifecycle/assignment-1` homework regen
+- P4.7: `crds-and-operators/assignment-1` Level 1 regen
+- P4.8: `troubleshooting/assignment-1` Exercise 1.2 single-failure fix
 
 **Recommended next-up priority order (any can be done independently):**
 
-1. **Surgical fixes** (cheap, high value)
-   - `troubleshooting/assignment-1` Exercise 1.2 single-exercise fix (P4.8)
-   - `crds-and-operators/assignment-1` Level 1 only (P4.7)
-   - `cluster-lifecycle/assignment-1` homework only (P4.6)
-
-2. **Thin regenerations** (quality uplift)
+1. **Thin regenerations** (quality uplift; existing content works but does not meet new gates)
    - `security-contexts/assignment-1`, `-2`, `-3` (P4.2)
    - `storage/assignment-1`, `-2`, `-3` (P4.3)
 
-3. **Ingress controller swap** (P4.9 through P4.13; largest per-assignment)
+2. **Ingress controller swap** (P4.9 through P4.13; largest per-assignment, new controllers per D8)
 
 3. **Regenerate thin existing** (quality uplift; existing content works but does not meet new gates)
    - `security-contexts/assignment-1,2,3` (P4.2)
