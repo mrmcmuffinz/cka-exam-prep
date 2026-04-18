@@ -1,7 +1,7 @@
 # Repository Audit Findings
 
 **Audit date:** 2026-04-18
-**Last status update:** 2026-04-18 (Phases 1-3 complete; Phase 4 in progress, 5 of ~19 assignments content-complete; `rbac/assignment-2` moves E1 and E4 further along, `statefulsets/assignment-1` resolves curriculum gap G5, `troubleshooting/assignment-2` further resolves E4)
+**Last status update:** 2026-04-18 (Phases 1-3 complete; Phase 4 in progress, 6 of ~19 assignments content-complete; `rbac/assignment-2` moves E1 and E4 further along, `statefulsets/assignment-1` resolves curriculum gap G5, `troubleshooting/assignment-2` further resolves E4, `autoscaling/assignment-1` resolves curriculum gap G1)
 **Scope:** Full repository (infrastructure, skills, all 40 assignments across 14 topics)
 **Method:** Read the infrastructure files (`CLAUDE.md`, `README.md`, `cka-homework-plan.md`,
 devcontainer files, both `SKILL.md` files, all three reference files), all 14 topic-level
@@ -333,7 +333,7 @@ Phase 4. G7 and G8 are technique-weaving items deferred to Phase 5.
 - In-place pod resize (Kubernetes 1.33 feature, on the curriculum) is mentioned but not
   practiced.
 
-**Status:** Scoped in Phase 3 at `exercises/autoscaling/` (1 assignment, HPA + in-place resize + VPA concepts + metrics-server). Content generation in Phase 4 (P4 new-topic task).
+**Status:** Resolved 2026-04-18. Scoped in Phase 3 at `exercises/autoscaling/` (1 assignment); content generated under Phase 4 covering metrics-server dependency, HPA v2 spec, CPU and memory-based HPA, multi-metric HPA, behavior tuning (stabilization windows, policies, selectPolicy), in-place pod resize (GA in v1.33), VPA concepts with three update modes, and the AbleToScale/ScalingActive/ScalingLimited diagnostic workflow.
 
 **G2. Jobs and CronJobs.**
 - Zero assignments have `kind: Job` or `kind: CronJob` (confirmed by grep).

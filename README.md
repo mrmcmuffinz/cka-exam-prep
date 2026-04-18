@@ -70,7 +70,7 @@ cka-exam-prep/
     ├── storage/                       # PV, PVC, StorageClass, dynamic provisioning (1-3, content complete)
     ├── troubleshooting/               # Cross-domain capstone series (1-4, content complete)
     ├── jobs-and-cronjobs/             # Batch workloads (1, content complete)
-    ├── autoscaling/                   # HPA, VPA concepts, in-place pod resize (1, prompt in place, content pending)
+    ├── autoscaling/                   # HPA, VPA concepts, in-place pod resize (1, content complete)
     ├── statefulsets/                  # Stateful workloads (1, content complete)
     ├── admission-controllers/         # Built-ins and ValidatingAdmissionPolicy (1, prompt in place, content pending)
     └── pod-security/                  # Pod Security Standards and Pod Security Admission (1, content complete)

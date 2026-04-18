@@ -24,18 +24,19 @@ We are mid-way through a large remediation effort captured in `docs/remediation-
 **Current state as of 2026-04-18 (update this block in `next-session-prompt.md` after each session):**
 
 - Phases 1, 2, 3 complete.
-- Phase 4 is in progress. **5 of approximately 19 assignments content-complete:**
+- Phase 4 is in progress. **6 of approximately 19 assignments content-complete:**
   - `exercises/jobs-and-cronjobs/assignment-1/` (closes curriculum gap G2)
   - `exercises/pod-security/assignment-1/` (closes curriculum gap G6)
   - `exercises/rbac/assignment-2/` (closes P4.1; partially resolves audit findings E1 and E4)
   - `exercises/statefulsets/assignment-1/` (closes curriculum gap G5)
   - `exercises/troubleshooting/assignment-2/` (closes P4.4; further resolves finding E4)
+  - `exercises/autoscaling/assignment-1/` (closes curriculum gap G1)
 - Kubernetes target version for all content: **v1.35** (per the CKA curriculum document on github.com/cncf/curriculum).
 - Component pins verified against upstream docs on 2026-04-18 and recorded in `docs/cluster-setup.md` version matrix.
 
 **What I need from you this session:**
 
-1. **Pick the next Phase 4 task from the priority queue in `docs/session-handoff.md`.** Top choices: `troubleshooting/assignment-4` (stub-to-full regeneration, highest visual impact per assignment; P4.5), or `autoscaling/assignment-1`, `admission-controllers/assignment-1` (new content closing remaining curriculum gaps G1 and G3). Tell me which one you plan to generate and confirm you have read the four essential documents before writing anything.
+1. **Pick the next Phase 4 task from the priority queue in `docs/session-handoff.md`.** Top choices: `troubleshooting/assignment-4` (stub-to-full regeneration, last remaining stub; P4.5), or `admission-controllers/assignment-1` (new content closing the last remaining curriculum gap G3). Tell me which one you plan to generate and confirm you have read the four essential documents before writing anything.
 
 2. **Generate the four content files** (`README.md`, `<topic>-tutorial.md`, `<topic>-homework.md`, `<topic>-homework-answers.md`) that satisfy every hard gate in `base-template.md`. Use the 9-section canonical README shape, narrative paragraph flow in the tutorial, 15 build-or-fix exercises with RBAC-style verification, three-stage debugging answers for Level 3 and Level 5, and a Common Mistakes section with three or more entries.
 

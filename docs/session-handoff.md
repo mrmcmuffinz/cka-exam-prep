@@ -2,7 +2,7 @@
 
 This document explains how to continue the remediation work across Claude Code sessions. It is intended for the repo maintainer (Abe) or any future assistant resuming Phase 4 content generation.
 
-**Last updated:** 2026-04-18 (after Phase 4 assignments 1, 2, 3, 4, and 5 of ~19 complete)
+**Last updated:** 2026-04-18 (after Phase 4 assignments 1-6 of ~19 complete)
 
 ---
 
@@ -15,7 +15,7 @@ As of 2026-04-18:
 | 1. Infrastructure fixes | Complete | typo, version pins, worktree dir, tmux commit |
 | 2. Skill asset strengthening | Complete | base-template.md, SKILL.md, cluster-setup.md, registry refresh |
 | 3. Topic scoping | Complete | 5 new topic READMEs + prompts; ingress restructured to 5 assignments with updated prompts |
-| 4. Content generation | In progress | 5 of ~19 assignments done: `jobs-and-cronjobs/assignment-1`, `pod-security/assignment-1`, `rbac/assignment-2`, `statefulsets/assignment-1`, `troubleshooting/assignment-2` |
+| 4. Content generation | In progress | 6 of ~19 assignments done: `jobs-and-cronjobs/assignment-1`, `pod-security/assignment-1`, `rbac/assignment-2`, `statefulsets/assignment-1`, `troubleshooting/assignment-2`, `autoscaling/assignment-1` |
 | 5. Technique weaving | Not started | kubectl debug, port-forward, scheduler profiles |
 | 6. Verification and housekeeping | Not started | cross-reference audit, final consistency sweep |
 
@@ -43,6 +43,7 @@ Look at `docs/remediation-plan.md` Phase 4. Tasks that are `Not started` are rea
 - P4.1: `rbac/assignment-2` content
 - P3.6 partially: `statefulsets/assignment-1` content
 - P4.4: `troubleshooting/assignment-2` content
+- P3.6 partially: `autoscaling/assignment-1` content
 
 **Recommended next-up priority order (any can be done independently):**
 
@@ -50,8 +51,7 @@ Look at `docs/remediation-plan.md` Phase 4. Tasks that are `Not started` are rea
    - `troubleshooting/assignment-4` (P4.5)
 
 2. **New gap topics** (close curriculum holes; prompts already in place from Phase 3)
-   - `autoscaling/assignment-1` (P3.6 remainder)
-   - `admission-controllers/assignment-1` (P3.6 remainder)
+   - `admission-controllers/assignment-1` (P3.6 remainder; last remaining new-topic gap)
 
 3. **Regenerate thin existing** (quality uplift; existing content works but does not meet new gates)
    - `security-contexts/assignment-1,2,3` (P4.2)
@@ -143,8 +143,9 @@ When generating new Phase 4 content, read one of the completed reference assignm
 - `exercises/rbac/assignment-2/` — skill-generated under the new hard gates; cluster-scoped authorization topic; demonstrates the three-stage debugging structure on silent-failure RBAC bugs
 - `exercises/statefulsets/assignment-1/` — skill-generated under the new hard gates; workload-controller topic with rich tutorial narrative on scope-matrix failures and staged rollouts
 - `exercises/troubleshooting/assignment-2/` — skill-generated under the new hard gates; all-debug troubleshooting topic with kind-specific inside-the-node workflows, the canonical reference for a "15 debug exercises" shape
+- `exercises/autoscaling/assignment-1/` — skill-generated under the new hard gates; mixes build, debug, and design exercises around a controller that depends on a live observable signal (metrics-server)
 
-Pick whichever is most shape-adjacent to the assignment being generated. For ingress assignments, read a networking-style reference. For RBAC-style authorization or admission topics, `rbac/assignment-2` is the current Phase 4 exemplar. For workload-controller topics, `jobs-and-cronjobs/assignment-1` and `statefulsets/assignment-1` are the nearest shape. For troubleshooting-heavy topics (troubleshooting/assignment-4, any future all-debug assignment), `troubleshooting/assignment-2` is the shape.
+Pick whichever is most shape-adjacent to the assignment being generated. For ingress assignments, read a networking-style reference. For RBAC-style authorization or admission topics, `rbac/assignment-2` is the current Phase 4 exemplar. For workload-controller topics, `jobs-and-cronjobs/assignment-1` and `statefulsets/assignment-1` are the nearest shape. For autoscaling or other controller topics depending on metrics-server, `autoscaling/assignment-1` is the reference. For troubleshooting-heavy topics (troubleshooting/assignment-4, any future all-debug assignment), `troubleshooting/assignment-2` is the shape.
 
 ---
 
@@ -194,8 +195,8 @@ Tick every item before marking a task Complete.
 
 ## Summary
 
-Five assignments complete out of roughly 19 in Phase 4. Each full assignment takes 20-30% of a 1M context window, so plan on 2-3 assignments per session with Opus 4.7 1M. Smaller fixes (Phase 5 technique weaving, targeted homework-only regenerations) fit comfortably on Sonnet 4.6 at 200k.
+Six assignments complete out of roughly 19 in Phase 4. Each full assignment takes 20-30% of a 1M context window, so plan on 2-3 assignments per session with Opus 4.7 1M. Smaller fixes (Phase 5 technique weaving, targeted homework-only regenerations) fit comfortably on Sonnet 4.6 at 200k.
 
-The reference quality bar is set by `jobs-and-cronjobs/assignment-1`, `pod-security/assignment-1`, `rbac/assignment-2`, `statefulsets/assignment-1`, and `troubleshooting/assignment-2`. Future Phase 4 output must meet the same bar.
+The reference quality bar is set by `jobs-and-cronjobs/assignment-1`, `pod-security/assignment-1`, `rbac/assignment-2`, `statefulsets/assignment-1`, `troubleshooting/assignment-2`, and `autoscaling/assignment-1`. Future Phase 4 output must meet the same bar.
 
 Doc sync is not optional: update `remediation-plan.md` and `audit-findings.md` in the same commit as each content task to avoid the drift that required the 2026-04-18 doc-sync pass.
