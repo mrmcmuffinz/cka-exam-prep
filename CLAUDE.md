@@ -107,7 +107,7 @@ exercises/                          All homework assignments (content state as o
   jobs-and-cronjobs/1               Batch workloads (content complete, 2026-04-18)
   autoscaling/1                     HPA, VPA, in-place pod resize (content complete, 2026-04-18)
   statefulsets/1                    Stateful workloads (content complete, 2026-04-18)
-  admission-controllers/1           Built-ins and ValidatingAdmissionPolicy (prompt in place, content pending)
+  admission-controllers/1           Built-ins and ValidatingAdmissionPolicy (content complete, 2026-04-18)
   pod-security/1                    Pod Security Standards and PSA (content complete, 2026-04-18)
 
 .claude/skills/                     Claude Code skills for assignment generation

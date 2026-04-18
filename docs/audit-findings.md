@@ -1,7 +1,7 @@
 # Repository Audit Findings
 
 **Audit date:** 2026-04-18
-**Last status update:** 2026-04-18 (Phases 1-3 complete; Phase 4 in progress, 6 of ~19 assignments content-complete; `rbac/assignment-2` moves E1 and E4 further along, `statefulsets/assignment-1` resolves curriculum gap G5, `troubleshooting/assignment-2` further resolves E4, `autoscaling/assignment-1` resolves curriculum gap G1)
+**Last status update:** 2026-04-18 (Phases 1-3 complete; Phase 4 in progress, 7 of ~19 assignments content-complete; P3.6 fully complete with all five new-topic assignments done; G1, G2, G3, G5, G6 curriculum gaps all resolved; `rbac/assignment-2` and `troubleshooting/assignment-2` move E1 and E4 further along)
 **Scope:** Full repository (infrastructure, skills, all 40 assignments across 14 topics)
 **Method:** Read the infrastructure files (`CLAUDE.md`, `README.md`, `cka-homework-plan.md`,
 devcontainer files, both `SKILL.md` files, all three reference files), all 14 topic-level
@@ -351,7 +351,7 @@ Phase 4. G7 and G8 are technique-weaving items deferred to Phase 5.
   `MutatingWebhookConfiguration`, or `ValidatingWebhookConfiguration`.
 - CEL-based `ValidatingAdmissionPolicy` (GA in 1.30) is not covered.
 
-**Status:** Scoped in Phase 3 at `exercises/admission-controllers/` (1 assignment, built-ins plus `ValidatingAdmissionPolicy`). Content generation in Phase 4.
+**Status:** Resolved 2026-04-18. Scoped in Phase 3 at `exercises/admission-controllers/` (1 assignment); content generated under Phase 4 covering the four-phase request flow, built-in admission controllers (NamespaceLifecycle, LimitRanger, ResourceQuota, ServiceAccount, DefaultStorageClass, MutatingAdmissionWebhook, ValidatingAdmissionWebhook, PodSecurity), the API server's `--enable-admission-plugins` flag, ValidatingAdmissionPolicy with CEL including matchConstraints, validations with message/messageExpression, failurePolicy, paramKind, and the three validationActions (Deny, Warn, Audit).
 
 **G4. `kubectl debug` and ephemeral containers.**
 - No mentions anywhere in the repo.
