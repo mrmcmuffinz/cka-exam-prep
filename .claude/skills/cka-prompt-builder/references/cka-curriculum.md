@@ -1,8 +1,8 @@
 # CKA Exam Curriculum Reference
 
 **Source:** CNCF official curriculum (github.com/cncf/curriculum)
-**Exam version:** Kubernetes v1.34+ (updated February 2025)
-**Last verified:** 2026-04-17
+**Exam version:** Kubernetes v1.35 (CKA_Curriculum_v1.35.pdf published by CNCF)
+**Last verified:** 2026-04-18 against github.com/cncf/curriculum
 
 ---
 

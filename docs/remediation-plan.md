@@ -1,7 +1,7 @@
 # Remediation Plan
 
 **Created:** 2026-04-18
-**Last updated:** 2026-04-18 (Phase 1 complete)
+**Last updated:** 2026-04-18 (Phase 1 complete; version pins corrected to K8s 1.35 compatible releases)
 **Companion document:** `audit-findings.md`
 
 This plan addresses the findings from the audit. Every task has an explicit
@@ -55,6 +55,19 @@ techniques, not standalone topics.
 **D5. `tmux` Dockerfile change commits as-is.**
 Small, intentional, harmless. Not a priority to expand further.
 
+**D6. Kubernetes version target is v1.35.**
+Confirmed against `github.com/cncf/curriculum` (document listed as
+`CKA_Curriculum_v1.35.pdf`). This drives all version pin choices for cluster
+components. Component versions must support K8s 1.35 at minimum. Verification
+was done against upstream project documentation (not from general knowledge).
+
+**D7. Verification path for third-party component pins.**
+When pinning any external component version, verify the version supports the
+target Kubernetes version by consulting the component's official documentation
+(its README, releases page, or compatibility matrix). Do not pin based on
+general knowledge. If the documentation is unavailable, flag the gap rather
+than guess.
+
 ---
 
 ## Phase 1: Infrastructure fixes
@@ -65,8 +78,8 @@ Direct edits; skill pipeline not involved.
 |---|---|---|---|
 | P1.1 | Fix `pods/assignment-6/README.md` line 3: `(6 of 6)` to `(6 of 7)` (ref O2) | Complete | Fixed 2026-04-18. |
 | P1.2 | Commit the `tmux` addition in `.devcontainer/Dockerfile` (ref O6) | Complete | Committed 2026-04-18 in the Phase 1 batch. |
-| P1.3 | Pin `ingress-nginx/main` to a release tag in three files under `exercises/ingress-and-gateway-api/assignment-1/` (ref U3) | Complete | Pinned to `controller-v1.11.2` across README, tutorial, and answer key on 2026-04-18. |
-| P1.4 | Align Calico version across six files (ref U2) | Complete | Only three install URLs existed (confirmed by grep). Standardized on `v3.27.0` by updating `troubleshooting/assignment-4/README.md`. |
+| P1.3 | Pin `ingress-nginx/main` to a release tag in three files under `exercises/ingress-and-gateway-api/assignment-1/` (ref U3) | Complete | Initially pinned to `controller-v1.11.2`, corrected on 2026-04-18 to `controller-v1.15.1` after verifying against the ingress-nginx README (latest v1.15.x, supports K8s 1.31-1.35 per the project's compatibility table). The `deploy/static/provider/kind/deploy.yaml` path was verified to exist at that tag. |
+| P1.4 | Align Calico version across three install URLs (ref U2) | Complete | Initially standardized on `v3.27.0`, corrected on 2026-04-18 to `v3.31.5` after verifying against the Calico documentation (v3.31 tested against K8s 1.32-1.35; v3.31.5 released 2026-04-15). The `manifests/calico.yaml` path was verified to exist at that tag. |
 | P1.5 | Decide on `.claude/worktrees/` (ref O5) | Complete | Removed the empty untracked directory on 2026-04-18. `settings.local.json` keeps the `git worktree *` permission so the workflow is available when needed; git will recreate the directory if `git worktree add` places a worktree there. |
 
 ---
@@ -166,3 +179,4 @@ Record notable progress events here with date. Keep entries short.
 |---|---|
 | 2026-04-18 | Audit and plan produced. All tasks at "Not started". |
 | 2026-04-18 | Phase 1 complete (P1.1-P1.5). Infrastructure fixes applied: typo corrected, tmux commit made, `ingress-nginx` pinned to `controller-v1.11.2`, Calico standardized at `v3.27.0`, empty `.claude/worktrees/` removed. |
+| 2026-04-18 | Version pins corrected after verifying against upstream documentation. K8s 1.35 is the exam target (confirmed by `CKA_Curriculum_v1.35.pdf` in github.com/cncf/curriculum). `ingress-nginx` re-pinned to `controller-v1.15.1`, Calico re-pinned to `v3.31.5`, `cka-curriculum.md` reference file updated from "v1.34+" to "v1.35". |

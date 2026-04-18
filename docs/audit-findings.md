@@ -298,6 +298,31 @@ all have dedicated assignments.
 
 ---
 
+## External Dependency Notes
+
+The audit checked external component version compatibility against upstream documentation
+on 2026-04-18. The following notes are useful context for future maintenance.
+
+**Kubernetes target version: v1.35.** Confirmed against `github.com/cncf/curriculum`,
+which publishes the curriculum as `CKA_Curriculum_v1.35.pdf`. Kubernetes 1.35.3 is the
+current stable patch (released 2026-03-19). Supported versions are 1.33, 1.34, and 1.35.
+
+**Ingress-nginx is being retired.** The project README states that best-effort maintenance
+continues until March 2026, after which updates and security patches cease. The repo pins
+`controller-v1.15.1`, which is the latest v1.15 release (2026-03-19) and supports K8s
+1.31-1.35. The ingress-and-gateway-api assignments may eventually need to switch to a
+different ingress controller (InGate, nginx-gateway-fabric, or Gateway API exclusively).
+Worth revisiting if the CKA exam material is updated to reflect this transition.
+
+**Calico v3.31.5** (released 2026-04-15) is the current v3.31 patch. Supports K8s
+1.32-1.35. The repo pins this version across three install URLs.
+
+**Kind v0.31.0** (released 2025-12-18) ships `kindest/node:v1.35.0` as the default and
+also supports images for K8s 1.31-1.34. Users running the exercises should ensure their
+kind binary is v0.31.0 or later to access the 1.35 node image.
+
+---
+
 ## Summary
 
 The bones of the repository are strong. The pod series and `rbac/assignment-1` set a high

@@ -43,7 +43,7 @@ The `extraPortMappings` make ports 80 and 443 on the kind node accessible from y
 Install the nginx-ingress controller configured for kind:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/kind/deploy.yaml
 ```
 
 Wait for the controller to be ready:

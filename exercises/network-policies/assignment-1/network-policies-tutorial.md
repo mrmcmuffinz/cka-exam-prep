@@ -30,7 +30,7 @@ EOF
 Install Calico:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml
+kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.5/manifests/calico.yaml
 ```
 
 Wait for Calico pods to be ready:
