@@ -1,31 +1,47 @@
 # Assignment 2: Control Plane Troubleshooting
 
-This assignment is the second in the four-part troubleshooting series for CKA exam preparation. It focuses on control plane component failures: API server issues, scheduler failures, controller manager problems, and etcd connectivity. This requires understanding Kubernetes architecture and static pod manifests.
+This is the second assignment in the four-part Troubleshooting series. It focuses on failures of the Kubernetes control plane: the API server, the scheduler, the controller manager, and etcd. Where Assignment 1 taught diagnosing a misbehaving application, this assignment teaches diagnosing a misbehaving cluster. The competencies covered are exactly the set most candidates under-practice: reading a static pod manifest in `/etc/kubernetes/manifests/`, using `crictl` when `kubectl` is down, analyzing control plane component logs, verifying certificates with `kubeadm certs check-expiration` and `openssl x509`, renewing kubeadm-managed certificates, and recovering from a control plane component that refuses to start. Kind-specific access patterns (reaching the control plane as a container via `nerdctl exec -it kind-control-plane bash`) are covered up front so that every exercise has a consistent workflow.
 
-## File Overview
+## Files
 
-The assignment is split across four files. `README.md` (this file) provides the overview. `troubleshooting-tutorial.md` covers control plane architecture, static pod debugging, certificate verification, and component log analysis. `troubleshooting-homework.md` contains 15 debugging exercises. `troubleshooting-homework-answers.md` contains solutions with diagnostic workflows.
+| File | Purpose |
+|---|---|
+| `prompt.md` | The generation prompt (input to the homework generator skill) |
+| `README.md` | This overview |
+| `troubleshooting-tutorial.md` | Step-by-step tutorial covering control plane architecture, static pod mechanics, crictl usage, certificate workflow, and log analysis |
+| `troubleshooting-homework.md` | 15 debugging exercises across five difficulty levels |
+| `troubleshooting-homework-answers.md` | Complete solutions using the three-stage debugging structure, with diagnostic workflows and common mistakes |
+
+## Recommended Workflow
+
+Work through the tutorial with a live cluster in front of you. The tutorial walks the control plane from the outside in: first the kubectl-visible view (control plane pods in `kube-system`), then the inside-the-node view (crictl and journalctl when kubectl is down), then the manifest-editing cycle (edit manifest, wait for kubelet to reconcile, observe), then the certificate workflow (inspect, check expiration, renew, restart static pods so the new certs take effect). Every exercise later in the assignment depends on those four loops, so practice them deliberately rather than skimming. When you move into the homework, every exercise is a debug scenario; there are no build tasks at this level. Read the Diagnosis section of the answer key only after you have tried your own diagnostic workflow on a broken cluster. The three-stage answer structure (Diagnosis, What the bug is and why, Fix) is the exam rubric, not the solution shortcut.
 
 ## Difficulty Progression
 
-Level 1: Component status verification. Level 2: Static pod manifest issues. Level 3: Component failures (API server, scheduler, controller manager). Level 4: Certificate issues. Level 5: Complex multi-component scenarios.
+Level 1 practices component status verification and log reading on a cluster that is nominally working; one component is then taken offline to exercise identification. Level 2 covers static pod manifest issues: YAML errors, image-tag mistakes, bad flag values. Every exercise requires editing a manifest inside the control plane container and waiting for kubelet to reconcile. Level 3 covers component failures where the manifest is structurally valid but the component refuses to run or fails to do its job (API server with an unreachable etcd target, scheduler with a misconfigured flag, controller manager with a bad cluster-name). Level 4 covers certificates: expiration awareness, verification against the cluster CA, targeted renewal, and the restart-static-pods step that most candidates forget. Level 5 is advanced: multi-component cascading failures, etcd outage recovery (which takes the whole cluster down), and full control plane recovery from a degraded starting state.
 
 ## Prerequisites
 
-Completed cluster-lifecycle and tls-and-certificates assignments. Multi-node kind cluster.
+Complete `exercises/cluster-lifecycle/assignment-1` through `assignment-3` so that kubeadm's role, static pod mechanics, and etcd fundamentals are already familiar. Complete `exercises/tls-and-certificates/` so that certificate structure (subject, issuer, NotAfter, SANs) and the cluster PKI layout (`/etc/kubernetes/pki/`) are not new material. Complete `exercises/troubleshooting/assignment-1` first; the diagnostic sequence from that assignment (`get pod` then `describe pod` then `logs` then `get events`) carries over directly to the control plane pods.
 
 ## Cluster Requirements
 
-Multi-node kind cluster with access to control plane container via nerdctl exec.
+A multi-node kind cluster is the right environment. The multi-node layout matters because some exercises observe how the API server behaves when one control plane becomes unreachable from worker kubelets, and because the scheduler and controller manager exercises leave worker nodes in predictable states. See `docs/cluster-setup.md#multi-node-kind-cluster` for the cluster creation command and verification. No extra components (MetalLB, Calico, metrics-server, Gateway API CRDs) are required. The `nerdctl` CLI must be available on the host; every control plane manipulation in this assignment is done through `nerdctl exec -it kind-control-plane bash` (or `docker exec -it kind-control-plane bash` if using the Docker provider instead).
+
+Recovery discipline matters in this assignment more than any other. Every exercise that breaks the control plane includes a documented recovery path, and every setup step is reversible by applying the corresponding fix. If a cluster does become unrecoverable (the most common cause is breaking etcd and not restoring the manifest before container restart), delete it with `kind delete cluster` and recreate using the cluster-setup recipe.
 
 ## Kind Cluster Note
 
-Kind runs control plane components as containers within the kind node container. Some exercises require accessing the control plane node via `docker exec kind-control-plane` (or `nerdctl exec`). This is different from bare-metal clusters where you would SSH to nodes.
+Kind runs the control plane as static pods inside a single container named `kind-control-plane`. That container behaves like a node: it runs containerd, kubelet as a systemd service, and the four control plane static pods (`kube-apiserver`, `kube-scheduler`, `kube-controller-manager`, `etcd`). Accessing the control plane requires entering this container with `nerdctl exec -it kind-control-plane bash`, not SSH as you would on a real node. Some scenarios that are routine on bare-metal or VMs (for example, simulating a power loss on a control plane node) are not meaningful in kind; those are flagged in the tutorial and not tested in exercises. Every scenario that is included has been chosen because it reproduces cleanly inside a kind container.
 
-## Estimated Time
+## Estimated Time Commitment
 
-Tutorial: 45-60 minutes. Exercises: 6-8 hours.
+Plan for 60 to 90 minutes on the tutorial; the tutorial walks the four diagnostic loops (kubectl view, inside-the-node view, manifest edit cycle, certificate workflow) and each loop should be practiced until it is muscle memory. The 15 exercises together take six to eight hours. Level 1 exercises run about 15 minutes each once the tutorial workflow is in place. Level 2 manifest exercises run 15 to 25 minutes each; editing in a kind container requires repeated `nerdctl exec` plus a wait for kubelet to reconcile, which cannot be rushed. Level 3 component-failure exercises run 25 to 40 minutes each because the debugging is deeper; the symptom does not always point at the component that is broken. Level 4 certificate exercises run 20 to 35 minutes each. Level 5 exercises are the longest: 45 to 60 minutes each, and the etcd recovery exercise benefits from having the cluster-setup command ready in a side terminal in case the recovery path is slower than expected.
 
-## Key Takeaways
+## Scope Boundary and What Comes Next
 
-Verify control plane component health, debug static pod manifest errors, diagnose API server, scheduler, and controller manager failures, verify certificates and identify expiration issues, and analyze control plane component logs.
+This assignment covers the control plane components: API server, scheduler, controller manager, etcd, and the supporting static pod manifests and certificates. It does not cover application troubleshooting, which is `exercises/troubleshooting/assignment-1`. It does not cover node and kubelet issues (node `NotReady`, DiskPressure, MemoryPressure, kubelet systemd failures), which are `exercises/troubleshooting/assignment-3`. It does not cover network issues (DNS, Services, NetworkPolicies, CNI), which are `exercises/troubleshooting/assignment-4`. It does not cover etcd backup and restore workflows, which are `exercises/cluster-lifecycle/assignment-3` territory; this assignment uses etcd availability debugging only, not state preservation. Admission control and Pod Security admission are handled in their own topic directories and do not appear as control plane failures here.
+
+## Key Takeaways After Completing This Assignment
+
+By the time you finish all 15 exercises, you should be able to run a five-step health check on any kubeadm cluster (pods in `kube-system`, static pod manifests on disk, kubelet service via `journalctl -u kubelet`, `crictl ps` for running containers inside the node, component log sampling) without consulting documentation, because you will have repeated each step a dozen times under broken conditions. You should know where kubeadm places its static pod manifests (`/etc/kubernetes/manifests/`) and the exact four filenames that belong there. You should reach for `crictl` the instant `kubectl` fails, and know that `crictl logs <id>` and `crictl inspect <id>` are the equivalents of `kubectl logs` and `kubectl describe pod` when the API server is gone. You should be able to run `kubeadm certs check-expiration`, read its output format (CERTIFICATE, EXPIRES, RESIDUAL TIME, CERTIFICATE AUTHORITY, EXTERNALLY MANAGED), and know that kubeadm manages exactly seven certificates and three kubeconfig files with the embedded clients, with a default validity of one year for leaf certs and ten years for CAs. You should know that `kubeadm certs renew all` updates the cert files on disk but does not restart the components; the common fix is either to `touch /etc/kubernetes/manifests/*.yaml` or to use `crictl stop`+`crictl rm` to force kubelet to recreate each static pod with the new certificates. You should be comfortable editing a manifest in a kind node with a small editor (`vi`), understand that kubelet reconciles changes within a few seconds, and know that a typo in the manifest makes kubelet fail to start the pod and log the parse error. Finally, you should have a clean recovery mental model for the worst case: etcd is offline, kubectl is unreachable, and you have to recover the cluster using only `nerdctl exec`, `crictl`, and the on-disk manifest in `/etc/kubernetes/manifests/etcd.yaml`.
