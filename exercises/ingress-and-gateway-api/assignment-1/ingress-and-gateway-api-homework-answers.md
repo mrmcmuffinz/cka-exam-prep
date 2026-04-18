@@ -509,7 +509,7 @@ EOF
 
 **Mistake:** Creating Ingress without installing nginx-ingress.
 
-**Fix:** `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml`
+**Fix:** `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.11.2/deploy/static/provider/kind/deploy.yaml`
 
 ### Service Name or Port Wrong
 

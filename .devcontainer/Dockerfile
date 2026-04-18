@@ -6,6 +6,7 @@ RUN apt-get update && \
         socat \
         vim \
         python3-pip \
+        tmux \
     && rm -rf /var/lib/apt/lists/*
 RUN python3 -m pip install semgrep --break-system-packages
 

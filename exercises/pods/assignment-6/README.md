@@ -1,6 +1,6 @@
 # Assignment 6: Multi-Container Patterns
 
-**Series:** CKA Pod-Focused Assignments (6 of 6)
+**Series:** CKA Pod-Focused Assignments (6 of 7)
 **Prerequisites:** Assignments 1-5 (Pod Fundamentals, Configuration Injection, Health & Observability, Scheduling, Resources & QoS)
 **Estimated Time:** 6-8 hours (tutorial + exercises)
 
