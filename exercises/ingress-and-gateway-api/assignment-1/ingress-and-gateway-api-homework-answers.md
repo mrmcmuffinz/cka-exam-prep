@@ -1,549 +1,444 @@
-# Ingress and Gateway API Homework Answers: Ingress Fundamentals
+# Ingress API Fundamentals Homework Answers
 
-Complete solutions for all 15 exercises with explanations.
+Complete solutions. Level 3 and Level 5 debugging answers use the three-stage structure.
 
 ---
 
 ## Exercise 1.1 Solution
 
-**Task:** Create an Ingress with a single backend.
-
-**Solution:**
-
 ```yaml
-kubectl apply -f - <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: webapp-ingress
+  name: hello-ingress
   namespace: ex-1-1
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
-  - host: ex-1-1.local
+  - host: hello.example.test
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: webapp-svc
+            name: hello
             port:
               number: 80
-EOF
 ```
+
+`ingressClassName: traefik` sends this Ingress to the Traefik controller from the tutorial. `pathType: Prefix` with `path: /` matches every request on this host. `backend.service.name: hello` and `backend.service.port.number: 80` route to the Service and its port.
 
 ---
 
 ## Exercise 1.2 Solution
 
-**Task:** Verify Ingress address assignment.
-
-**Solution:**
-
-Check the Ingress status:
-
-```bash
-kubectl get ingress app-ingress -n ex-1-2
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: paths-ingress
+  namespace: ex-1-2
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: paths.example.test
+    http:
+      paths:
+      - {path: /a, pathType: Prefix, backend: {service: {name: a, port: {number: 80}}}}
+      - {path: /b, pathType: Prefix, backend: {service: {name: b, port: {number: 80}}}}
 ```
 
-The ADDRESS column should show `localhost`. If empty, check:
-1. Is nginx-ingress controller running?
-2. Does the Ingress have ingressClassName: nginx?
+Two paths on the same host, each pointing to its own Service. `Prefix` matching respects path-segment boundaries, so `/a/anything` matches `/a` but `/apple` does not.
 
 ---
 
 ## Exercise 1.3 Solution
 
-**Task:** Test with curl and Host header.
-
-**Solution:**
-
-```bash
-curl -H "Host: hello.test" http://localhost/
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: catchall
+  namespace: ex-1-3
+spec:
+  ingressClassName: traefik
+  defaultBackend:
+    service: {name: fallback, port: {number: 80}}
 ```
 
-This sends the request to localhost but with the Host header set to `hello.test`, which the Ingress controller uses for routing.
+No `rules` means no specific routing. `defaultBackend` receives every request. Since there is only one Ingress in this namespace and it has only `defaultBackend`, any Host header that reaches Traefik and does not match other Ingresses in the cluster lands here.
 
 ---
 
 ## Exercise 2.1 Solution
 
-**Task:** Create Ingress with multiple path routes.
-
-**Solution:**
-
 ```yaml
-kubectl apply -f - <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: multi-path
+  name: exact-ingress
   namespace: ex-2-1
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
-  - host: ex-2-1.local
+  - host: exact.example.test
     http:
       paths:
-      - path: /frontend
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend-svc
-            port:
-              number: 80
-      - path: /backend
-        pathType: Prefix
-        backend:
-          service:
-            name: backend-svc
-            port:
-              number: 80
-EOF
+      - path: /api
+        pathType: Exact
+        backend: {service: {name: api, port: {number: 80}}}
 ```
+
+`Exact` matches the path character-for-character. `/api` matches only `/api` (no trailing slash, no subpath). `/api/` and `/api/extra` do not match.
 
 ---
 
 ## Exercise 2.2 Solution
 
-**Task:** Create Ingress with multiple host routes.
-
-**Solution:**
-
 ```yaml
-kubectl apply -f - <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: multi-host
+  name: multi
   namespace: ex-2-2
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
-  - host: a.example.com
+  - host: foo.example.test
     http:
       paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: site-a-svc
-            port:
-              number: 80
-  - host: b.example.com
+      - {path: /, pathType: Prefix, backend: {service: {name: foo, port: {number: 80}}}}
+  - host: bar.example.test
     http:
       paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: site-b-svc
-            port:
-              number: 80
-EOF
+      - {path: /, pathType: Prefix, backend: {service: {name: bar, port: {number: 80}}}}
+  - host: shared.example.test
+    http:
+      paths:
+      - {path: /foo, pathType: Prefix, backend: {service: {name: foo, port: {number: 80}}}}
+      - {path: /bar, pathType: Prefix, backend: {service: {name: bar, port: {number: 80}}}}
 ```
+
+Three rules (three `host` entries), the third with two paths. The `host` field scopes the rule to a specific Host header.
 
 ---
 
 ## Exercise 2.3 Solution
 
-**Task:** Test different path types.
-
-**Solution:**
-
 ```yaml
-kubectl apply -f - <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: prefix-ingress
+  name: with-fallback
   namespace: ex-2-3
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
+  defaultBackend:
+    service: {name: default, port: {number: 80}}
   rules:
-  - host: ex-2-3.local
+  - host: app.example.test
     http:
       paths:
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: api-svc
-            port:
-              number: 80
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: exact-ingress
-  namespace: ex-2-3
-spec:
-  ingressClassName: nginx
-  rules:
-  - host: ex-2-3.local
-    http:
-      paths:
-      - path: /exact
-        pathType: Exact
-        backend:
-          service:
-            name: api-svc
-            port:
-              number: 80
-EOF
+      - {path: /, pathType: Prefix, backend: {service: {name: app, port: {number: 80}}}}
 ```
 
-**Behavior:**
-- Prefix `/api`: matches `/api`, `/api/`, `/api/anything`
-- Exact `/exact`: matches only `/exact`, not `/exact/more`
+A rule plus a defaultBackend. The rule wins for requests on its host; any other host falls to defaultBackend.
 
 ---
 
 ## Exercise 3.1 Solution
 
-**Task:** Diagnose backend service not found.
-
-**Diagnosis:**
+**Diagnosis.**
 
 ```bash
-kubectl get svc -n ex-3-1
-# Shows: application-svc
-
-kubectl describe ingress broken-ingress -n ex-3-1
-# Backend: app-svc (does not exist!)
+kubectl describe ingress -n ex-3-1 stuck
+kubectl get ingressclass
 ```
 
-**Root Cause:** Ingress references `app-svc` but the service is named `application-svc`.
+Describe shows no loadBalancer.ingress, no events. `kubectl get ingressclass` shows `traefik`, not `nginx`. The Ingress's `ingressClassName: nginx` names a non-existent class.
 
-**Fix:** Change the Ingress backend service name to `application-svc`.
+**What the bug is and why.** The Ingress references `ingressClassName: nginx`. No controller in this cluster watches the `nginx` class (only `traefik` does). Traefik ignores the Ingress because its class does not match. No controller assigns an ADDRESS; traffic returns 404.
+
+**Fix.**
+
+```bash
+kubectl patch ingress -n ex-3-1 stuck -p '{"spec":{"ingressClassName":"traefik"}}'
+```
+
+Traefik immediately picks up the Ingress. ADDRESS populates within a few seconds. Traffic routes correctly.
 
 ---
 
 ## Exercise 3.2 Solution
 
-**Task:** Diagnose path not matching.
-
-**Diagnosis:**
+**Diagnosis.**
 
 ```bash
-kubectl describe ingress path-issue -n ex-3-2
-# Path: api (missing leading /)
+kubectl describe ingress -n ex-3-2 ifu | grep Backends
+kubectl get svc -n ex-3-2
 ```
 
-**Root Cause:** Path is `api` instead of `/api`. Paths must start with `/`.
+The Ingress names Service `frontend`. Only `frontend-svc` exists; no Service named `frontend`. Traefik's 404 comes from routing to a non-existent Service.
 
-**Fix:** Change path to `/api`.
+**What the bug is and why.** The Ingress's `backend.service.name` points at a Service that does not exist. Kubernetes does not validate Service existence at Ingress creation time; the controller sees no endpoints and returns 404 at request time.
+
+**Fix.**
+
+```bash
+kubectl patch ingress -n ex-3-2 ifu --type='json' \
+  -p='[{"op":"replace","path":"/spec/rules/0/http/paths/0/backend/service/name","value":"frontend-svc"}]'
+```
 
 ---
 
 ## Exercise 3.3 Solution
 
-**Task:** Diagnose no address assigned.
-
-**Diagnosis:**
+**Diagnosis.**
 
 ```bash
-kubectl describe ingress no-class -n ex-3-3
-# No ingressClassName specified
+curl -sI -H "Host: api.example.test" http://localhost/api/v1
+# Returns 404
+
+curl -sI -H "Host: api.example.test" http://localhost/api
+# Also 404 (application serves at /api/v1, not /api)
 ```
 
-**Root Cause:** The Ingress does not have `ingressClassName: nginx`. Without this, no controller picks it up.
+The Ingress's `path: /api, pathType: Exact` matches only the literal `/api`. But the nginx backend only responds at `/api/v1`. So even when the Ingress matches, the backend 404s. And `/api/v1` does not match `Exact /api` in the Ingress.
 
-**Fix:** Add `spec.ingressClassName: nginx`.
+**What the bug is and why.** `Exact` matching requires the request path to exactly equal the Ingress path. `/api/v1` does not equal `/api`. The fix is to change to `pathType: Prefix` (so `/api` matches `/api/v1` too) and keep the nginx config serving at `/api/v1`.
+
+**Fix.**
+
+```bash
+kubectl patch ingress -n ex-3-3 path-bad --type='json' \
+  -p='[{"op":"replace","path":"/spec/rules/0/http/paths/0/pathType","value":"Prefix"}]'
+```
 
 ---
 
 ## Exercise 4.1 Solution
 
-**Task:** Configure default backend.
-
-**Solution:**
-
 ```yaml
-kubectl apply -f - <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: with-default
+  name: four-one
   namespace: ex-4-1
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   defaultBackend:
-    service:
-      name: default-svc
-      port:
-        number: 80
+    service: {name: svc-default, port: {number: 80}}
   rules:
-  - host: ex-4-1.local
+  - host: app.example.test
     http:
       paths:
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: api-svc
-            port:
-              number: 80
-EOF
+      - {path: /x, pathType: Prefix, backend: {service: {name: svc-x, port: {number: 80}}}}
+      - {path: /y, pathType: Prefix, backend: {service: {name: svc-y, port: {number: 80}}}}
 ```
 
 ---
 
 ## Exercise 4.2 Solution
 
-**Task:** Use wildcard host.
-
-**Solution:**
-
 ```yaml
-kubectl apply -f - <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: wildcard
+  name: traefik-version
   namespace: ex-4-2
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
-  - host: "*.example.com"
+  - host: two-classes.example.test
     http:
       paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: wildcard-svc
-            port:
-              number: 80
-EOF
+      - {path: /, pathType: Prefix, backend: {service: {name: present, port: {number: 80}}}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: future-version
+  namespace: ex-4-2
+spec:
+  ingressClassName: future-controller
+  rules:
+  - host: two-classes.example.test
+    http:
+      paths:
+      - {path: /, pathType: Prefix, backend: {service: {name: present, port: {number: 80}}}}
 ```
 
-Note: The wildcard `*` only matches one subdomain level.
+Only `traefik-version` serves traffic. `future-version` sits with no ADDRESS because the `future-controller` IngressClass has no controller watching it. The key lesson: multiple IngressClasses can coexist in a cluster; each owns its own Ingresses.
 
 ---
 
 ## Exercise 4.3 Solution
 
-**Task:** Route multiple services on different paths.
-
-**Solution:**
-
 ```yaml
-kubectl apply -f - <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: multi-api
+  name: versioned
   namespace: ex-4-3
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
-  - host: ex-4-3.local
+  - host: versioned.example.test
     http:
       paths:
-      - path: /api/users
-        pathType: Prefix
-        backend:
-          service:
-            name: users-svc
-            port:
-              number: 80
-      - path: /api/products
-        pathType: Prefix
-        backend:
-          service:
-            name: products-svc
-            port:
-              number: 80
-      - path: /api/orders
-        pathType: Prefix
-        backend:
-          service:
-            name: orders-svc
-            port:
-              number: 80
-EOF
+      - {path: /api/v1, pathType: Prefix, backend: {service: {name: api-v1, port: {number: 80}}}}
+      - {path: /api/v2, pathType: Prefix, backend: {service: {name: api-v2, port: {number: 80}}}}
 ```
+
+Two paths on one host. Prefix matching means `/api/v1/x` routes to `api-v1` and `/api/v2/y` routes to `api-v2`. `/api/v3` 404s because no rule matches.
 
 ---
 
 ## Exercise 5.1 Solution
 
-**Task:** Multi-service application with path routing.
-
-**Solution:**
-
 ```yaml
-kubectl apply -f - <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app-ingress
+  name: webapp
   namespace: ex-5-1
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
+  defaultBackend:
+    service: {name: marketing, port: {number: 80}}
   rules:
-  - host: app.example.com
+  - host: www.webapp.example.test
     http:
       paths:
-      - path: /api
-        pathType: Prefix
-        backend:
-          service:
-            name: api-svc
-            port:
-              number: 80
-      - path: /static
-        pathType: Prefix
-        backend:
-          service:
-            name: static-svc
-            port:
-              number: 80
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: web-svc
-            port:
-              number: 80
-EOF
+      - {path: /, pathType: Prefix, backend: {service: {name: marketing, port: {number: 80}}}}
+      - {path: /static, pathType: Prefix, backend: {service: {name: static, port: {number: 80}}}}
+  - host: api.webapp.example.test
+    http:
+      paths:
+      - {path: /, pathType: Prefix, backend: {service: {name: api, port: {number: 80}}}}
+  - host: admin.webapp.example.test
+    http:
+      paths:
+      - {path: /, pathType: Prefix, backend: {service: {name: admin, port: {number: 80}}}}
+  - host: health.webapp.example.test
+    http:
+      paths:
+      - {path: /healthz, pathType: Exact, backend: {service: {name: health, port: {number: 80}}}}
 ```
 
-Note: More specific paths (`/api`, `/static`) should come before the catch-all `/`.
+Note: on the `www.webapp.example.test` host, `/static` is listed before `/` so its more-specific Prefix wins for paths starting with `/static`. Traefik (and Ingress controllers generally) sort paths by specificity; still, listing the more-specific path first is good practice for clarity. `defaultBackend` on `marketing` means any request on a host not explicitly routed lands on the marketing site.
 
 ---
 
 ## Exercise 5.2 Solution
 
-**Task:** Debug complex routing issue.
-
-**Diagnosis:**
+**Diagnosis.**
 
 ```bash
-kubectl get svc main-svc -n ex-5-2 -o yaml
-# port: 8080 (service port)
-# targetPort: 80 (pod port)
-
-kubectl describe ingress complex-routing -n ex-5-2
-# Backend port: 80
+kubectl get ingress -n ex-5-2 broken
+kubectl get ingressclass
+kubectl get svc -n ex-5-2
 ```
 
-**Root Cause:** The Ingress references port 80, but the service exposes port 8080.
+Three facts surface:
 
-**Fix:** Change the Ingress backend port to 8080:
+- Ingress has no ADDRESS. Its `ingressClassName: nginx` has no matching controller; only `traefik` exists.
+- Even with the class fixed, `backend.service.name: fake-svc` points at a non-existent Service.
+- Even with both fixed, `pathType: Exact` on `/v1/status` will match `/v1/status` but the application also needs `Prefix` if any subpaths are ever added (for this exercise, `Exact` on `/v1/status` matches because the nginx config explicitly serves at that path).
 
-```yaml
-backend:
-  service:
-    name: main-svc
-    port:
-      number: 8080
+Actually the third issue: the nginx backend ConfigMap defines the location at `/v1/status`, which matches `Exact /v1/status`. So `Exact` works here. The real issues are the first two.
+
+**What the bug is and why.**
+
+- The IngressClass is wrong. No controller watches `nginx` in this cluster.
+- The Service name is wrong. `fake-svc` does not exist.
+
+**Fix.**
+
+```bash
+kubectl patch ingress -n ex-5-2 broken --type='json' -p='[
+  {"op":"replace","path":"/spec/ingressClassName","value":"traefik"},
+  {"op":"replace","path":"/spec/rules/0/http/paths/0/backend/service/name","value":"real-svc"}
+]'
 ```
+
+Within seconds, the ADDRESS populates and requests route through.
 
 ---
 
 ## Exercise 5.3 Solution
 
-**Task:** Design Ingress for microservices.
-
-**Solution:**
+Three separate Ingress resources, each owned by a hypothetical team:
 
 ```yaml
-kubectl apply -f - <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
-metadata:
-  name: microservices
-  namespace: ex-5-3
+metadata: {name: api-ingress, namespace: ex-5-3}
 spec:
-  ingressClassName: nginx
-  defaultBackend:
-    service:
-      name: error-svc
-      port:
-        number: 80
+  ingressClassName: traefik
   rules:
-  - host: api.company.com
+  - host: company.example.test
     http:
       paths:
-      - path: /v1/users
-        pathType: Prefix
-        backend:
-          service:
-            name: users-svc
-            port:
-              number: 80
-      - path: /v1/products
-        pathType: Prefix
-        backend:
-          service:
-            name: products-svc
-            port:
-              number: 80
-  - host: www.company.com
+      - {path: /api, pathType: Prefix, backend: {service: {name: api, port: {number: 80}}}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: {name: ui-ingress, namespace: ex-5-3}
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: company.example.test
     http:
       paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend-svc
-            port:
-              number: 80
-EOF
+      - {path: /, pathType: Prefix, backend: {service: {name: ui, port: {number: 80}}}}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: {name: health-ingress, namespace: ex-5-3}
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: company.example.test
+    http:
+      paths:
+      - {path: /healthz, pathType: Exact, backend: {service: {name: health, port: {number: 80}}}}
 ```
 
-**Design Decisions:**
-
-1. **Separate hosts for API and web:** Clean separation of concerns
-2. **Versioned API paths:** `/v1/` allows future API versions
-3. **Default backend:** Handles unknown hosts/paths gracefully
+Multiple Ingresses on the same host are merged by the controller; the more-specific path (`/healthz`, `/api`) wins over the general `/`. This is the pattern used in production to decouple per-team Ingress ownership: the API team owns `api-ingress`, the UI team owns `ui-ingress`, and SRE owns `health-ingress`.
 
 ---
 
 ## Common Mistakes
 
-### Ingress Controller Not Installed
+**1. Forgetting `ingressClassName`.** Omitting the field relies on the cluster's default IngressClass (if any), which changes across environments. In production always set `ingressClassName` explicitly.
 
-**Mistake:** Creating Ingress without installing nginx-ingress.
+**2. Typing the wrong class name.** `nginx` vs `traefik` vs `haproxy` are all common typos. The Ingress sits with empty ADDRESS and no events.
 
-**Fix:** `kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/kind/deploy.yaml`
+**3. Assuming `pathType: Prefix` is a simple string prefix.** `Prefix /app` matches `/app`, `/app/`, `/app/anything` but not `/application`. Path-segment boundaries matter.
 
-### Service Name or Port Wrong
+**4. Using `pathType: Exact` for a backend that serves multiple paths.** Exact matches only the literal path. Clients requesting any child path 404. Use Prefix unless truly a single endpoint.
 
-**Mistake:** Typo in service name or using wrong port.
+**5. Pointing at a non-existent Service.** Kubernetes does not validate that the `backend.service.name` exists at Ingress creation. The first symptom is a 404 or 503 at request time; describe the Ingress and check endpoints.
 
-**Fix:** Verify with `kubectl get svc -n <namespace>`.
+**6. Pointing at a Service that exists but has no endpoints.** If the backend Deployment is unhealthy, the Service has no endpoints, and the Ingress returns 503. Always check `kubectl get endpoints` during debugging.
 
-### PathType Mismatch
+**7. Putting Ingress on the wrong node in a kind cluster.** kind's `extraPortMappings` only apply to one specific node. Traefik must be scheduled on that node (via `nodeSelector: ingress-ready=true` in the Helm install) for traffic on `localhost:80` to reach it.
 
-**Mistake:** Using Exact when Prefix is needed.
-
-**Fix:** Understand Exact matches only exact path, Prefix matches path and subpaths.
-
-### Host Not Matching Request
-
-**Mistake:** Ingress has host but request does not match.
-
-**Fix:** Use `curl -H "Host: hostname" http://localhost/`.
-
-### Backend Service Has No Endpoints
-
-**Mistake:** Service selector does not match pods.
-
-**Fix:** `kubectl get endpoints <service> -n <namespace>`.
+**8. Testing an Ingress with a browser expecting DNS resolution.** DNS for custom hosts (`app.example.test`) is not configured by default. Use `curl -H "Host: <hostname>"` or add hosts to `/etc/hosts`.
 
 ---
 
-## Ingress Debugging Cheat Sheet
+## Verification Commands Cheat Sheet
 
-| Task | Command |
-|------|---------|
-| List Ingresses | `kubectl get ingress -n <ns>` |
-| Describe Ingress | `kubectl describe ingress <name> -n <ns>` |
-| Check controller | `kubectl get pods -n ingress-nginx` |
-| Check endpoints | `kubectl get endpoints <svc> -n <ns>` |
-| Test with host | `curl -H "Host: name" http://localhost/path` |
-| Controller logs | `kubectl logs -n ingress-nginx -l app.kubernetes.io/component=controller` |
+| Check | Command |
+|---|---|
+| Ingress ADDRESS (controller accepted) | `kubectl get ingress -n <ns> <name>` |
+| Ingress rules and backends | `kubectl describe ingress -n <ns> <name>` |
+| IngressClasses available | `kubectl get ingressclass` |
+| Default IngressClass | `kubectl get ingressclass -o jsonpath='{range .items[?(@.metadata.annotations.ingressclass\.kubernetes\.io/is-default-class=="true")]}{.metadata.name}{"\n"}{end}'` |
+| Backend Service endpoints | `kubectl get endpoints -n <ns> <service>` |
+| Test host-based routing | `curl -H "Host: <host>" http://localhost/<path>` |
+| Traefik controller logs | `kubectl logs -n traefik -l app.kubernetes.io/name=traefik --tail=50` |
+| Change IngressClass via patch | `kubectl patch ingress <name> -p '{"spec":{"ingressClassName":"<class>"}}'` |
