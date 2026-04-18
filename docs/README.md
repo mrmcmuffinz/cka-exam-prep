@@ -14,6 +14,7 @@ being made and to track progress against a coherent plan.
 | `remediation-plan.md` | Phased plan for addressing the audit findings. Every task has an explicit status that is updated as work progresses. Includes the key decisions made during planning and a progress log. |
 | `cluster-setup.md` | Single source of truth for kind cluster configurations and the component version matrix. Every assignment README and tutorial references sections of this document by anchor rather than inlining cluster commands. |
 | `session-handoff.md` | How to continue Phase 4 content generation across Claude Code sessions: current status, next-task priority, model and context-size recommendations, reference quality bar, pre-commit checklist. |
+| `next-session-prompt.md` | A ready-to-use prompt to start a new Claude Code session. Copy the block between the marker lines and paste as the first message in a fresh session. Update the "Current state" block after each completed assignment. |
 
 ## Origin
 

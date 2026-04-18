@@ -69,11 +69,11 @@ cka-exam-prep/
     ├── network-policies/              # Ingress/egress rules, namespace isolation (1-3, content complete)
     ├── storage/                       # PV, PVC, StorageClass, dynamic provisioning (1-3, content complete)
     ├── troubleshooting/               # Cross-domain capstone series (1-4, content complete)
-    ├── jobs-and-cronjobs/             # Batch workloads (1, prompt in place, content pending)
+    ├── jobs-and-cronjobs/             # Batch workloads (1, content complete)
     ├── autoscaling/                   # HPA, VPA concepts, in-place pod resize (1, prompt in place, content pending)
     ├── statefulsets/                  # Stateful workloads (1, prompt in place, content pending)
     ├── admission-controllers/         # Built-ins and ValidatingAdmissionPolicy (1, prompt in place, content pending)
-    └── pod-security/                  # Pod Security Standards and Pod Security Admission (1, prompt in place, content pending)
+    └── pod-security/                  # Pod Security Standards and Pod Security Admission (1, content complete)
 ```
 
 "Content complete" means the four content files (README, tutorial, homework, answers) exist. Some content-complete assignments are queued for regeneration against stricter quality gates per `docs/remediation-plan.md` Phase 4.
