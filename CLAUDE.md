@@ -14,6 +14,9 @@ Mannambeth Udemy CKA course and KodeKloud labs.
 - `cka-homework-plan.md` is the master plan. It maps every CKA exam competency to an
   assignment, tracks what has been generated, and defines the generation sequence. Read
   this first when deciding what to work on next.
+- `LEARNING_PATH.md` is the learner-facing curriculum. It organizes all 45 assignments
+  into 10 phases with progress checkboxes, time estimates, prerequisites, and CKA domain
+  coverage. This is the document learners follow to work through the exercises in order.
 - `README.md` is the public-facing repo overview for learners.
 - `docs/audit-findings.md` and `docs/remediation-plan.md` capture the ongoing audit and
   the phased plan for improving the assignment corpus. Read these when deciding what

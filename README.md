@@ -30,6 +30,7 @@ The `cka-homework-plan.md` file at the repo root tracks all 45 assignments in th
 cka-exam-prep/
 ├── CLAUDE.md                          # Claude Code project context
 ├── README.md                          # This file
+├── LEARNING_PATH.md                   # Ordered curriculum with progress tracking
 ├── LICENSE                            # Apache 2.0
 ├── cka-homework-plan.md               # Master plan: coverage matrix, generation sequence
 │
@@ -98,25 +99,9 @@ For details on the generation workflow, see `CLAUDE.md`.
 
 ## Recommended Study Progression
 
-The pod series is designed to be worked through in order. Each assignment builds on the pod spec concepts from earlier assignments and explicitly declares what it assumes and what it defers. Attempting Assignment 4 (Scheduling) without Assignment 1 (Pod Fundamentals) will still work mechanically but misses the point, which is deliberate practice of a full skill stack.
+See **[LEARNING_PATH.md](LEARNING_PATH.md)** for the full ordered curriculum. The learning path organizes all 45 assignments into 10 phases, sequenced to build skills progressively and align with the Mumshad course structure. It includes progress checkboxes, time estimates, and CKA domain coverage per phase.
 
-The RBAC material is independent of the pod series and can be worked through at any point after Assignment 1, since it requires only the ability to create pods for testing service account permissions. RBAC assignment-2 (cluster-scoped) builds on assignment-1 (namespace-scoped) and should be done after it.
-
-1. **Assignment 1: Pod Fundamentals** establishes the pod spec, single and multi-container mechanics, commands and arguments, environment variables from literals, restart policy, image pull policy, and basic init containers. Everything later builds on this.
-2. **Assignment 2: Pod Configuration Injection** adds ConfigMaps and Secrets, consumed as environment variables, volume mounts, and projected volumes, along with the downward API.
-3. **Assignment 3: Pod Health and Observability** covers liveness, readiness, and startup probes, lifecycle hooks, termination behavior, and the diagnostic workflow for unhealthy pods.
-4. **Assignment 4: Pod Scheduling and Placement** introduces the multi-node kind cluster (required from this point on for some exercises) and teaches nodeSelector, node affinity, pod affinity and anti-affinity, taints and tolerations, topology spread, and priority classes.
-5. **Assignment 5: Pod Resources and QoS** covers CPU and memory requests and limits, QoS class assignment, OOMKill and throttling behavior, and namespace-level controls via LimitRange and ResourceQuota.
-6. **Assignment 6: Multi-Container Patterns** teaches the sidecar, ambassador, and adapter patterns, along with native sidecars (init containers with restartPolicy: Always) and shared process namespace.
-7. **Assignment 7: Workload Controllers** transitions from pods to the controllers that manage them: ReplicaSets, Deployments (including rollouts, rollbacks, and strategies), and DaemonSets.
-
-**RBAC assignment-1 (namespace-scoped)** covers Roles and RoleBindings, service accounts, and the common patterns for granting scoped permissions within a namespace. **RBAC assignment-2 (cluster-scoped)** extends this to ClusterRoles, ClusterRoleBindings, aggregated ClusterRoles, and cluster-scoped resources like nodes and PersistentVolumes.
-
-**TLS and Certificates** covers the Kubernetes PKI, certificate creation and inspection with openssl, the Certificates API and CertificateSigningRequests, and kubeconfig certificate management.
-
-**Security Contexts** covers pod and container security settings: runAsUser, runAsGroup, fsGroup, Linux capabilities, readOnlyRootFilesystem, allowPrivilegeEscalation, and seccomp profiles.
-
-After the pod series, the remaining assignments can be worked in any order that follows the generation sequence, since each is self-contained with its own tutorial. The troubleshooting series should be done last as it draws on concepts from all other topics.
+**Quick summary:** Start with the pod series (Phase 1, assignments 1-7), which establishes the foundation for everything else. Then work through cluster infrastructure, access control, workload security, and configuration management before tackling the networking phase. Complete the troubleshooting capstone last, as it integrates concepts from all other topics.
 
 ## How to Work Through an Assignment
 
