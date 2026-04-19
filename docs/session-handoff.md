@@ -2,7 +2,7 @@
 
 This document explains how to continue the remediation work across Claude Code sessions. It is intended for the repo maintainer (Abe) or any future assistant resuming Phase 4 content generation.
 
-**Last updated:** 2026-04-19 (Phase 5 complete: kubectl debug, kubectl port-forward, and scheduler profiles weaved into existing tutorials. Phases 1-5 all closed. Remaining work: Phase 6 verification and housekeeping.)
+**Last updated:** 2026-04-19 (Phase 6 complete: all verification and housekeeping audits passed. Phases 1-6 all closed. Remediation plan complete.)
 
 ---
 
@@ -17,7 +17,7 @@ As of 2026-04-18:
 | 3. Topic scoping | Complete | 5 new topic READMEs + prompts; ingress restructured to 5 assignments with updated prompts |
 | 4. Content generation | Complete | All 19 full-assignment regens done plus 3 surgical regens. security-contexts/1-3, storage/1-3, ingress/1-5 closed under P4.2, P4.3, and P4.9-P4.13 on 2026-04-18 alongside the earlier completions |
 | 5. Technique weaving | Complete | kubectl debug (ephemeral containers, node debugging), kubectl port-forward (services/pods), scheduler profiles (acknowledged in pods/4) |
-| 6. Verification and housekeeping | Not started | cross-reference audit, final consistency sweep |
+| 6. Verification and housekeeping | Complete | series counters verified, cross-references validated, READMEs/tutorials/answers audited, coverage matrix confirmed, audit-findings closed |
 
 ---
 
@@ -53,16 +53,7 @@ Look at `docs/remediation-plan.md` Phase 5 or Phase 6. Tasks that are `Not start
 - P4.12: `ingress-and-gateway-api/assignment-4` content with NGINX Gateway Fabric v2.5.1 (new)
 - P4.13: `ingress-and-gateway-api/assignment-5` content with Ingress2Gateway CLI v1.0.0 (new)
 
-**Next up (Phase 6 only):**
-
-**Phase 6 — verification and housekeeping** (mostly auditing, can be done in one focused session)
-   - P6.1: `6 of 6` typo sweep
-   - P6.2: Cross-reference audit (grep for `exercises/X/assignment-Y`)
-   - P6.3: Audit all README shapes against the 9-section canonical
-   - P6.4: Audit tutorials against the E3 standard (per-field documentation)
-   - P6.5: Audit answer keys against the three-stage debugging structure
-   - P6.6: Final `cka-homework-plan.md` coverage matrix update
-   - P6.7: Final `docs/audit-findings.md` status sweep (already in progress)
+**All phases complete.** No remaining remediation work. The repository is in its final audited state with 45 content-complete assignments across 17 topics. (already in progress)
 
 ### Step 3: Follow the task-appropriate workflow
 
@@ -193,10 +184,15 @@ Tick every item before marking any full-assignment regeneration task Complete. P
 
 ## Summary
 
-Phases 1-5 are complete. All 19 full-assignment regens plus the 3 surgical regens are done (Phase 4). All five new-topic curriculum gaps (G1, G2, G3, G5, G6) are closed. All stub READMEs are regenerated. All thin tutorials are rewritten under the Phase 2 quality gates. All five ingress assignments are regenerated under the D8 controller-diversity restructure. Phase 5 technique weaving is complete: `kubectl debug` weaved into troubleshooting/1 and /3, `kubectl port-forward` weaved into services/1, scheduler profiles acknowledged in pods/4. Curriculum gaps G4, G7, G8 are now resolved.
+All six phases are complete. The remediation plan is closed.
 
-Remaining work: Phase 6 verification and housekeeping (7 audit tasks). No new full-assignment generation required; all fits comfortably on Sonnet 4.6 at 200k context.
+- **45 content-complete assignments** across 17 topics
+- **19 full-assignment regens** under the Phase 2 quality gates plus 3 surgical regens
+- **5 new topics** (jobs-and-cronjobs, autoscaling, statefulsets, admission-controllers, pod-security) closing curriculum gaps G1, G2, G3, G5, G6
+- **Ingress expansion** from 3 to 5 assignments with controller diversity (Traefik, HAProxy Ingress, Envoy Gateway, NGINX Gateway Fabric, Ingress2Gateway CLI)
+- **Technique weaving** for kubectl debug, kubectl port-forward, and scheduler profiles (G4, G7, G8)
+- **Phase 6 verification** confirmed: series counters correct, cross-references valid, READMEs/tutorials/answers meet quality gates
 
 The reference quality bar is set by the 19 skill-generated Phase 4 assignments plus the two hand-crafted originals (`pods/assignment-1`, `rbac/assignment-1`). Any future content work must meet the same bar.
 
-Doc sync is not optional: update `remediation-plan.md` and `audit-findings.md` in the same commit as each content task to avoid the drift that required the 2026-04-18 doc-sync pass.
+For future maintenance, continue the practice of updating `remediation-plan.md` and `audit-findings.md` in the same commit as any content changes.

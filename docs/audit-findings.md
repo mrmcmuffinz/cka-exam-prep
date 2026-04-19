@@ -1,7 +1,7 @@
 # Repository Audit Findings
 
 **Audit date:** 2026-04-18
-**Last status update:** 2026-04-19 (Phases 1-5 all complete. All 19 full-assignment Phase 4 regens done plus 3 surgical regens. Phase 5 technique weaving complete. Findings O1, O3, U1, U4, U7, E1, E2, E3, E5 fully resolved. Curriculum gaps G1, G2, G3, G4, G5, G6, G7, G8 all resolved. E4, U5, U6 resolved in earlier Phase 4 batches. Remaining pending: E6 and E7 (deferred to Phase 6 verification).)
+**Last status update:** 2026-04-19 (Phase 6 verification complete. All findings resolved. Remediation plan closed.)
 **Scope:** Full repository (infrastructure, skills, all 40 assignments across 14 topics)
 **Method:** Read the infrastructure files (`CLAUDE.md`, `README.md`, `cka-homework-plan.md`,
 devcontainer files, both `SKILL.md` files, all three reference files), all 14 topic-level
@@ -346,17 +346,19 @@ The pod tutorial teaches `metadata.labels['key']` works and `metadata.labels.key
 Only the pod series covers this gotcha. If the pattern reappears in later assignments, the
 corresponding tutorials should reinforce it.
 
-**Status: Pending.** No phase explicitly addresses per-gotcha reinforcement across
-tutorials. Consider adding this to Phase 6 verification (P6.4) if the pattern recurs
-during Phase 4 regeneration.
+**Status: Resolved 2026-04-19 (P6.4).** Phase 6 verification confirmed the Downward API label
+syntax gotcha is thoroughly covered in `pods/assignment-2` tutorial, which is the canonical
+location for ConfigMap/Secret/DownwardAPI injection. No other assignment introduces the
+`fieldRef` pattern in a context that would require reinforcement. The pattern does not recur.
 
 **E7. Cross-references are frozen at generation time.**
 Many assignments reference other assignments by path. Those paths now exist, but the
 reference was written when the target was planned. Backward references to prerequisites
 should be verified.
 
-**Status: Pending.** Scheduled for Phase 6 verification (P6.2): a grep pass over all
-`exercises/X/assignment-Y` references confirms each target exists.
+**Status: Resolved 2026-04-19 (P6.2).** Script verified all cross-references across the
+repository. Every `exercises/<topic>/assignment-<n>` path referenced in any .md file points
+to an existing directory. No orphan references found.
 
 ---
 

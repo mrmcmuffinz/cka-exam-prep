@@ -22,7 +22,7 @@ The assignments in this repository are organized to cover all five CKA exam doma
 
 Security topics are distributed across domains rather than grouped into a single series, matching how the CKA exam tests them: RBAC and TLS under Cluster Architecture, security contexts and Pod Security Admission under Workloads & Scheduling, network policies under Services & Networking, and certificate troubleshooting under Troubleshooting.
 
-The `cka-homework-plan.md` file at the repo root tracks all 45 assignments in the corpus, all of which are content-complete as of 2026-04-19 (the 38 original-scope assignments plus the 2-assignment ingress expansion and the 5 new single-assignment topics). The `docs/` directory tracks the audit and the remediation plan that drove the recent Phase 4 quality uplift.
+The `cka-homework-plan.md` file at the repo root tracks all 45 assignments in the corpus, all of which are content-complete as of 2026-04-19 (the 38 original-scope assignments plus the 2-assignment ingress expansion and the 5 new single-assignment topics). The `docs/` directory contains the audit findings and the six-phase remediation plan, which is now complete.
 
 ## Repository Layout
 
@@ -76,7 +76,7 @@ cka-exam-prep/
     └── pod-security/                  # Pod Security Standards and Pod Security Admission (1, content complete)
 ```
 
-"Content complete" means the four content files (README, tutorial, homework, answers) exist. As of 2026-04-19, every assignment in the corpus is content-complete. Phases 1-5 are all complete. Phase 6 (verification and housekeeping) in `docs/remediation-plan.md` tracks final consistency audits.
+"Content complete" means the four content files (README, tutorial, homework, answers) exist. As of 2026-04-19, every assignment in the corpus is content-complete. All six remediation phases are complete and the plan is closed.
 
 Each topic directory contains a topic-level `README.md` that explains why the topic has its number of assignments, what each one covers, scope boundaries, cluster requirements, and recommended order. This is the scoping document that determines how a topic is decomposed before any assignment content is generated.
 

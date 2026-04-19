@@ -1,6 +1,6 @@
 # CKA Homework Assignment Plan
 
-**Status:** All 45 assignments content-complete as of 2026-04-19. Phases 1-5 all complete (infrastructure fixes, skill strengthening, topic scoping, content generation/regeneration, technique weaving). Remaining work (Phase 6 verification and housekeeping) is tracked in `docs/remediation-plan.md`.
+**Status:** All 45 assignments content-complete as of 2026-04-19. All six phases complete (infrastructure fixes, skill strengthening, topic scoping, content generation/regeneration, technique weaving, verification and housekeeping). Remediation plan closed.
 **Last updated:** 2026-04-19
 
 ---
