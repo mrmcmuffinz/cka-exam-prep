@@ -273,11 +273,11 @@ for reference.
 | `ingress-and-gateway-api/assignment-5` | Traefik and Envoy Gateway from prior assignments, plus the `Ingress2Gateway` CLI v1.0.0 | n/a (reuses prior installs) | Both (migration) |
 
 All controller versions verified against each project's official releases page
-on 2026-04-18. The per-assignment tutorial produced in Phase 4 will contain the
-exact Helm or manifest install command for each controller. Until Phase 4
-regeneration, the existing content files in assignments 1-3 pin
-`ingress-nginx controller-v1.15.1` as a transitional state that still works
-with Kubernetes 1.35 per the pre-retirement support matrix.
+on 2026-04-18. The per-assignment tutorial for each ingress assignment contains
+the exact Helm or manifest install command for that controller, produced under
+Phase 4 regeneration (completed 2026-04-18). The transitional `ingress-nginx
+controller-v1.15.1` pin that briefly appeared in assignments 1-3 is no longer
+used by any content file.
 
 ---
 

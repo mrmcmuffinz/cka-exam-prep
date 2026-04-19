@@ -172,17 +172,24 @@ and are the reference quality bar: `pods/assignment-1` is named in `base-templat
 as the canonical reference for README shape, tutorial narrative style, and answer-key
 debugging structure. Do not regenerate these through the skills.
 
-Other assignments across the 13 skill-generated topics (cluster-lifecycle, tls-and-
-certificates, security-contexts, crds-and-operators, storage, services, coredns,
-network-policies, ingress-and-gateway-api, helm, kustomize, rbac/2, troubleshooting)
-are generated content that may be regenerated against the stricter hard gates added
-in Phase 2. The `docs/remediation-plan.md` Phase 4 task list specifies which
-assignments are queued for regeneration.
+All 19 Phase 4 skill-generated assignments (security-contexts/1-3, storage/1-3,
+ingress-and-gateway-api/1-5, plus the earlier batch: rbac/2, jobs-and-cronjobs/1,
+autoscaling/1, statefulsets/1, admission-controllers/1, pod-security/1,
+troubleshooting/2, troubleshooting/4) now satisfy the same hard gates that
+`pods/assignment-1` set. They are additional reference examples of what the
+quality bar looks like when applied by the skill. The remaining skill-generated
+assignments (helm/1-3, kustomize/1-3, crds-and-operators/1-3, tls-and-
+certificates/1-3, cluster-lifecycle/1-3, services/1-3, coredns/1-3,
+network-policies/1-3, troubleshooting/1 and /3) predate the Phase 2 hard gates
+and may be regenerated in the future if a quality gap surfaces; none is
+currently queued.
 
 ## Generation Sequence
 
-The original `cka-homework-plan.md` Generation Sequence is now historical; all 38
-assignments from the original scope are generated. The current plan of work is driven
-by `docs/remediation-plan.md`. Phase 4 covers regeneration of under-delivering
-existing assignments plus content generation for the five new topics and ingress
-assignments 4-5.
+The original `cka-homework-plan.md` Generation Sequence is historical; all 38
+original-scope assignments were generated under that sequence. The subsequent
+plan of work is captured in `docs/remediation-plan.md`. Phase 4 (content
+regeneration of under-delivering assignments, content generation for the
+five new topics, and the ingress restructure from 3 to 5 assignments) is
+now complete. Phases 5 (technique weaving) and 6 (verification and
+housekeeping) remain as small follow-up work.

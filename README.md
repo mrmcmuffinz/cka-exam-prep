@@ -22,7 +22,7 @@ The assignments in this repository are organized to cover all five CKA exam doma
 
 Security topics are distributed across domains rather than grouped into a single series, matching how the CKA exam tests them: RBAC and TLS under Cluster Architecture, security contexts and Pod Security Admission under Workloads & Scheduling, network policies under Services & Networking, and certificate troubleshooting under Troubleshooting.
 
-The `cka-homework-plan.md` file at the repo root tracks the 38 currently generated assignments plus 7 planned (the ingress expansion from 3 to 5 assignments and five new topics: jobs-and-cronjobs, autoscaling, statefulsets, admission-controllers, pod-security). The `docs/` directory tracks the audit and remediation plan that drives this expansion.
+The `cka-homework-plan.md` file at the repo root tracks all 45 assignments in the corpus, all of which are content-complete as of 2026-04-19 (the 38 original-scope assignments plus the 2-assignment ingress expansion and the 5 new single-assignment topics). The `docs/` directory tracks the audit and the remediation plan that drove the recent Phase 4 quality uplift.
 
 ## Repository Layout
 

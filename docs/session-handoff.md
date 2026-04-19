@@ -35,7 +35,7 @@ As of 2026-04-18:
 
 ### Step 2: Identify the next task
 
-Look at `docs/remediation-plan.md` Phase 4. Tasks that are `Not started` are ready. The current completed and priority queue looks like:
+Look at `docs/remediation-plan.md` Phase 5 or Phase 6. Tasks that are `Not started` are ready. Phase 4 is fully closed; the priority queue looks like:
 
 **All Phase 4 tasks complete as of 2026-04-18:**
 - P3.6 fully: all five new-topic assignments content complete
@@ -69,23 +69,29 @@ Look at `docs/remediation-plan.md` Phase 4. Tasks that are `Not started` are rea
    - P6.6: Final `cka-homework-plan.md` coverage matrix update
    - P6.7: Final `docs/audit-findings.md` status sweep (already in progress)
 
-### Step 3: Follow the generation workflow
+### Step 3: Follow the task-appropriate workflow
 
-For each Phase 4 content task:
+**For a Phase 5 weaving task:**
 
-1. Read the assignment's `prompt.md` (already in place from Phase 3 or pre-existing).
-2. Verify any external component version used by the assignment against upstream documentation (per decision D7). Do not trust general knowledge.
-3. Write the four content files (`README.md`, `<topic>-tutorial.md`, `<topic>-homework.md`, `<topic>-homework-answers.md`) matching the canonical shape and hard gates in `base-template.md`.
-4. Use `jobs-and-cronjobs/assignment-1` or `pod-security/assignment-1` as the reference quality bar.
-5. Update `docs/remediation-plan.md`: mark the task Complete with date; add a progress-log entry.
-6. Commit with a clear message.
+1. Read the target tutorial file end-to-end so the new section integrates with the existing narrative.
+2. Check which docs the existing tutorial references and maintain the same cross-reference style.
+3. Add one or two new sections (not a full rewrite). Match the per-field spec-documentation pattern (valid values, defaults, failure mode) already used in the tutorial.
+4. Update `docs/remediation-plan.md`: mark the task Complete with date; add a progress-log entry.
+5. Commit with a clear message.
+
+**For a Phase 6 audit task:**
+
+1. Run the audit (grep, glob, or targeted reads) and produce a list of discrepancies with file-and-line citations.
+2. Fix small ones inline; flag any that require larger work by opening a follow-up task in `docs/remediation-plan.md`.
+3. Update the task status and the relevant audit-finding status.
+4. Commit with a clear message naming the audit that ran and the discrepancies found.
 
 ### Step 4: Keep documentation synchronized as you go
 
-Do not defer doc updates to the end. In the same commit as each content-generation task, update:
+Do not defer doc updates to the end. In the same commit as each task, update:
 
 - `docs/remediation-plan.md` — task status and progress log
-- `docs/audit-findings.md` — any finding whose status now changes (for example, E1 moves from "Partially resolved" closer to "Resolved" as more regenerations complete)
+- `docs/audit-findings.md` — any finding whose status changes (Phase 5 closes G4, G7, G8; Phase 6 closes E6 and E7 once audits confirm no fixes are needed)
 - `cka-homework-plan.md` — only if the high-level status summary changes
 - `.claude/skills/cka-prompt-builder/references/assignment-registry.md` — only if the scope summary of an assignment needs updating
 
@@ -95,24 +101,22 @@ Do not defer doc updates to the end. In the same commit as each content-generati
 
 ### Recommended setup
 
-**For full content generation** (one complete assignment per session, four files of substantial depth):
+**For Phase 5 technique weaving and Phase 6 audits** (the remaining work):
+
+- **Model:** Claude Sonnet 4.6 (`claude-sonnet-4-6`) with the 200k context is sufficient for any Phase 5 weave or any single Phase 6 audit.
+- **Tasks per session:** one Phase 5 weave per session; multiple Phase 6 audits per session if they surface few fixes.
+
+**For historical reference only — full content generation** (no longer required now that Phase 4 is closed):
 
 - **Model:** Claude Opus 4.7 (`claude-opus-4-7`) with the 1M context variant (`claude-opus-4-7[1m]`)
 - **Context usage per assignment:** roughly 14% of a 1M context window
 - **Assignments per session:** 2 is comfortable, 3 is possible but leaves little room for course correction
 
-The 1M context variant is the right call because a good content assignment runs 2,000 to 3,000 lines across the four files, plus you need to keep the prompt, base template, and reference quality-bar example in context while writing. The 200k-token variant is too small for this.
+Use Opus 4.7 1M only if an audit uncovers a full-assignment regeneration requirement, which should not occur under the current plan.
 
-**For smaller targeted fixes** (regenerate a single homework section, fix a Level 1 in an existing assignment):
+### Context budgeting rule of thumb (historical)
 
-- **Model:** Claude Sonnet 4.6 (`claude-sonnet-4-6`) with the 200k context is sufficient
-- **Fixes per session:** several small fixes fit comfortably in 200k context
-
-Use Sonnet 4.6 for Phase 5 technique-weaving (`kubectl debug`, `kubectl port-forward`, scheduler profiles) since those are small additions to existing tutorials. Use Opus 4.7 1M for net-new assignments and full regenerations.
-
-### Context budgeting rule of thumb
-
-Observed from generating the eight completed Phase 4 assignments to date:
+Observed from generating the 19 completed Phase 4 assignments:
 
 - Reading the prompt, base-template, and an existing assignment as quality-bar reference: ~5-8% of 1M context
 - Web-fetching upstream docs for API verification: ~3-5%
@@ -156,9 +160,9 @@ Pick whichever is most shape-adjacent. For the Phase 5 `kubectl debug` weave, `t
 
 ---
 
-## Checklist before committing a Phase 4 assignment
+## Checklist before committing a Phase 4-style assignment (historical; preserved for reference)
 
-Tick every item before marking a task Complete.
+Tick every item before marking any full-assignment regeneration task Complete. Phase 4 is closed, but the same checklist governs any hypothetical future regeneration surfaced by Phase 6 audits.
 
 **File presence:**
 - [ ] `README.md` exists and follows the 9-section canonical shape

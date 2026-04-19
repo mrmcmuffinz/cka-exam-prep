@@ -106,10 +106,11 @@ which is also stale. The CLAUDE.md skill workflow step 8 instructs the generator
 "update `assignment-registry.md` to reflect the new assignment's status" but this did
 not happen for the batch-merged assignments.
 
-**Status: Resolved (Phase 2, commit `1d8cce5`).** `assignment-registry.md` consolidated
-to a single "Assignments" section with a Status Summary; `cka-homework-plan.md`
-Status Summary rewritten to list 38 generated plus 7 planned (ingress expansion plus
-five new topics). See P2.11, P2.12.
+**Status: Resolved (Phase 2, commit `1d8cce5`; Status Summary refreshed again on
+2026-04-19 after Phase 4 closure).** `assignment-registry.md` was consolidated
+to a single "Assignments" section with a Status Summary in Phase 2, and both
+that file and `cka-homework-plan.md` now list all 45 assignments as
+content-complete. See P2.11, P2.12.
 
 **O5. Unused scaffolding.**
 `.claude/worktrees/` exists and is empty. `settings.local.json` allow-lists `git worktree`
@@ -171,10 +172,15 @@ Three files in `exercises/ingress-and-gateway-api/assignment-1/` apply
 `https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml`.
 The `main` branch can move unpredictably.
 
-**Status: Resolved transitionally; superseded by D8 restructure.** Phase 1 pinned to
-`controller-v1.15.1` (commits `6539e27` and `68cdd97`). Phase 4 content regeneration
-replaces ingress-nginx entirely with per-assignment controllers (Traefik, HAProxy
-Ingress, Envoy Gateway, NGINX Gateway Fabric) per decision D8.
+**Status: Resolved fully via the D8 restructure.** Phase 1 pinned the
+transitional state to `controller-v1.15.1` (commits `6539e27` and
+`68cdd97`). Phase 4 content regeneration (P4.9-P4.13, completed
+2026-04-18) replaced ingress-nginx entirely with per-assignment
+controllers per decision D8: Traefik v3.6.13 (assignment-1), HAProxy
+Ingress v3.2.6 (assignment-2), Envoy Gateway v1.7.2 (assignment-3),
+NGINX Gateway Fabric v2.5.1 (assignment-4), Ingress2Gateway CLI v1.0.0
+plus reused prior installs (assignment-5). No content file references
+`ingress-nginx` any longer.
 
 **U4. Verification commands vary in rigor.**
 Four observed patterns:

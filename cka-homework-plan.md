@@ -1,7 +1,7 @@
 # CKA Homework Assignment Plan
 
-**Status:** Content complete for the original scope; expansion and regeneration underway per `docs/remediation-plan.md`
-**Last updated:** 2026-04-18
+**Status:** All 45 assignments content-complete as of 2026-04-19. Phase 4 content regeneration of under-delivering assignments is closed. Remaining work (Phase 5 technique weaving, Phase 6 verification) is tracked in `docs/remediation-plan.md`.
+**Last updated:** 2026-04-19
 
 ---
 
@@ -32,37 +32,41 @@ pod scheduling appears in both the pod series and the troubleshooting series).
 
 ## Assignment Status Summary
 
-**Total assignments as of 2026-04-18:** 38 generated, with 7 new assignments
-planned (2 for the ingress topic expansion plus 5 for new topics).
+**Total assignments as of 2026-04-19:** 45 content-complete. Every assignment
+in the corpus has its four content files (README, tutorial, homework, answers)
+plus its `prompt.md` input.
 
-- **Generated (original scope):** 38. All assignments across pods (1-7),
-  rbac (1-2), cluster-lifecycle (1-3), tls-and-certificates (1-3),
-  security-contexts (1-3), crds-and-operators (1-3), storage (1-3),
-  services (1-3), coredns (1-3), network-policies (1-3),
-  ingress-and-gateway-api (1-3), helm (1-3), kustomize (1-3), and
-  troubleshooting (1-4).
-- **Planned regeneration (Phase 4 of `docs/remediation-plan.md`):** several
-  assignments will be regenerated against stricter quality gates defined in
-  `base-template.md`. This does not add assignments; it raises the quality
-  bar of existing ones.
-- **Planned new assignments (Phase 3 of `docs/remediation-plan.md`):**
-  - `ingress-and-gateway-api/assignment-4` and `assignment-5` (ingress
-    topic expansion per decision D8)
-  - New topic `autoscaling/` covering HPA, VPA, and in-place pod resize
-    (1 to 2 assignments)
-  - New topic `jobs-and-cronjobs/` (1 assignment)
-  - New topic `statefulsets/` (1 assignment)
-  - New topic `admission-controllers/` (1 assignment)
-  - New topic `pod-security/` covering Pod Security Standards and
-    Pod Security Admission (1 assignment)
+- **Original-scope corpus (38):** pods (1-7), rbac (1-2), cluster-lifecycle
+  (1-3), tls-and-certificates (1-3), security-contexts (1-3), crds-and-operators
+  (1-3), storage (1-3), services (1-3), coredns (1-3), network-policies (1-3),
+  ingress-and-gateway-api (1-3 as originally scoped), helm (1-3), kustomize
+  (1-3), and troubleshooting (1-4).
+- **Ingress expansion (D8, +2):** `ingress-and-gateway-api/assignment-4`
+  (NGINX Gateway Fabric) and `assignment-5` (Ingress2Gateway migration). The
+  topic is now 5 assignments covering controller diversity: Traefik, HAProxy
+  Ingress, Envoy Gateway, NGINX Gateway Fabric, plus the migration capstone.
+- **New topics (+5):** `autoscaling/1` (HPA, VPA, in-place resize);
+  `jobs-and-cronjobs/1`; `statefulsets/1`; `admission-controllers/1` (built-ins
+  plus ValidatingAdmissionPolicy); `pod-security/1` (Pod Security Standards
+  and Pod Security Admission).
+
+All 19 regenerated Phase 4 assignments (security-contexts/1-3, storage/1-3,
+ingress-and-gateway-api/1-5, rbac/2, jobs-and-cronjobs/1, autoscaling/1,
+statefulsets/1, admission-controllers/1, pod-security/1, troubleshooting/2,
+troubleshooting/4) satisfy the Phase 2 hard gates: 9-section canonical
+README, narrative tutorial with per-field spec documentation, 15 build-or-fix
+exercises with RBAC-style verification, three-stage debugging answers, and
+Common Mistakes sections with 7-8 entries each. Three surgical regens
+(P4.6 cluster-lifecycle/1 homework, P4.7 crds-and-operators/1 Level 1
+fixes, P4.8 troubleshooting/1 Exercise 1.2 fix) round out Phase 4.
 
 **Assignment distribution:**
-- **3-assignment topics:** 10 topics (cluster-lifecycle, tls-and-certificates, security-contexts, crds-and-operators, storage, services, coredns, network-policies, helm, kustomize)
-- **4-assignment topic:** 1 topic (troubleshooting)
-- **5-assignment topic (planned expansion):** 1 topic (ingress-and-gateway-api)
 - **7-assignment series:** 1 topic (pods)
+- **5-assignment topic:** 1 topic (ingress-and-gateway-api, post-expansion)
+- **4-assignment topic:** 1 topic (troubleshooting)
+- **3-assignment topics:** 10 topics (cluster-lifecycle, tls-and-certificates, security-contexts, crds-and-operators, storage, services, coredns, network-policies, helm, kustomize)
 - **2-assignment series:** 1 topic (rbac)
-- **Planned new single or dual-assignment topics:** 5 (autoscaling, jobs-and-cronjobs, statefulsets, admission-controllers, pod-security)
+- **1-assignment topics:** 5 (autoscaling, jobs-and-cronjobs, statefulsets, admission-controllers, pod-security)
 
 ---
 
