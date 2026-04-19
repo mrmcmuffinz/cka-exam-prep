@@ -99,9 +99,7 @@ For details on the generation workflow, see `CLAUDE.md`.
 
 ## Recommended Study Progression
 
-See **[LEARNING_PATH.md](LEARNING_PATH.md)** for the full ordered curriculum. The learning path organizes all 45 assignments into 10 phases, sequenced to build skills progressively and align with the Mumshad course structure. It includes progress checkboxes, time estimates, and CKA domain coverage per phase.
-
-**Quick summary:** Start with the pod series (Phase 1, assignments 1-7), which establishes the foundation for everything else. Then work through cluster infrastructure, access control, workload security, and configuration management before tackling the networking phase. Complete the troubleshooting capstone last, as it integrates concepts from all other topics.
+See **[LEARNING_PATH.md](LEARNING_PATH.md)** for the full ordered curriculum with progress checkboxes, time estimates, and CKA domain coverage per phase.
 
 ## How to Work Through an Assignment
 
