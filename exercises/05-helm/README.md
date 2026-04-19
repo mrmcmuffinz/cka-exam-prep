@@ -16,8 +16,8 @@ Helm's CKA-relevant surface focuses on chart consumption (not authoring): reposi
 | Assignment | Description | Prerequisites |
 |---|---|---|
 | assignment-1 | Helm Basics | Helm architecture and concepts (charts, releases, revisions), chart repositories (add, search, update, list), installing charts (helm install, release naming), values customization (--set flag), inspecting charts (helm show) | None |
-| assignment-2 | Helm Lifecycle Management | Upgrading releases (helm upgrade), values files (-f values.yaml), reusing values (--reuse-values vs --reset-values), rolling back releases (helm rollback), release history (helm history), uninstalling releases (helm uninstall) | helm/assignment-1 |
-| assignment-3 | Helm Templates and Debugging | Template rendering (helm template), debugging chart installations, Helm hooks (pre-install, post-install), chart dependencies, Helm secrets and sensitive data, Helm best practices | helm/assignment-2 |
+| assignment-2 | Helm Lifecycle Management | Upgrading releases (helm upgrade), values files (-f values.yaml), reusing values (--reuse-values vs --reset-values), rolling back releases (helm rollback), release history (helm history), uninstalling releases (helm uninstall) | 05-helm/assignment-1 |
+| assignment-3 | Helm Templates and Debugging | Template rendering (helm template), debugging chart installations, Helm hooks (pre-install, post-install), chart dependencies, Helm secrets and sensitive data, Helm best practices | 05-helm/assignment-2 |
 
 ## Scope Boundaries
 
@@ -25,7 +25,7 @@ This topic covers Helm as a chart consumer. The following related areas are hand
 
 - **Kustomize** (alternative manifest management approach): covered in `kustomize/`
 - **Operators installed via Helm** (using Helm to install operators): covered in `crds-and-operators/`
-- **Deployment rollouts** (Helm manages Deployments, but rollout mechanics are separate): covered in `pods/assignment-7`
+- **Deployment rollouts** (Helm manages Deployments, but rollout mechanics are separate): covered in `01-pods/assignment-7`
 - **Chart authoring** (writing chart templates, helpers, hooks): not in CKA scope, excluded from all assignments
 
 Assignment-1 focuses on chart discovery and basic installation. Assignment-2 focuses on release lifecycle operations. Assignment-3 focuses on debugging and advanced patterns.

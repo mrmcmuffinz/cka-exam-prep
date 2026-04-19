@@ -16,8 +16,8 @@ Custom Resource Definitions and operators extend Kubernetes with new resource ty
 | Assignment | Description | Prerequisites |
 |---|---|---|
 | assignment-1 | Custom Resource Definitions | CRD spec structure (group, versions, scope, names), CRD schema definition (OpenAPI v3), CRD versioning strategies, creating and applying CRDs, CRD validation rules, CRD status subresources | None |
-| assignment-2 | Custom Resources and RBAC | Custom resource CRUD operations, custom resource namespacing vs cluster-scoping, RBAC for custom resources (Roles referencing CR types), custom resource discovery (kubectl api-resources), custom resource categories and short names, kubectl integration | crds-and-operators/assignment-1 |
-| assignment-3 | Operators and Controllers | Custom controller concept (watch-reconcile loop), operator pattern overview, installing existing operators, operator lifecycle (install, upgrade, uninstall), troubleshooting operator installations, operator best practices and when to use them | crds-and-operators/assignment-2 |
+| assignment-2 | Custom Resources and RBAC | Custom resource CRUD operations, custom resource namespacing vs cluster-scoping, RBAC for custom resources (Roles referencing CR types), custom resource discovery (kubectl api-resources), custom resource categories and short names, kubectl integration | 15-crds-and-operators/assignment-1 |
+| assignment-3 | Operators and Controllers | Custom controller concept (watch-reconcile loop), operator pattern overview, installing existing operators, operator lifecycle (install, upgrade, uninstall), troubleshooting operator installations, operator best practices and when to use them | 15-crds-and-operators/assignment-2 |
 
 ## Scope Boundaries
 
@@ -40,4 +40,4 @@ Single-node kind cluster for all three assignments. Operator installation may re
 2. Work through assignments 1, 2, 3 sequentially
 3. Assignment-2 assumes understanding of CRD structure from assignment-1
 4. Assignment-3 assumes understanding of custom resources from assignment-2
-5. Familiarity with RBAC (rbac/assignment-1) helps for the custom resource permission exercises in assignment-2
+5. Familiarity with RBAC (12-rbac/assignment-1) helps for the custom resource permission exercises in assignment-2

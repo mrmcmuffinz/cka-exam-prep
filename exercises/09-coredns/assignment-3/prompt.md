@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed coredns/assignment-1 and assignment-2
+- I have completed 09-coredns/assignment-1 and assignment-2
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -52,10 +52,10 @@ This assignment covers diagnosing and resolving DNS issues: resolution failures,
 
 **Out of scope (covered in other assignments, do not include):**
 
-- DNS fundamentals (exercises/coredns/assignment-1)
-- CoreDNS configuration basics (exercises/coredns/assignment-2)
-- Network Policy creation (exercises/network-policies/)
-- Cross-domain troubleshooting (exercises/troubleshooting/assignment-4)
+- DNS fundamentals (exercises/09-09-coredns/assignment-1)
+- CoreDNS configuration basics (exercises/09-09-coredns/assignment-2)
+- Network Policy creation (exercises/10-network-policies/)
+- Cross-domain troubleshooting (exercises/19-19-troubleshooting/assignment-4)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -111,7 +111,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of DNS Troubleshooting assignment
-   - Prerequisites: coredns/assignment-1, assignment-2
+   - Prerequisites: 09-coredns/assignment-1, assignment-2
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: multi-node kind cluster
    - Recommended workflow
@@ -138,11 +138,11 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/coredns/assignment-1: DNS fundamentals
-  - exercises/coredns/assignment-2: CoreDNS configuration
+  - exercises/09-09-coredns/assignment-1: DNS fundamentals
+  - exercises/09-09-coredns/assignment-2: CoreDNS configuration
 
 - **Follow-up assignments:**
-  - exercises/troubleshooting/assignment-4: Network troubleshooting
+  - exercises/19-19-troubleshooting/assignment-4: Network troubleshooting
 
 COURSE MATERIAL REFERENCE:
 - S9 (Lectures 227-230): DNS in Kubernetes, CoreDNS

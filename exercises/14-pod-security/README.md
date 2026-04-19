@@ -15,7 +15,7 @@ The Pod Security Standards (PSS) define three profiles, Privileged, Baseline, an
 
 | Assignment | Description | Prerequisites |
 |---|---|---|
-| assignment-1 | Pod Security Standards and Pod Security Admission | Three PSS profiles (Privileged, Baseline, Restricted) and what each permits, three PSA modes (enforce, audit, warn) and how to combine them, `pod-security.kubernetes.io/{enforce,audit,warn}` labels, version pinning with `-version` labels, relationship between PSA and `securityContext`, reading admission rejection messages, audit annotations visible in kube-apiserver audit events, namespace-level exemptions via the API server config | pods/assignment-1, security-contexts/assignment-1 (pod-level securityContext concepts), security-contexts/assignment-3 (readOnlyRootFilesystem, seccomp) |
+| assignment-1 | Pod Security Standards and Pod Security Admission | Three PSS profiles (Privileged, Baseline, Restricted) and what each permits, three PSA modes (enforce, audit, warn) and how to combine them, `pod-security.kubernetes.io/{enforce,audit,warn}` labels, version pinning with `-version` labels, relationship between PSA and `securityContext`, reading admission rejection messages, audit annotations visible in kube-apiserver audit events, namespace-level exemptions via the API server config | 01-pods/assignment-1, 13-security-contexts/assignment-1 (pod-level securityContext concepts), 13-security-contexts/assignment-3 (readOnlyRootFilesystem, seccomp) |
 
 ## Scope Boundaries
 

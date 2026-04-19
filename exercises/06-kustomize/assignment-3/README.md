@@ -16,7 +16,7 @@ Level 1 exercises cover base and overlay creation. Level 2 exercises focus on en
 
 ## Prerequisites
 
-You need a running kind cluster created with rootless nerdctl and kubectl configured to talk to it. You should have completed kustomize/assignment-1 (Fundamentals) and kustomize/assignment-2 (Patches and Transformers).
+You need a running kind cluster created with rootless nerdctl and kubectl configured to talk to it. You should have completed 06-kustomize/assignment-1 (Fundamentals) and 06-kustomize/assignment-2 (Patches and Transformers).
 
 ## Cluster Requirements
 

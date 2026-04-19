@@ -6,8 +6,8 @@ This is the third of three assignments covering Network Policies in Kubernetes. 
 
 Before starting this assignment, you should have completed:
 
-- exercises/network-policies/assignment-1 (NetworkPolicy Fundamentals)
-- exercises/network-policies/assignment-2 (Advanced Selectors and Isolation)
+- exercises/10-10-network-policies/assignment-1 (NetworkPolicy Fundamentals)
+- exercises/10-10-network-policies/assignment-2 (Advanced Selectors and Isolation)
 
 You should understand podSelector, namespaceSelector, ipBlock, default deny policies, and policy additive behavior.
 

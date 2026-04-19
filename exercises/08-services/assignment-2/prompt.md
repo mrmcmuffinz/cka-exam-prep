@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed services/assignment-1 (ClusterIP Services)
+- I have completed 08-services/assignment-1 (ClusterIP Services)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -54,15 +54,15 @@ This assignment covers NodePort services, LoadBalancer services, ExternalName se
 
 **Out of scope (covered in other assignments, do not include):**
 
-- ClusterIP basics (exercises/services/assignment-1)
-- Service selectors and label matching (exercises/services/assignment-1)
-- Endpoints inspection in depth (exercises/services/assignment-1)
-- Service discovery (exercises/services/assignment-1)
-- Headless services (exercises/services/assignment-1)
-- Multi-port services (exercises/services/assignment-3)
-- Session affinity (exercises/services/assignment-3)
-- Service troubleshooting (exercises/services/assignment-3)
-- Ingress and Gateway API (exercises/ingress-and-gateway-api/)
+- ClusterIP basics (exercises/08-08-services/assignment-1)
+- Service selectors and label matching (exercises/08-08-services/assignment-1)
+- Endpoints inspection in depth (exercises/08-08-services/assignment-1)
+- Service discovery (exercises/08-08-services/assignment-1)
+- Headless services (exercises/08-08-services/assignment-1)
+- Multi-port services (exercises/08-08-services/assignment-3)
+- Session affinity (exercises/08-08-services/assignment-3)
+- Service troubleshooting (exercises/08-08-services/assignment-3)
+- Ingress and Gateway API (exercises/11-ingress-and-gateway-api/)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -118,7 +118,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of External Service Types assignment
-   - Prerequisites: services/assignment-1
+   - Prerequisites: 08-services/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: multi-node kind cluster with metallb
    - Recommended workflow
@@ -148,11 +148,11 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/services/assignment-1: ClusterIP services
+  - exercises/08-08-services/assignment-1: ClusterIP services
 
 - **Follow-up assignments:**
-  - exercises/services/assignment-3: Service patterns and troubleshooting
-  - exercises/ingress-and-gateway-api/assignment-1: L7 routing
+  - exercises/08-08-services/assignment-3: Service patterns and troubleshooting
+  - exercises/11-11-ingress-and-gateway-api/assignment-1: L7 routing
 
 COURSE MATERIAL REFERENCE:
 - S2 (Lectures 33-37): Services (ClusterIP, NodePort, LoadBalancer)

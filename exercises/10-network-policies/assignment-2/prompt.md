@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed network-policies/assignment-1
+- I have completed 10-network-policies/assignment-1
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -53,10 +53,10 @@ This assignment covers namespaceSelector, combined selectors, ipBlock/CIDR, defa
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Basic NetworkPolicy structure (exercises/network-policies/assignment-1)
-- podSelector basics (exercises/network-policies/assignment-1)
-- Port filtering basics (exercises/network-policies/assignment-1)
-- Policy debugging (exercises/network-policies/assignment-3)
+- Basic NetworkPolicy structure (exercises/10-10-network-policies/assignment-1)
+- podSelector basics (exercises/10-10-network-policies/assignment-1)
+- Port filtering basics (exercises/10-10-network-policies/assignment-1)
+- Policy debugging (exercises/10-10-network-policies/assignment-3)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -113,7 +113,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of Advanced Selectors and Isolation assignment
-   - Prerequisites: network-policies/assignment-1
+   - Prerequisites: 10-network-policies/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: multi-node kind with Calico
    - Recommended workflow
@@ -141,10 +141,10 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/network-policies/assignment-1: NetworkPolicy fundamentals
+  - exercises/10-10-network-policies/assignment-1: NetworkPolicy fundamentals
 
 - **Follow-up assignments:**
-  - exercises/network-policies/assignment-3: Network policy debugging
+  - exercises/10-10-network-policies/assignment-3: Network policy debugging
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 179-182): Network policies

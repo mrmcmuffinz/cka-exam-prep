@@ -58,11 +58,11 @@ This assignment covers Helm architecture, chart repositories, installing charts,
 
 **Out of scope (covered in other assignments, do not include):**
 
-- helm upgrade (exercises/helm/assignment-2)
-- helm rollback (exercises/helm/assignment-2)
-- Values files (exercises/helm/assignment-2)
-- helm template (exercises/helm/assignment-3)
-- Helm hooks (exercises/helm/assignment-3)
+- helm upgrade (exercises/05-05-helm/assignment-2)
+- helm rollback (exercises/05-05-helm/assignment-2)
+- Values files (exercises/05-05-helm/assignment-2)
+- helm template (exercises/05-05-helm/assignment-3)
+- Helm hooks (exercises/05-05-helm/assignment-3)
 - Chart authoring (not in CKA scope)
 
 ASSIGNMENT REQUIREMENTS:
@@ -148,8 +148,8 @@ CROSS-REFERENCES:
   - General Kubernetes familiarity
 
 - **Follow-up assignments:**
-  - exercises/helm/assignment-2: Helm lifecycle management
-  - exercises/helm/assignment-3: Helm templates and debugging
+  - exercises/05-05-helm/assignment-2: Helm lifecycle management
+  - exercises/05-05-helm/assignment-3: Helm templates and debugging
 
 COURSE MATERIAL REFERENCE:
 - S12 (Lectures 252-262): Helm introduction, charts, values, lifecycle management

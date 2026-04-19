@@ -4,7 +4,7 @@ CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
 - I have completed the following CKA course sections: S1-S7 (through security contexts)
-- I have completed security-contexts/assignment-1 (user/group security)
+- I have completed 13-security-contexts/assignment-1 (user/group security)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -52,12 +52,12 @@ This assignment covers Linux capabilities in Kubernetes: adding and dropping cap
 
 **Out of scope (covered in other assignments, do not include):**
 
-- runAsUser, runAsGroup, fsGroup (exercises/security-contexts/assignment-1)
-- supplementalGroups (exercises/security-contexts/assignment-1)
-- readOnlyRootFilesystem (exercises/security-contexts/assignment-3)
-- seccomp profiles (exercises/security-contexts/assignment-3)
-- Pod Security Standards/Admission (exercises/pod-security/assignment-1)
-- Network Policies (exercises/network-policies/)
+- runAsUser, runAsGroup, fsGroup (exercises/13-13-security-contexts/assignment-1)
+- supplementalGroups (exercises/13-13-security-contexts/assignment-1)
+- readOnlyRootFilesystem (exercises/13-13-security-contexts/assignment-3)
+- seccomp profiles (exercises/13-13-security-contexts/assignment-3)
+- Pod Security Standards/Admission (exercises/14-14-pod-security/assignment-1)
+- Network Policies (exercises/10-network-policies/)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -113,7 +113,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of Capabilities and Privilege Control assignment
-   - Prerequisites: security-contexts/assignment-1
+   - Prerequisites: 13-security-contexts/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Recommended workflow
@@ -141,10 +141,10 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/security-contexts/assignment-1: User and group security
+  - exercises/13-13-security-contexts/assignment-1: User and group security
 
 - **Follow-up assignments:**
-  - exercises/security-contexts/assignment-3: Filesystem and seccomp profiles
+  - exercises/13-13-security-contexts/assignment-3: Filesystem and seccomp profiles
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 175-178): Security contexts, capabilities

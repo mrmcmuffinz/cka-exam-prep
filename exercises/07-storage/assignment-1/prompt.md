@@ -4,7 +4,7 @@ CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
 - I have completed the following CKA course sections: S1-S8 (through Storage)
-- I have completed pods/assignment-1 and pods/assignment-2 (pod specs and volumes)
+- I have completed 01-pods/assignment-1 and 01-pods/assignment-2 (pod specs and volumes)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -54,12 +54,12 @@ This assignment covers volume types, PersistentVolume resources, static provisio
 
 **Out of scope (covered in other assignments, do not include):**
 
-- PersistentVolumeClaims (exercises/storage/assignment-2)
-- PVC binding mechanics (exercises/storage/assignment-2)
-- StorageClasses (exercises/storage/assignment-3)
-- Dynamic provisioning (exercises/storage/assignment-3)
-- ConfigMap and Secret volumes in depth (exercises/pods/assignment-2)
-- fsGroup and volume permissions (exercises/security-contexts/assignment-1)
+- PersistentVolumeClaims (exercises/07-07-storage/assignment-2)
+- PVC binding mechanics (exercises/07-07-storage/assignment-2)
+- StorageClasses (exercises/07-07-storage/assignment-3)
+- Dynamic provisioning (exercises/07-07-storage/assignment-3)
+- ConfigMap and Secret volumes in depth (exercises/01-01-pods/assignment-2)
+- fsGroup and volume permissions (exercises/13-13-security-contexts/assignment-1)
 - StatefulSets (not in current CKA scope)
 
 ASSIGNMENT REQUIREMENTS:
@@ -116,7 +116,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of Volumes and PersistentVolumes assignment
-   - Prerequisites: pods/assignment-1, pods/assignment-2
+   - Prerequisites: 01-pods/assignment-1, 01-pods/assignment-2
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Recommended workflow
@@ -144,12 +144,12 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/pods/assignment-1: Pod fundamentals
-  - exercises/pods/assignment-2: Volume mounts
+  - exercises/01-01-pods/assignment-1: Pod fundamentals
+  - exercises/01-01-pods/assignment-2: Volume mounts
 
 - **Follow-up assignments:**
-  - exercises/storage/assignment-2: PersistentVolumeClaims and binding
-  - exercises/storage/assignment-3: StorageClasses and dynamic provisioning
+  - exercises/07-07-storage/assignment-2: PersistentVolumeClaims and binding
+  - exercises/07-07-storage/assignment-3: StorageClasses and dynamic provisioning
 
 COURSE MATERIAL REFERENCE:
 - S8 (Lectures 193-198): Volumes, PersistentVolumes, PersistentVolumeClaims

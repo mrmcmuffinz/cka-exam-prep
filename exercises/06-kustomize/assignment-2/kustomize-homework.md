@@ -1,6 +1,6 @@
 # Patches and Transformers Homework
 
-This homework file contains 15 progressive exercises organized into five difficulty levels. The exercises assume you have worked through `kustomize-tutorial.md` and completed kustomize/assignment-1. Each exercise uses its own namespace and working directory. Complete the exercises in order.
+This homework file contains 15 progressive exercises organized into five difficulty levels. The exercises assume you have worked through `kustomize-tutorial.md` and completed 06-kustomize/assignment-1. Each exercise uses its own namespace and working directory. Complete the exercises in order.
 
 ## Setup
 

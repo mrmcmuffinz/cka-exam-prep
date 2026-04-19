@@ -4,7 +4,7 @@ CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
 - I have completed the following CKA course sections: S1-S6 (through lecture 142, covering Core Concepts, Scheduling, Logging & Monitoring, Application Lifecycle Management, and Cluster Maintenance)
-- I have completed cluster-lifecycle/assignment-1 (Cluster Installation)
+- I have completed 17-cluster-lifecycle/assignment-1 (Cluster Installation)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -60,14 +60,14 @@ This assignment covers cluster version upgrades using kubeadm, node maintenance 
 
 **Out of scope (covered in other assignments, do not include):**
 
-- kubeadm init and join workflows (exercises/cluster-lifecycle/assignment-1)
-- Node prerequisites and preparation (exercises/cluster-lifecycle/assignment-1)
-- CNI installation (exercises/cluster-lifecycle/assignment-1)
-- etcd backup and restore (exercises/cluster-lifecycle/assignment-3)
-- HA control plane configuration (exercises/cluster-lifecycle/assignment-3)
-- TLS certificate management (exercises/tls-and-certificates/)
-- RBAC configuration (exercises/rbac/)
-- Detailed troubleshooting of upgrade failures (exercises/troubleshooting/assignment-2)
+- kubeadm init and join workflows (exercises/17-17-cluster-lifecycle/assignment-1)
+- Node prerequisites and preparation (exercises/17-17-cluster-lifecycle/assignment-1)
+- CNI installation (exercises/17-17-cluster-lifecycle/assignment-1)
+- etcd backup and restore (exercises/17-17-cluster-lifecycle/assignment-3)
+- HA control plane configuration (exercises/17-17-cluster-lifecycle/assignment-3)
+- TLS certificate management (exercises/18-tls-and-certificates/)
+- RBAC configuration (exercises/12-rbac/)
+- Detailed troubleshooting of upgrade failures (exercises/19-19-troubleshooting/assignment-2)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -126,7 +126,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of the Cluster Upgrades and Maintenance assignment
-   - Prerequisites: cluster-lifecycle/assignment-1
+   - Prerequisites: 17-cluster-lifecycle/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: multi-node kind cluster
    - Note about kind limitations for actual upgrades
@@ -164,12 +164,12 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/cluster-lifecycle/assignment-1: Cluster installation fundamentals
+  - exercises/17-17-cluster-lifecycle/assignment-1: Cluster installation fundamentals
 
 - **Follow-up assignments:**
-  - exercises/cluster-lifecycle/assignment-3: etcd operations and HA control plane
-  - exercises/troubleshooting/assignment-2: Control plane troubleshooting (failed upgrades)
-  - exercises/troubleshooting/assignment-3: Node troubleshooting
+  - exercises/17-17-cluster-lifecycle/assignment-3: etcd operations and HA control plane
+  - exercises/19-19-troubleshooting/assignment-2: Control plane troubleshooting (failed upgrades)
+  - exercises/19-19-troubleshooting/assignment-3: Node troubleshooting
 
 COURSE MATERIAL REFERENCE:
 This assignment aligns with Mumshad CKA course sections:

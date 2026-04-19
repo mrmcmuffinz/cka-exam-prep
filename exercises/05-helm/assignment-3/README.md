@@ -16,7 +16,7 @@ Level 1 exercises cover template rendering: using helm template to render charts
 
 ## Prerequisites
 
-You need a running kind cluster created with rootless nerdctl, kubectl configured to talk to it, and the Helm CLI installed. You should have completed helm/assignment-1 (Helm Basics) and helm/assignment-2 (Lifecycle Management) so that installation, values, and lifecycle operations are familiar.
+You need a running kind cluster created with rootless nerdctl, kubectl configured to talk to it, and the Helm CLI installed. You should have completed 05-helm/assignment-1 (Helm Basics) and 05-helm/assignment-2 (Lifecycle Management) so that installation, values, and lifecycle operations are familiar.
 
 ## Cluster Requirements
 

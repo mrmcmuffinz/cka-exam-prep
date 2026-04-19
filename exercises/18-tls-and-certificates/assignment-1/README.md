@@ -10,7 +10,7 @@ This assignment teaches PKI fundamentals, certificate creation with openssl, and
 
 ## Prerequisites
 
-- **exercises/cluster-lifecycle/assignment-1:** Understanding control plane components
+- **exercises/17-17-cluster-lifecycle/assignment-1:** Understanding control plane components
 
 ## Estimated Time
 
@@ -36,5 +36,5 @@ KIND_EXPERIMENTAL_PROVIDER=nerdctl kind create cluster
 
 ## What Comes Next
 
-- **exercises/tls-and-certificates/assignment-2:** Certificates API and kubeconfig
-- **exercises/tls-and-certificates/assignment-3:** Certificate troubleshooting
+- **exercises/18-18-tls-and-certificates/assignment-2:** Certificates API and kubeconfig
+- **exercises/18-18-tls-and-certificates/assignment-3:** Certificate troubleshooting

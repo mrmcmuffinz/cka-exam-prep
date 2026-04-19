@@ -4,7 +4,7 @@ CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
 - I have completed the following CKA course sections: S1-S7 (through security contexts)
-- I have completed security-contexts/assignment-1 and assignment-2
+- I have completed 13-security-contexts/assignment-1 and assignment-2
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -59,11 +59,11 @@ This assignment covers filesystem constraints (readOnlyRootFilesystem) and secco
 
 **Out of scope (covered in other assignments, do not include):**
 
-- runAsUser, runAsGroup, fsGroup (exercises/security-contexts/assignment-1)
-- Capabilities (exercises/security-contexts/assignment-2)
-- allowPrivilegeEscalation (exercises/security-contexts/assignment-2)
-- Pod Security Standards/Admission (exercises/pod-security/assignment-1)
-- Network Policies (exercises/network-policies/)
+- runAsUser, runAsGroup, fsGroup (exercises/13-13-security-contexts/assignment-1)
+- Capabilities (exercises/13-13-security-contexts/assignment-2)
+- allowPrivilegeEscalation (exercises/13-13-security-contexts/assignment-2)
+- Pod Security Standards/Admission (exercises/14-14-pod-security/assignment-1)
+- Network Policies (exercises/10-network-policies/)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -120,7 +120,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of Filesystem and seccomp Profiles assignment
-   - Prerequisites: security-contexts/assignment-1, assignment-2
+   - Prerequisites: 13-security-contexts/assignment-1, assignment-2
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Note about seccomp profile location in kind
@@ -152,12 +152,12 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/security-contexts/assignment-1: User and group security
-  - exercises/security-contexts/assignment-2: Capabilities and privilege control
+  - exercises/13-13-security-contexts/assignment-1: User and group security
+  - exercises/13-13-security-contexts/assignment-2: Capabilities and privilege control
 
 - **Follow-up assignments:**
-  - exercises/storage/assignment-1: PersistentVolumes (fsGroup interaction)
-  - exercises/troubleshooting/assignment-1: Application troubleshooting
+  - exercises/07-07-storage/assignment-1: PersistentVolumes (fsGroup interaction)
+  - exercises/19-19-troubleshooting/assignment-1: Application troubleshooting
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 175-178): Security contexts

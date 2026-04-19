@@ -15,9 +15,9 @@ Services are the primary abstraction for exposing pods to other pods and to exte
 
 | Assignment | Description | Prerequisites |
 |---|---|---|
-| assignment-1 | ClusterIP Services | ClusterIP service type (default, internal access), service selectors and label matching, Endpoints and EndpointSlices, service creation (imperative vs declarative), service discovery via environment variables, headless services (ClusterIP: None) | pods/assignment-7 |
-| assignment-2 | External Service Types | NodePort services (external access on static port), NodePort port allocation and kube-proxy behavior, LoadBalancer services (cloud provider integration), LoadBalancer vs NodePort in kind clusters, ExternalName services (DNS CNAME mapping), services without selectors (manual endpoint management) | services/assignment-1 |
-| assignment-3 | Service Patterns and Troubleshooting | Multi-port services, session affinity (ClientIP), service topology and traffic policies, troubleshooting empty endpoints, troubleshooting selector mismatches, service readiness and endpoint removal | services/assignment-2 |
+| assignment-1 | ClusterIP Services | ClusterIP service type (default, internal access), service selectors and label matching, Endpoints and EndpointSlices, service creation (imperative vs declarative), service discovery via environment variables, headless services (ClusterIP: None) | 01-pods/assignment-7 |
+| assignment-2 | External Service Types | NodePort services (external access on static port), NodePort port allocation and kube-proxy behavior, LoadBalancer services (cloud provider integration), LoadBalancer vs NodePort in kind clusters, ExternalName services (DNS CNAME mapping), services without selectors (manual endpoint management) | 08-services/assignment-1 |
+| assignment-3 | Service Patterns and Troubleshooting | Multi-port services, session affinity (ClientIP), service topology and traffic policies, troubleshooting empty endpoints, troubleshooting selector mismatches, service readiness and endpoint removal | 08-services/assignment-2 |
 
 ## Scope Boundaries
 
@@ -26,7 +26,7 @@ This topic covers the Service resource. The following related areas are handled 
 - **CoreDNS** (DNS-based service discovery in depth, service DNS format): covered in `coredns/`
 - **Ingress and Gateway API** (L7 routing to backend services): covered in `ingress-and-gateway-api/`
 - **Network Policies** (controlling which pods can reach a service): covered in `network-policies/`
-- **Service selector mismatches in cross-domain troubleshooting**: covered in `troubleshooting/assignment-1` and `troubleshooting/assignment-4`
+- **Service selector mismatches in cross-domain troubleshooting**: covered in `19-troubleshooting/assignment-1` and `19-troubleshooting/assignment-4`
 
 Assignment-1 focuses on internal ClusterIP services. Assignment-2 focuses on external service types. Assignment-3 focuses on advanced patterns and debugging.
 
@@ -36,7 +36,7 @@ Multi-node kind cluster for all three assignments. NodePort exercises need multi
 
 ## Recommended Order
 
-1. Complete `pods/assignment-7` (Workload Controllers) first, since services need Deployments as backends for realistic exercises
+1. Complete `01-pods/assignment-7` (Workload Controllers) first, since services need Deployments as backends for realistic exercises
 2. Work through assignments 1, 2, 3 sequentially
 3. Assignment-2 assumes understanding of ClusterIP services and endpoint mechanics from assignment-1
 4. Assignment-3 assumes understanding of all service types from assignments 1 and 2

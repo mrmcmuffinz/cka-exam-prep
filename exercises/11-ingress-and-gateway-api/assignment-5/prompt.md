@@ -6,7 +6,7 @@
 - **CKA domain:** Services & Networking (20%)
 - **Competencies covered:** Migration from Ingress to Gateway API (explicit 2026 CKA exam content per candidate reports)
 - **Course sections referenced:** S9 (lectures 231-240, Ingress and Gateway API)
-- **Prerequisites:** `ingress-and-gateway-api/assignment-1` (Ingress API with Traefik) and `ingress-and-gateway-api/assignment-3` (Gateway API with Envoy Gateway); both sets of installs are reused in this assignment
+- **Prerequisites:** `11-ingress-and-gateway-api/assignment-1` (Ingress API with Traefik) and `11-ingress-and-gateway-api/assignment-3` (Gateway API with Envoy Gateway); both sets of installs are reused in this assignment
 
 ## Scope declaration
 
@@ -79,11 +79,11 @@ All CKA resources are in scope. The assignment uses the Ingress, IngressClass, G
 ## Cross-references
 
 **Prerequisites (must be completed first):**
-- `exercises/ingress-and-gateway-api/assignment-1`: Ingress API fundamentals and Traefik install
-- `exercises/ingress-and-gateway-api/assignment-3`: Gateway API fundamentals and Envoy Gateway install
+- `exercises/11-11-ingress-and-gateway-api/assignment-1`: Ingress API fundamentals and Traefik install
+- `exercises/11-11-ingress-and-gateway-api/assignment-3`: Gateway API fundamentals and Envoy Gateway install
 
 **Adjacent topics:**
 - None at this level; this is the terminal assignment for the ingress-and-gateway-api series
 
 **Forward references:**
-- `exercises/troubleshooting/assignment-4`: network troubleshooting includes migration-related failure modes
+- `exercises/19-19-troubleshooting/assignment-4`: network troubleshooting includes migration-related failure modes

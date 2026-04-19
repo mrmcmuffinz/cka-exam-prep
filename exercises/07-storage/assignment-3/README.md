@@ -22,7 +22,7 @@ Level 1 is discovery and basics: list StorageClasses, identify the default, crea
 
 ## Prerequisites
 
-Complete `exercises/storage/assignment-1` (PVs) and `exercises/storage/assignment-2` (PVCs and binding). This assignment assumes you can author PVs and PVCs and can diagnose a `Pending` PVC from describe output. The new material is the StorageClass resource and the provisioner-driven workflow.
+Complete `exercises/07-07-storage/assignment-1` (PVs) and `exercises/07-07-storage/assignment-2` (PVCs and binding). This assignment assumes you can author PVs and PVCs and can diagnose a `Pending` PVC from describe output. The new material is the StorageClass resource and the provisioner-driven workflow.
 
 ## Cluster Requirements
 
@@ -34,7 +34,7 @@ The tutorial takes 45 to 60 minutes. The 15 exercises together take four to six 
 
 ## Scope Boundary and What Comes Next
 
-This assignment covers StorageClass resources, dynamic provisioning with kind's local-path provisioner, volume expansion, and binding modes. CSI driver installation and authoring custom provisioners are out of scope for the CKA and are not exercised. Snapshot, clone, and quota primitives are beyond CKA scope. StatefulSet volume-claim templates (which combine dynamic provisioning with per-replica PVCs) are `exercises/statefulsets/assignment-1`. Security-context interactions with dynamically provisioned volumes (`fsGroup` on the PVC-mounted volume) are `exercises/security-contexts/assignment-1`. Troubleshooting dynamically provisioned storage from a pod-centric angle is part of `exercises/troubleshooting/assignment-1`.
+This assignment covers StorageClass resources, dynamic provisioning with kind's local-path provisioner, volume expansion, and binding modes. CSI driver installation and authoring custom provisioners are out of scope for the CKA and are not exercised. Snapshot, clone, and quota primitives are beyond CKA scope. StatefulSet volume-claim templates (which combine dynamic provisioning with per-replica PVCs) are `exercises/03-03-statefulsets/assignment-1`. Security-context interactions with dynamically provisioned volumes (`fsGroup` on the PVC-mounted volume) are `exercises/13-13-security-contexts/assignment-1`. Troubleshooting dynamically provisioned storage from a pod-centric angle is part of `exercises/19-19-troubleshooting/assignment-1`.
 
 ## Key Takeaways After Completing This Assignment
 

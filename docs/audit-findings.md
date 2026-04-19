@@ -5,7 +5,7 @@
 **Scope:** Full repository (infrastructure, skills, all 40 assignments across 14 topics)
 **Method:** Read the infrastructure files (`CLAUDE.md`, `README.md`, `cka-homework-plan.md`,
 devcontainer files, both `SKILL.md` files, all three reference files), all 14 topic-level
-READMEs, both hand-crafted series (pods 1-7 and rbac/assignment-1) in depth, and
+READMEs, both hand-crafted series (pods 1-7 and 12-rbac/assignment-1) in depth, and
 representative assignments from each of the 13 skill-generated topics.
 
 ## Resolution status legend
@@ -29,7 +29,7 @@ The following assumptions shaped the audit. All were confirmed by the repo owner
    will read this material).
 3. The two-skill pipeline (`cka-prompt-builder` and `k8s-homework-generator`) is the intended
    tooling and stays.
-4. The hand-crafted pod series (assignments 1-7) and `rbac/assignment-1` are the intended
+4. The hand-crafted pod series (assignments 1-7) and `12-rbac/assignment-1` are the intended
    quality bar; everything else should aspire to match.
 5. Recent batch-merge commits indicate the current state is the "completed" state, not a
    work-in-progress snapshot.
@@ -64,7 +64,7 @@ The pod series alone uses three different shapes:
 - Mixed: assignments 5, 6
 
 Skill-generated topics then diverge again: `helm/*`, `kustomize/*` follow a narrative
-style, while `rbac/assignment-2`, `storage/*`, `security-contexts/*`, `troubleshooting/2`,
+style, while `12-rbac/assignment-2`, `storage/*`, `security-contexts/*`, `troubleshooting/2`,
 and `troubleshooting/4` are terse stubs.
 
 A learner flipping between topics hits a different document shape each time.
@@ -81,7 +81,7 @@ P4.8 troubleshooting/1 Exercise 1.2 fix) did not touch READMEs, so those
 three assignments retain their existing README shape from earlier
 generations; they remain within the corpus's documented quality bar.
 
-**O2. Bug in `pods/assignment-6/README.md` line 3.**
+**O2. Bug in `01-pods/assignment-6/README.md` line 3.**
 Says `Series: CKA Pod-Focused Assignments (6 of 6)`. Should be `(6 of 7)` because there
 are 7 pod assignments (assignment-7 exists).
 
@@ -101,7 +101,7 @@ Contains 39 occurrences of "Planned" for assignments that now exist
 services/1-3, coredns/1-3, network-policies/1-3, ingress/1-3, helm/1-3, kustomize/1-3,
 troubleshooting/1-4).
 
-The `cka-homework-plan.md` Status Summary says `Completed: 8 (pods 1-7, rbac/assignment-1)`
+The `cka-homework-plan.md` Status Summary says `Completed: 8 (pods 1-7, 12-rbac/assignment-1)`
 which is also stale. The CLAUDE.md skill workflow step 8 instructs the generator to
 "update `assignment-registry.md` to reflect the new assignment's status" but this did
 not happen for the batch-merged assignments.
@@ -157,8 +157,8 @@ P4.6/P4.7/P4.8 surgical-regen assignments that kept prior READMEs) follow
 the same pattern from earlier Phase 2 work.
 
 **U2. Calico version drift.**
-- `v3.27.0` in `network-policies/assignment-1` and `/assignment-2` tutorials
-- `v3.26.1` in `troubleshooting/assignment-4` README and `network-policies/assignment-3`
+- `v3.27.0` in `10-network-policies/assignment-1` and `/assignment-2` tutorials
+- `v3.26.1` in `19-troubleshooting/assignment-4` README and `10-network-policies/assignment-3`
   homework answers
 
 Different exercises may exhibit different behavior because of CNI version differences.
@@ -168,7 +168,7 @@ standardized on `v3.31.5` (verified against `docs.tigera.io/calico/latest/...`).
 `docs/cluster-setup.md` holds the pin.
 
 **U3. Unpinned `ingress-nginx/main` URL.**
-Three files in `exercises/ingress-and-gateway-api/assignment-1/` apply
+Three files in `exercises/11-11-ingress-and-gateway-api/assignment-1/` apply
 `https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml`.
 The `main` branch can move unpredictably.
 
@@ -202,21 +202,21 @@ chains remain in any regenerated assignment.
 **U5. Some exercises are not exam-realistic.**
 The CKA is performance-based: "create X, fix Y, verify Z." Several skill-generated
 exercises drift into "read and document":
-- `cluster-lifecycle/assignment-1` Exercise 1.1: "For each manifest, identify ... Document
+- `17-cluster-lifecycle/assignment-1` Exercise 1.1: "For each manifest, identify ... Document
   your findings." This is reading, not practice.
-- `crds-and-operators/assignment-1` Exercise 1.2: "List and describe CRDs in the cluster"
+- `15-crds-and-operators/assignment-1` Exercise 1.2: "List and describe CRDs in the cluster"
   is trivially easy and does not build a skill.
 
 **Status: Resolved 2026-04-18.** `base-template.md` prohibits reading-only
 tasks (P2.8); the specific assignments the audit called out have been
-regenerated: `cluster-lifecycle/assignment-1` homework under P4.6 (all
+regenerated: `17-cluster-lifecycle/assignment-1` homework under P4.6 (all
 reading-only tasks replaced with build-or-fix tasks), `crds-and-operators/
 assignment-1` Level 1 under P4.7 (exercises 1.2 and 1.3 replaced with a CR
 instance build and a `additionalPrinterColumns` update). Any reading-only
 tasks in the remaining P4.2/P4.3/P4.9-P4.13 regenerations will be removed
 as those assignments are rewritten, per the contract.
 
-**U6. `troubleshooting/assignment-1` Exercise 1.2 has ambiguous scope.**
+**U6. `19-troubleshooting/assignment-1` Exercise 1.2 has ambiguous scope.**
 Setup creates a pod referencing a missing PVC and a command that reads a non-existent
 file. Objective says "stuck in Pending" (PVC issue), but the answer key fixes both. The
 exercise is labeled Level 1 "single, clear failure" but actually has two.
@@ -226,11 +226,11 @@ clear failure (missing PVC); the container command changed from `cat /data/input
 (which masked a second failure mode) to `sleep 3600` so the pod reaches Running
 after a single PVC-create fix. Answer now uses the three-stage debugging structure.
 
-**U7. `storage/assignment-1` answer key duplicates every YAML block twice.**
+**U7. `07-storage/assignment-1` answer key duplicates every YAML block twice.**
 Once for display, once inside a `kubectl apply -f - <<EOF` heredoc. Two sources of truth
 diverge over time. Pod series answers (e.g., 3.1) show one canonical form.
 
-**Status: Resolved 2026-04-18 (P4.3).** `storage/assignment-1`, `-2`, `-3`
+**Status: Resolved 2026-04-18 (P4.3).** `07-storage/assignment-1`, `-2`, `-3`
 all regenerated under the no-duplicate-YAML rule. Every answer uses a single
 canonical YAML form (either inline display or `kubectl apply -f - <<'EOF'`
 heredoc, never both for the same spec). All 19 Phase 4 assignments comply.
@@ -258,26 +258,26 @@ in the Key Takeaways.
 ### What is working
 
 - Hand-crafted pod and rbac tutorials are genuinely excellent.
-  `pods/assignment-1/pod-fundamentals-tutorial.md` walks through defaults
+  `01-pods/assignment-1/pod-fundamentals-tutorial.md` walks through defaults
   (`restartPolicy: Always`, `imagePullPolicy: IfNotPresent`, `terminationGracePeriodSeconds: 30`)
   and explains why `command: ["sh", "-c"]` is necessary for `&&` to work.
 - `base-template.md` encodes the right conventions: narrative flow, anti-spoiler headings,
   specific expected outputs, `base64 -w0`, explicit tags.
 - Scope declarations in prompts are disciplined: in-scope vs. out-of-scope lists with
   forward references.
-- `pods/assignment-1` answer key explains diagnostic workflow, not just solutions. The
+- `01-pods/assignment-1` answer key explains diagnostic workflow, not just solutions. The
   "Common Mistakes" section is exam-grade material.
 
 ### Issues
 
 **E1. Large quality gap between hand-crafted and skill-generated content.**
-Compare `rbac/assignment-1/rbac-tutorial.md` (narrative, builds mental model of auth vs
-authz, explains CN/O certificate convention) against `rbac/assignment-2/rbac-tutorial.md`
+Compare `12-rbac/assignment-1/rbac-tutorial.md` (narrative, builds mental model of auth vs
+authz, explains CN/O certificate convention) against `12-rbac/assignment-2/rbac-tutorial.md`
 (short facts, bullet-heavy, reads like a reference card). The base-template's "narrative
 paragraph flow" rule is not being enforced by the generator.
 
 **Status: Resolved (Phase 2 contract + Phase 4 rollout complete as of 2026-04-18).**
-`base-template.md` names `pods/assignment-1` as the canonical reference
+`base-template.md` names `01-pods/assignment-1` as the canonical reference
 quality bar for tutorials and makes narrative prose a hard gate (P2.1). All
 19 Phase 4 tutorials follow the narrative-prose requirement with per-field
 spec documentation (valid values, defaults, failure modes): rbac/2,
@@ -286,7 +286,7 @@ troubleshooting/4, jobs-and-cronjobs/1, pod-security/1, security-contexts/1-3,
 storage/1-3, ingress-and-gateway-api/1-5.
 
 **E2. Skill-generated answer keys explain what, not why.**
-`troubleshooting/assignment-1` Exercise 1.1 answer: "The command has a syntax error:
+`19-troubleshooting/assignment-1` Exercise 1.1 answer: "The command has a syntax error:
 `daemon off` should be `daemon off;` (missing semicolon)." That is the fix but not the
 diagnosis. The pod/assignment-1 answer for exercise 3.2 (identical class of bug, wrong
 `command` structure) walks through `kubectl get pod`, `kubectl describe`, and explains
@@ -302,7 +302,7 @@ regen and the troubleshooting/1 Exercise 1.2 P4.8 surgical fix.
 
 **E3. Tutorials often skip the "why behind the default."**
 Skill-generated tutorials list fields and types; they rarely explain what happens if you
-do not set the field. Example: `security-contexts/assignment-1` homework asks you to use
+do not set the field. Example: `13-security-contexts/assignment-1` homework asks you to use
 `runAsNonRoot` but the tutorial does not explain what error Kubernetes surfaces when a
 container image has UID 0 and `runAsNonRoot: true` is set (it is
 `CreateContainerConfigError`).
@@ -316,7 +316,7 @@ documents the exact error message `container has runAsNonRoot and image will
 run as root` as the canonical diagnostic signature.
 
 **E4. Some skill-generated READMEs are reference stubs.**
-`troubleshooting/assignment-2` and `/assignment-4` READMEs are roughly 30 lines each,
+`19-troubleshooting/assignment-2` and `/assignment-4` READMEs are roughly 30 lines each,
 with no recommended workflow, no explanation of what makes control-plane troubleshooting
 different from application troubleshooting, no motivation for the Kind-specific caveats.
 This is insufficient given Troubleshooting is 30% of the exam.
@@ -338,7 +338,7 @@ have none or one-liners.
 topic-specific entries as a hard gate (P2.4). All 19 Phase 4 answer keys
 include a Common Mistakes section with at least 7 topic-specific entries
 each, plus the cluster-lifecycle/1 P4.6 regen. The hand-crafted
-`pods/assignment-1` reference remains the canonical quality bar with its
+`01-pods/assignment-1` reference remains the canonical quality bar with its
 seven deeply-reasoned entries.
 
 **E6. Downward API label syntax not reinforced.**
@@ -347,7 +347,7 @@ Only the pod series covers this gotcha. If the pattern reappears in later assign
 corresponding tutorials should reinforce it.
 
 **Status: Resolved 2026-04-19 (P6.4).** Phase 6 verification confirmed the Downward API label
-syntax gotcha is thoroughly covered in `pods/assignment-2` tutorial, which is the canonical
+syntax gotcha is thoroughly covered in `01-pods/assignment-2` tutorial, which is the canonical
 location for ConfigMap/Secret/DownwardAPI injection. No other assignment introduces the
 `fieldRef` pattern in a context that would require reinforcement. The pattern does not recur.
 
@@ -375,59 +375,59 @@ Phase 4. G7 and G8 are technique-weaving items deferred to Phase 5.
 
 **G1. Workload autoscaling (HPA, VPA, in-place pod resize).**
 - Domain 2 competency #3 in `cka-curriculum.md`.
-- `pods/assignment-5/prompt.md` line 45 explicitly defers HPA and VPA elsewhere, but
+- `01-pods/assignment-5/prompt.md` line 45 explicitly defers HPA and VPA elsewhere, but
   nothing else in the repo practices them.
-- `exercises/pods/README.md` line 36 claims Assignment 5 covers "autoscaling (HPA, VPA)"
+- `exercises/01-pods/README.md` line 36 claims Assignment 5 covers "autoscaling (HPA, VPA)"
   which contradicts the prompt. Documentation and content disagree.
 - In-place pod resize (Kubernetes 1.33 feature, on the curriculum) is mentioned but not
   practiced.
 
-**Status:** Resolved 2026-04-18. Scoped in Phase 3 at `exercises/autoscaling/` (1 assignment); content generated under Phase 4 covering metrics-server dependency, HPA v2 spec, CPU and memory-based HPA, multi-metric HPA, behavior tuning (stabilization windows, policies, selectPolicy), in-place pod resize (GA in v1.33), VPA concepts with three update modes, and the AbleToScale/ScalingActive/ScalingLimited diagnostic workflow.
+**Status:** Resolved 2026-04-18. Scoped in Phase 3 at `exercises/04-autoscaling/` (1 assignment); content generated under Phase 4 covering metrics-server dependency, HPA v2 spec, CPU and memory-based HPA, multi-metric HPA, behavior tuning (stabilization windows, policies, selectPolicy), in-place pod resize (GA in v1.33), VPA concepts with three update modes, and the AbleToScale/ScalingActive/ScalingLimited diagnostic workflow.
 
 **G2. Jobs and CronJobs.**
 - Zero assignments have `kind: Job` or `kind: CronJob` (confirmed by grep).
-- `pods/assignment-7` README lists them as "natural next topics" but no assignment covers
+- `01-pods/assignment-7` README lists them as "natural next topics" but no assignment covers
   them.
 - Backoff limits, completions, parallelism, schedule, and history limits are not practiced.
 
-**Status:** Scoped in Phase 3 at `exercises/jobs-and-cronjobs/` (1 assignment). Content generation in Phase 4.
+**Status:** Scoped in Phase 3 at `exercises/02-jobs-and-cronjobs/` (1 assignment). Content generation in Phase 4.
 
 **G3. Admission controllers.**
 - `cka-curriculum.md` Domain 2 competency #5 lists validating and mutating admission
   controllers.
-- Only two files mention them (forward-reference stubs in `pods/assignment-3/README.md`
-  and `pods/assignment-4/README.md`). Neither practices `ValidatingAdmissionPolicy`,
+- Only two files mention them (forward-reference stubs in `01-pods/assignment-3/README.md`
+  and `01-pods/assignment-4/README.md`). Neither practices `ValidatingAdmissionPolicy`,
   `MutatingWebhookConfiguration`, or `ValidatingWebhookConfiguration`.
 - CEL-based `ValidatingAdmissionPolicy` (GA in 1.30) is not covered.
 
-**Status:** Resolved 2026-04-18. Scoped in Phase 3 at `exercises/admission-controllers/` (1 assignment); content generated under Phase 4 covering the four-phase request flow, built-in admission controllers (NamespaceLifecycle, LimitRanger, ResourceQuota, ServiceAccount, DefaultStorageClass, MutatingAdmissionWebhook, ValidatingAdmissionWebhook, PodSecurity), the API server's `--enable-admission-plugins` flag, ValidatingAdmissionPolicy with CEL including matchConstraints, validations with message/messageExpression, failurePolicy, paramKind, and the three validationActions (Deny, Warn, Audit).
+**Status:** Resolved 2026-04-18. Scoped in Phase 3 at `exercises/16-admission-controllers/` (1 assignment); content generated under Phase 4 covering the four-phase request flow, built-in admission controllers (NamespaceLifecycle, LimitRanger, ResourceQuota, ServiceAccount, DefaultStorageClass, MutatingAdmissionWebhook, ValidatingAdmissionWebhook, PodSecurity), the API server's `--enable-admission-plugins` flag, ValidatingAdmissionPolicy with CEL including matchConstraints, validations with message/messageExpression, failurePolicy, paramKind, and the three validationActions (Deny, Warn, Audit).
 
 **G4. `kubectl debug` and ephemeral containers.**
 - No mentions anywhere in the repo.
 - `kubectl debug` is the modern technique for attaching a debug container to a running
   pod or a node; CKA expects familiarity.
 
-**Status:** Resolved 2026-04-19 under Phase 5 (P5.1). `troubleshooting/assignment-1` tutorial now has Part 8 covering ephemeral container injection with `kubectl debug pod/X --image=... --target=...`, network-only debugging without `--target`, copy mode with `--copy-to`, and limitations (cannot be removed, no resource limits counted, no ports/probes). `troubleshooting/assignment-3` tutorial now has Part 6 covering node debugging with `kubectl debug node/<node> -it --image=ubuntu:22.04`, chroot pattern for node-level access, kubelet/containerd inspection, log access via dmesg and journalctl, and use cases for managed clusters without SSH. Diagnostic Commands cheat sheets updated in both tutorials.
+**Status:** Resolved 2026-04-19 under Phase 5 (P5.1). `19-troubleshooting/assignment-1` tutorial now has Part 8 covering ephemeral container injection with `kubectl debug pod/X --image=... --target=...`, network-only debugging without `--target`, copy mode with `--copy-to`, and limitations (cannot be removed, no resource limits counted, no ports/probes). `19-troubleshooting/assignment-3` tutorial now has Part 6 covering node debugging with `kubectl debug node/<node> -it --image=ubuntu:22.04`, chroot pattern for node-level access, kubelet/containerd inspection, log access via dmesg and journalctl, and use cases for managed clusters without SSH. Diagnostic Commands cheat sheets updated in both tutorials.
 
 ### Medium priority
 
 **G5. StatefulSets.**
 - Zero files have `kind: StatefulSet` (confirmed by grep).
-- `exercises/storage/README.md` line 29 explicitly says "not currently in scope for CKA
+- `exercises/07-storage/README.md` line 29 explicitly says "not currently in scope for CKA
   assignments, may be added if exam coverage warrants it."
 - StatefulSets appear on the CKA exam regularly (stable identity, `volumeClaimTemplates`,
   headless service, ordered deployment, PDB interaction).
 
-**Status:** Resolved 2026-04-18. Scoped in Phase 3 at `exercises/statefulsets/` (1 assignment); content generated under Phase 4 covering stable identity, headless Service pairing, `volumeClaimTemplates`, `podManagementPolicy`, `updateStrategy` (RollingUpdate with partition, OnDelete), scaling with PVC retention, ControllerRevision rollback, and the "Forced rollback" recovery for stuck `OrderedReady` updates. `storage/README.md` forward reference already updated in Phase 3.
+**Status:** Resolved 2026-04-18. Scoped in Phase 3 at `exercises/03-statefulsets/` (1 assignment); content generated under Phase 4 covering stable identity, headless Service pairing, `volumeClaimTemplates`, `podManagementPolicy`, `updateStrategy` (RollingUpdate with partition, OnDelete), scaling with PVC retention, ControllerRevision rollback, and the "Forced rollback" recovery for stuck `OrderedReady` updates. `storage/README.md` forward reference already updated in Phase 3.
 
 **G6. Pod Security Standards and Pod Security Admission.**
-- Explicitly deferred in `exercises/security-contexts/assignment-2/prompt.md` line 59 and
+- Explicitly deferred in `exercises/13-13-security-contexts/assignment-2/prompt.md` line 59 and
   `assignment-3/prompt.md` line 65 as "not in current CKA scope."
 - The 2025 CKA curriculum update moved PSA into testing scope. Namespace-level
   `pod-security.kubernetes.io/enforce: baseline|restricted` labels and the relationship
   between PSS and `securityContext` are testable.
 
-**Status:** Scoped in Phase 3 at `exercises/pod-security/` (1 assignment). Content generation in Phase 4. Forward references in `security-contexts/README.md` and the assignment-2 and assignment-3 prompts updated in Phase 3.
+**Status:** Scoped in Phase 3 at `exercises/14-pod-security/` (1 assignment). Content generation in Phase 4. Forward references in `security-contexts/README.md` and the assignment-2 and assignment-3 prompts updated in Phase 3.
 
 ### Low priority
 
@@ -435,14 +435,14 @@ Phase 4. G7 and G8 are technique-weaving items deferred to Phase 5.
 - Only one file mentions `port-forward` (a passing reference in a TLS answer key).
 - Exam-pressure techniques for testing connectivity without NodePort/LoadBalancer friction.
 
-**Status:** Resolved 2026-04-19 under Phase 5 (P5.2). `services/assignment-1` tutorial now has a dedicated section after "Debugging Service Issues" covering `kubectl port-forward service/<name>` and `pod/<name>`, local port selection (explicit, same-as-remote, random with `:0`), namespace scoping, limitations (client-side, TCP-only, not for production), and background execution patterns. Service Verification reference table updated to include port-forward commands. `kubectl proxy` was not added (less common in exam scenarios; port-forward is the primary technique).
+**Status:** Resolved 2026-04-19 under Phase 5 (P5.2). `08-services/assignment-1` tutorial now has a dedicated section after "Debugging Service Issues" covering `kubectl port-forward service/<name>` and `pod/<name>`, local port selection (explicit, same-as-remote, random with `:0`), namespace scoping, limitations (client-side, TCP-only, not for production), and background execution patterns. Service Verification reference table updated to include port-forward commands. `kubectl proxy` was not added (less common in exam scenarios; port-forward is the primary technique).
 
 **G8. Custom scheduler profiles and multiple schedulers.**
 - `course-section-map.md` lists S3 lectures 77-81 as covering these.
-- `pods/assignment-4` covers scheduling mechanisms but does not practice writing a
+- `01-pods/assignment-4` covers scheduling mechanisms but does not practice writing a
   scheduler profile or running a second scheduler instance.
 
-**Status:** Resolved 2026-04-19 under Phase 5 (P5.3) via the alternative approach. `pods/assignment-4` tutorial section 9 expanded from 3 sentences to a 4-part subsection: multiple schedulers (deployment, `schedulerName` field, silent-Pending trap when scheduler name is wrong), scheduler profiles (plugin configuration, weight adjustment, use cases), rationale for thin coverage (default scheduler sufficient for CKA; mechanisms in sections 3-8 provide enough control), and pointers to Kubernetes docs and Mumshad lectures 77-81 for further study. Acknowledges the thin area explicitly rather than pretending to cover it deeply.
+**Status:** Resolved 2026-04-19 under Phase 5 (P5.3) via the alternative approach. `01-pods/assignment-4` tutorial section 9 expanded from 3 sentences to a 4-part subsection: multiple schedulers (deployment, `schedulerName` field, silent-Pending trap when scheduler name is wrong), scheduler profiles (plugin configuration, weight adjustment, use cases), rationale for thin coverage (default scheduler sufficient for CKA; mechanisms in sections 3-8 provide enough control), and pointers to Kubernetes docs and Mumshad lectures 77-81 for further study. Acknowledges the thin area explicitly rather than pretending to cover it deeply.
 
 ### Not gaps (verified covered)
 
@@ -504,7 +504,7 @@ kind binary is v0.31.0 or later to access the 1.35 node image.
 
 ## Summary
 
-The bones of the repository are strong. The pod series and `rbac/assignment-1` set a high
+The bones of the repository are strong. The pod series and `12-rbac/assignment-1` set a high
 quality bar that the skill-generated content does not consistently meet. Closing the
 content-quality gap is the highest-leverage work, followed by adding five new topics to
 close CKA curriculum gaps, and then by consolidating duplicated setup boilerplate and

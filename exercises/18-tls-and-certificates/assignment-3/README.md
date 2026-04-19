@@ -8,8 +8,8 @@ Certificate problems cause cryptic errors and can bring down clusters. This assi
 
 ## Prerequisites
 
-- **exercises/tls-and-certificates/assignment-1:** Certificate creation
-- **exercises/tls-and-certificates/assignment-2:** Certificates API
+- **exercises/18-18-tls-and-certificates/assignment-1:** Certificate creation
+- **exercises/18-18-tls-and-certificates/assignment-2:** Certificates API
 
 ## Estimated Time
 
@@ -31,5 +31,5 @@ Single-node kind cluster.
 
 ## What Comes Next
 
-- **exercises/rbac/assignment-2:** Cluster-scoped RBAC with certificate-based auth
-- **exercises/troubleshooting/assignment-2:** Control plane troubleshooting
+- **exercises/12-12-rbac/assignment-2:** Cluster-scoped RBAC with certificate-based auth
+- **exercises/19-19-troubleshooting/assignment-2:** Control plane troubleshooting

@@ -83,7 +83,7 @@ produces `network-policies-tutorial.md`).
    - Answers (solutions for all 15 exercises, common mistakes, cheat sheet)
 
 4. Write all four files to the assignment directory (for example,
-   `exercises/network-policies/assignment-1/`).
+   `exercises/10-network-policies/assignment-1/`).
 
 ## Quality Checks
 

@@ -6,7 +6,7 @@
 - **CKA domain:** Services & Networking (20%)
 - **Competencies covered:** Know how to use Ingress controllers and Ingress resources, with emphasis on annotations, rewrite rules, and TLS termination; demonstrate that the Ingress API is universal across controller implementations
 - **Course sections referenced:** S9 (lectures 231-237, Ingress controllers and resources)
-- **Prerequisites:** `ingress-and-gateway-api/assignment-1` (Traefik fundamentals), `tls-and-certificates/assignment-1` (certificate creation)
+- **Prerequisites:** `11-ingress-and-gateway-api/assignment-1` (Traefik fundamentals), `18-tls-and-certificates/assignment-1` (certificate creation)
 
 ## Scope declaration
 
@@ -53,8 +53,8 @@
 - Ingress API fundamentals: covered in assignment-1
 - Gateway API resources: covered in assignments 3 and 4
 - Migration from Ingress to Gateway API: covered in assignment-5
-- Detailed certificate creation with openssl: covered in `tls-and-certificates/assignment-1` (this assignment consumes the certs but does not reteach creation)
-- Certificate rotation and expiry troubleshooting: covered in `tls-and-certificates/assignment-3`
+- Detailed certificate creation with openssl: covered in `18-tls-and-certificates/assignment-1` (this assignment consumes the certs but does not reteach creation)
+- Certificate rotation and expiry troubleshooting: covered in `18-tls-and-certificates/assignment-3`
 - Advanced HAProxy-specific features beyond common Ingress annotations (TCP/UDP services, ModSecurity, etc.): out of CKA scope
 
 ## Environment requirements
@@ -78,12 +78,12 @@ All CKA resources are in scope. Exercises use Ingress, IngressClass, Service, De
 ## Cross-references
 
 **Prerequisites (must be completed first):**
-- `exercises/ingress-and-gateway-api/assignment-1`: Ingress API fundamentals and Traefik
-- `exercises/tls-and-certificates/assignment-1`: certificate creation with openssl
+- `exercises/11-11-ingress-and-gateway-api/assignment-1`: Ingress API fundamentals and Traefik
+- `exercises/18-18-tls-and-certificates/assignment-1`: certificate creation with openssl
 
 **Adjacent topics:**
-- `exercises/ingress-and-gateway-api/assignment-3`: Gateway API, which eliminates controller-specific annotations
+- `exercises/11-11-ingress-and-gateway-api/assignment-3`: Gateway API, which eliminates controller-specific annotations
 
 **Forward references:**
-- `exercises/ingress-and-gateway-api/assignment-5`: migration from Ingress to Gateway API
-- `exercises/troubleshooting/assignment-4`: network troubleshooting including Ingress failures
+- `exercises/11-11-ingress-and-gateway-api/assignment-5`: migration from Ingress to Gateway API
+- `exercises/19-19-troubleshooting/assignment-4`: network troubleshooting including Ingress failures

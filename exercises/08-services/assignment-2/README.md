@@ -12,7 +12,7 @@ This assignment builds on the ClusterIP fundamentals from assignment-1 and prepa
 
 Before starting this assignment, you should have completed:
 
-- **exercises/services/assignment-1 (Service Fundamentals):** You need to understand ClusterIP services, selectors, endpoints, and service discovery
+- **exercises/08-08-services/assignment-1 (Service Fundamentals):** You need to understand ClusterIP services, selectors, endpoints, and service discovery
 
 You should be comfortable with creating services both imperatively and declaratively.
 
@@ -104,5 +104,5 @@ EOF
 
 After completing this assignment, continue with:
 
-- **exercises/services/assignment-3 (Service Patterns and Troubleshooting):** Multi-port services, session affinity, traffic policies, and systematic troubleshooting
-- **exercises/ingress-and-gateway-api/assignment-1:** L7 routing to services with Ingress
+- **exercises/08-08-services/assignment-3 (Service Patterns and Troubleshooting):** Multi-port services, session affinity, traffic policies, and systematic troubleshooting
+- **exercises/11-11-ingress-and-gateway-api/assignment-1:** L7 routing to services with Ingress

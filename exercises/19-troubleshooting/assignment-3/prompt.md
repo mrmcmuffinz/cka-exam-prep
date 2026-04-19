@@ -58,10 +58,10 @@ This assignment covers node and kubelet troubleshooting: node NotReady, kubelet 
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Application troubleshooting (exercises/troubleshooting/assignment-1)
-- Control plane troubleshooting (exercises/troubleshooting/assignment-2)
-- Network troubleshooting (exercises/troubleshooting/assignment-4)
-- Node drain for upgrades (exercises/cluster-lifecycle/assignment-2)
+- Application troubleshooting (exercises/19-19-troubleshooting/assignment-1)
+- Control plane troubleshooting (exercises/19-19-troubleshooting/assignment-2)
+- Network troubleshooting (exercises/19-19-troubleshooting/assignment-4)
+- Node drain for upgrades (exercises/17-17-cluster-lifecycle/assignment-2)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -144,10 +144,10 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/cluster-lifecycle/ assignments
+  - exercises/17-cluster-lifecycle/ assignments
 
 - **Follow-up assignments:**
-  - exercises/troubleshooting/assignment-4: Network troubleshooting
+  - exercises/19-19-troubleshooting/assignment-4: Network troubleshooting
 
 COURSE MATERIAL REFERENCE:
 - S14 (Lectures 292-294): Worker node failure

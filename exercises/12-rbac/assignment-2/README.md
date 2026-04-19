@@ -22,7 +22,7 @@ Level 1 practices the core mechanics of creating a ClusterRole and binding it wi
 
 ## Prerequisites
 
-Complete `exercises/rbac/assignment-1` (namespace-scoped RBAC fundamentals) before this assignment. The object model, the subject forms (User, Group, ServiceAccount), and the diagnostic pattern built on `kubectl auth can-i` carry over unchanged; this assignment only adds the cluster-scoped objects on top of them. You should also have completed `exercises/tls-and-certificates/assignment-2` so that certificate-based authentication is familiar; the exercises here use `kubectl --as=USER` impersonation for verification (so cert creation is not repeated), but the mental model assumes you know how a username becomes an authenticated identity in the first place.
+Complete `exercises/12-12-rbac/assignment-1` (namespace-scoped RBAC fundamentals) before this assignment. The object model, the subject forms (User, Group, ServiceAccount), and the diagnostic pattern built on `kubectl auth can-i` carry over unchanged; this assignment only adds the cluster-scoped objects on top of them. You should also have completed `exercises/18-18-tls-and-certificates/assignment-2` so that certificate-based authentication is familiar; the exercises here use `kubectl --as=USER` impersonation for verification (so cert creation is not repeated), but the mental model assumes you know how a username becomes an authenticated identity in the first place.
 
 ## Cluster Requirements
 
@@ -34,7 +34,7 @@ Plan for about 45 to 60 minutes on the tutorial if you work through every step a
 
 ## Scope Boundary and What Comes Next
 
-This assignment covers cluster-scoped RBAC and the reusable-template patterns built on ClusterRoles. It does not cover authentication (certificate signing, `CertificateSigningRequest` objects, OIDC tokens, webhook authentication), which lives in `exercises/tls-and-certificates/`. It does not cover RBAC for custom resources, which lives in `exercises/crds-and-operators/assignment-2`. It does not cover admission controllers (`ValidatingAdmissionPolicy`, webhook admission), which live in `exercises/admission-controllers/`. It does not cover Pod Security Admission (`enforce`, `audit`, `warn` labels at namespace scope), which lives in `exercises/pod-security/`. It does not cover security contexts for running containers (`runAsUser`, `capabilities`, `seccompProfile`), which live in `exercises/security-contexts/`. Cross-domain RBAC troubleshooting reappears in `exercises/troubleshooting/assignment-3`.
+This assignment covers cluster-scoped RBAC and the reusable-template patterns built on ClusterRoles. It does not cover authentication (certificate signing, `CertificateSigningRequest` objects, OIDC tokens, webhook authentication), which lives in `exercises/18-tls-and-certificates/`. It does not cover RBAC for custom resources, which lives in `exercises/15-15-crds-and-operators/assignment-2`. It does not cover admission controllers (`ValidatingAdmissionPolicy`, webhook admission), which live in `exercises/16-admission-controllers/`. It does not cover Pod Security Admission (`enforce`, `audit`, `warn` labels at namespace scope), which lives in `exercises/14-pod-security/`. It does not cover security contexts for running containers (`runAsUser`, `capabilities`, `seccompProfile`), which live in `exercises/13-security-contexts/`. Cross-domain RBAC troubleshooting reappears in `exercises/19-19-troubleshooting/assignment-3`.
 
 ## Key Takeaways After Completing This Assignment
 

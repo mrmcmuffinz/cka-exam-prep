@@ -12,8 +12,8 @@ Since we use kind clusters (which abstract away kubeadm operations), this assign
 
 Before starting this assignment, you should have completed:
 
-- **exercises/pods/assignment-7 (Workload Controllers):** Understanding Deployments and DaemonSets helps understand control plane components
-- **exercises/rbac/assignment-1 (RBAC namespace-scoped):** Understanding ServiceAccounts and RBAC for verifying permissions
+- **exercises/01-01-pods/assignment-7 (Workload Controllers):** Understanding Deployments and DaemonSets helps understand control plane components
+- **exercises/12-12-rbac/assignment-1 (RBAC namespace-scoped):** Understanding ServiceAccounts and RBAC for verifying permissions
 
 You should be comfortable with basic kubectl operations and understand the Kubernetes control plane architecture.
 
@@ -97,6 +97,6 @@ ls /etc/kubernetes/pki/
 
 After completing this assignment, continue with:
 
-- **exercises/cluster-lifecycle/assignment-2 (Cluster Upgrades and Maintenance):** Kubeadm upgrade workflows, drain, cordon, uncordon
-- **exercises/cluster-lifecycle/assignment-3 (etcd Operations and HA):** etcd backup/restore, HA control plane concepts
-- **exercises/tls-and-certificates/assignment-1 (TLS Fundamentals):** Certificate creation and management
+- **exercises/17-17-cluster-lifecycle/assignment-2 (Cluster Upgrades and Maintenance):** Kubeadm upgrade workflows, drain, cordon, uncordon
+- **exercises/17-17-cluster-lifecycle/assignment-3 (etcd Operations and HA):** etcd backup/restore, HA control plane concepts
+- **exercises/18-18-tls-and-certificates/assignment-1 (TLS Fundamentals):** Certificate creation and management

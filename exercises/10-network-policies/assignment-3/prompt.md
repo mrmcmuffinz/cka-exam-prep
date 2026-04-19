@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed network-policies/assignment-1 and assignment-2
+- I have completed 10-network-policies/assignment-1 and assignment-2
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -53,9 +53,9 @@ This assignment covers diagnosing blocked and unexpectedly allowed traffic, poli
 
 **Out of scope (covered in other assignments, do not include):**
 
-- NetworkPolicy basics (exercises/network-policies/assignment-1)
-- Advanced selectors (exercises/network-policies/assignment-2)
-- Cross-domain troubleshooting (exercises/troubleshooting/assignment-4)
+- NetworkPolicy basics (exercises/10-10-network-policies/assignment-1)
+- Advanced selectors (exercises/10-10-network-policies/assignment-2)
+- Cross-domain troubleshooting (exercises/19-19-troubleshooting/assignment-4)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -112,7 +112,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of Network Policy Debugging assignment
-   - Prerequisites: network-policies/assignment-1, assignment-2
+   - Prerequisites: 10-network-policies/assignment-1, assignment-2
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: multi-node kind with Calico
    - Recommended workflow
@@ -140,11 +140,11 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/network-policies/assignment-1: NetworkPolicy fundamentals
-  - exercises/network-policies/assignment-2: Advanced selectors and isolation
+  - exercises/10-10-network-policies/assignment-1: NetworkPolicy fundamentals
+  - exercises/10-10-network-policies/assignment-2: Advanced selectors and isolation
 
 - **Follow-up assignments:**
-  - exercises/troubleshooting/assignment-4: Network troubleshooting
+  - exercises/19-19-troubleshooting/assignment-4: Network troubleshooting
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 179-182): Network policies

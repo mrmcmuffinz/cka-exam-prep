@@ -4,7 +4,7 @@ CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
 - I have completed the following CKA course sections: S1-S7 (through security contexts)
-- I have completed pods/assignment-1 (pod fundamentals) and pods/assignment-2 (volumes)
+- I have completed 01-pods/assignment-1 (pod fundamentals) and 01-pods/assignment-2 (volumes)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -52,13 +52,13 @@ This assignment covers user and group identity controls in security contexts: ru
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Linux capabilities (exercises/security-contexts/assignment-2)
-- allowPrivilegeEscalation (exercises/security-contexts/assignment-2)
-- readOnlyRootFilesystem (exercises/security-contexts/assignment-3)
-- seccomp profiles (exercises/security-contexts/assignment-3)
-- PersistentVolumes and PVCs in depth (exercises/storage/)
-- Network Policies (exercises/network-policies/)
-- RBAC (exercises/rbac/)
+- Linux capabilities (exercises/13-13-security-contexts/assignment-2)
+- allowPrivilegeEscalation (exercises/13-13-security-contexts/assignment-2)
+- readOnlyRootFilesystem (exercises/13-13-security-contexts/assignment-3)
+- seccomp profiles (exercises/13-13-security-contexts/assignment-3)
+- PersistentVolumes and PVCs in depth (exercises/07-storage/)
+- Network Policies (exercises/10-network-policies/)
+- RBAC (exercises/12-rbac/)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -114,7 +114,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of User and Group Security assignment
-   - Prerequisites: pods/assignment-1, pods/assignment-2
+   - Prerequisites: 01-pods/assignment-1, 01-pods/assignment-2
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Recommended workflow
@@ -143,13 +143,13 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/pods/assignment-1: Pod fundamentals
-  - exercises/pods/assignment-2: Volume mounts
+  - exercises/01-01-pods/assignment-1: Pod fundamentals
+  - exercises/01-01-pods/assignment-2: Volume mounts
 
 - **Follow-up assignments:**
-  - exercises/security-contexts/assignment-2: Capabilities and privilege control
-  - exercises/security-contexts/assignment-3: Filesystem and seccomp profiles
-  - exercises/storage/assignment-1: PersistentVolumes (fsGroup affects PVC mounts)
+  - exercises/13-13-security-contexts/assignment-2: Capabilities and privilege control
+  - exercises/13-13-security-contexts/assignment-3: Filesystem and seccomp profiles
+  - exercises/07-07-storage/assignment-1: PersistentVolumes (fsGroup affects PVC mounts)
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 175-178): Security contexts

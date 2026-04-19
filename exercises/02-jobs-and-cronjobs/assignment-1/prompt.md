@@ -6,7 +6,7 @@
 - **CKA domain:** Workloads & Scheduling (15%)
 - **Competencies covered:** Understand primitives for robust, self-healing application deployments (batch workloads); ReplicaSets contrasted with Jobs
 - **Course sections referenced:** S2 (lectures 18-32, pods and controllers), S3 (lectures 69-71, DaemonSets for contrast with Jobs), and the general workload-controller grounding from S5
-- **Prerequisites:** `pods/assignment-7` (Workload Controllers)
+- **Prerequisites:** `01-pods/assignment-7` (Workload Controllers)
 
 ## Scope declaration
 
@@ -48,11 +48,11 @@
 
 ### Out of scope (covered in other assignments, do not include)
 
-- Long-running workloads (ReplicaSets, Deployments, DaemonSets): covered in `pods/assignment-7`
+- Long-running workloads (ReplicaSets, Deployments, DaemonSets): covered in `01-pods/assignment-7`
 - StatefulSets: covered in `statefulsets/`
 - Horizontal Pod Autoscaler on Jobs: HPA does not target Jobs; covered in `autoscaling/` for Deployments only
-- Pod scheduling mechanics (node affinity, taints, tolerations): covered in `pods/assignment-4`
-- Resource requests and limits, QoS classes: covered in `pods/assignment-5`
+- Pod scheduling mechanics (node affinity, taints, tolerations): covered in `01-pods/assignment-4`
+- Resource requests and limits, QoS classes: covered in `01-pods/assignment-5`
 - Custom metrics and advanced scheduling for batch: out of CKA scope
 
 ## Environment requirements
@@ -76,12 +76,12 @@ All CKA resources are in scope (this topic is generated after Networking and Sto
 ## Cross-references
 
 **Prerequisites (must be completed first):**
-- `exercises/pods/assignment-7`: ReplicaSets and Deployments mental model
+- `exercises/01-01-pods/assignment-7`: ReplicaSets and Deployments mental model
 
 **Adjacent topics:**
-- `exercises/autoscaling/`: HPA for long-running workloads (contrasts with Jobs which are finite)
-- `exercises/statefulsets/`: stateful long-running workloads
-- `exercises/troubleshooting/assignment-1`: application-layer troubleshooting that will include Job failures as a category
+- `exercises/04-autoscaling/`: HPA for long-running workloads (contrasts with Jobs which are finite)
+- `exercises/03-statefulsets/`: stateful long-running workloads
+- `exercises/19-19-troubleshooting/assignment-1`: application-layer troubleshooting that will include Job failures as a category
 
 **Forward references:**
 None. This assignment is terminal for batch workload topics.

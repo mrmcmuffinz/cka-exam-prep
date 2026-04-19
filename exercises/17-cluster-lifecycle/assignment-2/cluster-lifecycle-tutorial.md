@@ -12,7 +12,7 @@ Before starting this tutorial, ensure you have:
 
 - A multi-node kind cluster running
 - kubectl configured to communicate with your cluster
-- Completed cluster-lifecycle/assignment-1
+- Completed 17-cluster-lifecycle/assignment-1
 
 ## Tutorial Setup
 

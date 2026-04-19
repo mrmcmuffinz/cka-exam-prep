@@ -6,7 +6,7 @@ This is the second of three assignments covering Network Policies in Kubernetes.
 
 Before starting this assignment, you should have completed:
 
-- exercises/network-policies/assignment-1 (NetworkPolicy Fundamentals)
+- exercises/10-10-network-policies/assignment-1 (NetworkPolicy Fundamentals)
 
 You should understand basic podSelector mechanics, ingress/egress rules, and port filtering.
 

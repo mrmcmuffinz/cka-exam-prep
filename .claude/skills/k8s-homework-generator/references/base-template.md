@@ -28,7 +28,7 @@ this generator.)
 ### 1. README.md
 
 The assignment's own overview. The canonical shape below is modeled on
-`exercises/pods/assignment-1/README.md`, which is the reference quality bar for
+`exercises/01-pods/assignment-1/README.md`, which is the reference quality bar for
 the entire corpus. Every assignment README must follow this shape. Narrative
 prose, not stacked bullet lists, is the default. Tables appear only where they
 genuinely help (the Files section, the version matrix reference) and never
@@ -79,7 +79,7 @@ references setup sections by anchor link.
 
 A standalone tutorial teaching one complete real-world workflow from start to
 finish. The reference quality bar is
-`exercises/pods/assignment-1/pod-fundamentals-tutorial.md`. New tutorials must
+`exercises/01-pods/assignment-1/pod-fundamentals-tutorial.md`. New tutorials must
 match that level of narrative depth, not the terser reference-card style found
 in some of the earlier skill-generated output.
 
@@ -157,7 +157,7 @@ Contains 15 progressive exercises organized into five difficulty levels.
 ### 4. <topic>-homework-answers.md
 
 Complete solutions for all 15 exercises. The reference quality bar is
-`exercises/pods/assignment-1/pod-fundamentals-homework-answers.md`, which
+`exercises/01-pods/assignment-1/pod-fundamentals-homework-answers.md`, which
 explains diagnostic reasoning (not just solutions) for every debugging exercise.
 
 **Structure:**

@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed services/assignment-1
+- I have completed 08-services/assignment-1
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -55,12 +55,12 @@ This assignment covers NetworkPolicy spec structure, podSelector mechanics, basi
 
 **Out of scope (covered in other assignments, do not include):**
 
-- namespaceSelector (exercises/network-policies/assignment-2)
-- ipBlock/CIDR selectors (exercises/network-policies/assignment-2)
-- Default deny policies (exercises/network-policies/assignment-2)
-- Namespace isolation strategies (exercises/network-policies/assignment-2)
-- Policy debugging and troubleshooting (exercises/network-policies/assignment-3)
-- Ingress L7 routing (exercises/ingress-and-gateway-api/)
+- namespaceSelector (exercises/10-10-network-policies/assignment-2)
+- ipBlock/CIDR selectors (exercises/10-10-network-policies/assignment-2)
+- Default deny policies (exercises/10-10-network-policies/assignment-2)
+- Namespace isolation strategies (exercises/10-10-network-policies/assignment-2)
+- Policy debugging and troubleshooting (exercises/10-10-network-policies/assignment-3)
+- Ingress L7 routing (exercises/11-ingress-and-gateway-api/)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -118,7 +118,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of NetworkPolicy Fundamentals assignment
-   - Prerequisites: services/assignment-1
+   - Prerequisites: 08-services/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: multi-node kind with Calico CNI
    - Calico installation instructions
@@ -163,11 +163,11 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/services/assignment-1: Service basics
+  - exercises/08-08-services/assignment-1: Service basics
 
 - **Follow-up assignments:**
-  - exercises/network-policies/assignment-2: Advanced selectors and isolation
-  - exercises/network-policies/assignment-3: Network policy debugging
+  - exercises/10-10-network-policies/assignment-2: Advanced selectors and isolation
+  - exercises/10-10-network-policies/assignment-3: Network policy debugging
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 179-182): Network policies

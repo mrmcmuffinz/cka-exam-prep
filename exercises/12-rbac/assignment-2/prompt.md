@@ -4,12 +4,12 @@ CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
 - I have completed the following CKA course sections: S1-S7 (through RBAC)
-- I have completed rbac/assignment-1 (namespace-scoped RBAC)
-- I have completed tls-and-certificates/assignment-2 (certificate-based authentication)
+- I have completed 12-rbac/assignment-1 (namespace-scoped RBAC)
+- I have completed 18-tls-and-certificates/assignment-2 (certificate-based authentication)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
-This assignment covers cluster-scoped RBAC: ClusterRoles, ClusterRoleBindings, cluster-scoped resources, aggregated ClusterRoles, and the pattern of using ClusterRole with RoleBinding. Namespace-scoped RBAC (Roles, RoleBindings) is assumed knowledge from assignment-1. Authentication via certificates is assumed from tls-and-certificates/assignment-2.
+This assignment covers cluster-scoped RBAC: ClusterRoles, ClusterRoleBindings, cluster-scoped resources, aggregated ClusterRoles, and the pattern of using ClusterRole with RoleBinding. Namespace-scoped RBAC (Roles, RoleBindings) is assumed knowledge from assignment-1. Authentication via certificates is assumed from 18-tls-and-certificates/assignment-2.
 
 **In scope for this assignment:**
 
@@ -66,10 +66,10 @@ This assignment covers cluster-scoped RBAC: ClusterRoles, ClusterRoleBindings, c
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Roles and RoleBindings (exercises/rbac/assignment-1)
-- User certificate creation (exercises/tls-and-certificates/assignment-1 and assignment-2)
-- kubeconfig management (exercises/tls-and-certificates/assignment-2)
-- RBAC for custom resources (exercises/crds-and-operators/assignment-2)
+- Roles and RoleBindings (exercises/12-12-rbac/assignment-1)
+- User certificate creation (exercises/18-18-tls-and-certificates/assignment-1 and assignment-2)
+- kubeconfig management (exercises/18-18-tls-and-certificates/assignment-2)
+- RBAC for custom resources (exercises/15-15-crds-and-operators/assignment-2)
 - Admission controllers
 
 ASSIGNMENT REQUIREMENTS:
@@ -129,7 +129,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of RBAC (Cluster-Scoped) assignment
-   - Prerequisites: rbac/assignment-1, tls-and-certificates/assignment-2
+   - Prerequisites: 12-rbac/assignment-1, 18-tls-and-certificates/assignment-2
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Recommended workflow
@@ -158,11 +158,11 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/rbac/assignment-1: Namespace-scoped RBAC fundamentals
-  - exercises/tls-and-certificates/assignment-2: Certificate-based authentication
+  - exercises/12-12-rbac/assignment-1: Namespace-scoped RBAC fundamentals
+  - exercises/18-18-tls-and-certificates/assignment-2: Certificate-based authentication
 
 - **Follow-up assignments:**
-  - exercises/crds-and-operators/assignment-2: RBAC for custom resources
+  - exercises/15-15-crds-and-operators/assignment-2: RBAC for custom resources
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 160-168): API groups, authorization, RBAC (Roles, ClusterRoles, bindings)

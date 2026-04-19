@@ -22,7 +22,7 @@ Level 1 inspects capabilities: read the default set from `/proc/self/status` in 
 
 ## Prerequisites
 
-Complete `exercises/security-contexts/assignment-1` first. Some of the exercises use `runAsUser` and `runAsNonRoot` from that assignment without reteaching them. A general familiarity with Linux capabilities (what `CAP_NET_ADMIN`, `CAP_SYS_TIME`, and `CAP_CHOWN` do at the syscall level) is assumed; the tutorial reinforces by showing each one in use but does not teach capabilities from scratch. The `capabilities(7)` man page is an excellent external reference.
+Complete `exercises/13-13-security-contexts/assignment-1` first. Some of the exercises use `runAsUser` and `runAsNonRoot` from that assignment without reteaching them. A general familiarity with Linux capabilities (what `CAP_NET_ADMIN`, `CAP_SYS_TIME`, and `CAP_CHOWN` do at the syscall level) is assumed; the tutorial reinforces by showing each one in use but does not teach capabilities from scratch. The `capabilities(7)` man page is an excellent external reference.
 
 ## Cluster Requirements
 
@@ -34,7 +34,7 @@ The tutorial takes 45 to 60 minutes. The 15 exercises together take four to six 
 
 ## Scope Boundary and What Comes Next
 
-This assignment covers Linux capabilities and the `allowPrivilegeEscalation` field. `readOnlyRootFilesystem` and seccomp profiles are the third layer of the container security story, covered in `exercises/security-contexts/assignment-3`. The namespace-level policy that enforces "drop ALL" and "allowPrivilegeEscalation: false" cluster-wide is Pod Security Admission, covered in `exercises/pod-security/assignment-1`. Custom admission policies that enforce capability restrictions via CEL live in `exercises/admission-controllers/assignment-1`. Seccomp profiles specifically are the other half of the syscall-filtering story and are covered in assignment-3.
+This assignment covers Linux capabilities and the `allowPrivilegeEscalation` field. `readOnlyRootFilesystem` and seccomp profiles are the third layer of the container security story, covered in `exercises/13-13-security-contexts/assignment-3`. The namespace-level policy that enforces "drop ALL" and "allowPrivilegeEscalation: false" cluster-wide is Pod Security Admission, covered in `exercises/14-14-pod-security/assignment-1`. Custom admission policies that enforce capability restrictions via CEL live in `exercises/16-16-admission-controllers/assignment-1`. Seccomp profiles specifically are the other half of the syscall-filtering story and are covered in assignment-3.
 
 ## Key Takeaways After Completing This Assignment
 

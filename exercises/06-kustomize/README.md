@@ -16,8 +16,8 @@ Kustomize's CKA-relevant surface covers kustomization.yaml structure, resource m
 | Assignment | Description | Prerequisites |
 |---|---|---|
 | assignment-1 | Kustomize Fundamentals | kustomization.yaml structure and purpose, resource references (resources field), managing directories (bases), common transformers (namePrefix, nameSuffix), commonLabels and commonAnnotations, building and applying kustomizations | None |
-| assignment-2 | Patches and Transformers | Strategic merge patches, JSON 6902 patches, inline patches, image transformers, ConfigMap and Secret generators, patch targets and selectors | kustomize/assignment-1 |
-| assignment-3 | Overlays and Components | Base and overlay directory structure, environment-specific configurations (dev, staging, prod), components (reusable partial configurations), kustomization composition, namespace transformers, Kustomize best practices | kustomize/assignment-2 |
+| assignment-2 | Patches and Transformers | Strategic merge patches, JSON 6902 patches, inline patches, image transformers, ConfigMap and Secret generators, patch targets and selectors | 06-kustomize/assignment-1 |
+| assignment-3 | Overlays and Components | Base and overlay directory structure, environment-specific configurations (dev, staging, prod), components (reusable partial configurations), kustomization composition, namespace transformers, Kustomize best practices | 06-kustomize/assignment-2 |
 
 ## Scope Boundaries
 

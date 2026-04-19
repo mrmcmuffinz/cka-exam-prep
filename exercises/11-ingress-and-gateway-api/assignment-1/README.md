@@ -22,7 +22,7 @@ Level 1 is basic Ingress creation: deploy a backend Service, create an Ingress w
 
 ## Prerequisites
 
-Complete `exercises/services/assignment-1` (ClusterIP Services are the backends that Ingress points to). The exercises assume you can author a Service and a Deployment; this assignment adds the Ingress resource on top.
+Complete `exercises/08-08-services/assignment-1` (ClusterIP Services are the backends that Ingress points to). The exercises assume you can author a Service and a Deployment; this assignment adds the Ingress resource on top.
 
 ## Cluster Requirements
 
@@ -34,7 +34,7 @@ The tutorial takes 60 to 90 minutes because installing Traefik, checking its Ing
 
 ## Scope Boundary and What Comes Next
 
-This assignment covers Ingress API fundamentals only. Advanced Ingress patterns (TLS, annotations, rewrite-target) are covered in `exercises/ingress-and-gateway-api/assignment-2` with HAProxy Ingress. Gateway API resources (`GatewayClass`, `Gateway`, `HTTPRoute`) are covered in assignments 3 and 4. Migration is covered in assignment 5. Services and their selectors are `exercises/services/`. Network Policies that affect ingress traffic are `exercises/network-policies/`. DNS for the Ingress hostname is `exercises/coredns/`; the exercises use `curl -H "Host: ..."` to simulate DNS rather than configure real resolution.
+This assignment covers Ingress API fundamentals only. Advanced Ingress patterns (TLS, annotations, rewrite-target) are covered in `exercises/11-11-ingress-and-gateway-api/assignment-2` with HAProxy Ingress. Gateway API resources (`GatewayClass`, `Gateway`, `HTTPRoute`) are covered in assignments 3 and 4. Migration is covered in assignment 5. Services and their selectors are `exercises/08-services/`. Network Policies that affect ingress traffic are `exercises/10-network-policies/`. DNS for the Ingress hostname is `exercises/09-coredns/`; the exercises use `curl -H "Host: ..."` to simulate DNS rather than configure real resolution.
 
 ## Key Takeaways After Completing This Assignment
 

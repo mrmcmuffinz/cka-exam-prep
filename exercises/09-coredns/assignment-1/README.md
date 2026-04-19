@@ -6,7 +6,7 @@ This is the first of three assignments covering DNS in Kubernetes. This assignme
 
 Before starting this assignment, you should have completed:
 
-- exercises/services/assignment-1 (ClusterIP Services)
+- exercises/08-08-services/assignment-1 (ClusterIP Services)
 
 You should be comfortable creating Services and understanding how pods communicate with services using ClusterIP addresses.
 

@@ -12,7 +12,7 @@ Since kind clusters cannot be upgraded in place, hands-on exercises focus on dra
 
 Before starting this assignment, you should have completed:
 
-- **exercises/cluster-lifecycle/assignment-1 (Cluster Installation):** Understanding kubeadm artifacts and control plane components
+- **exercises/17-17-cluster-lifecycle/assignment-1 (Cluster Installation):** Understanding kubeadm artifacts and control plane components
 
 ## Estimated Time
 
@@ -56,5 +56,5 @@ KIND_EXPERIMENTAL_PROVIDER=nerdctl kind create cluster --config kind-multi-node.
 
 ## What Comes Next
 
-- **exercises/cluster-lifecycle/assignment-3:** etcd operations and HA control plane
-- **exercises/troubleshooting/assignment-2:** Control plane troubleshooting
+- **exercises/17-17-cluster-lifecycle/assignment-3:** etcd operations and HA control plane
+- **exercises/19-19-troubleshooting/assignment-2:** Control plane troubleshooting

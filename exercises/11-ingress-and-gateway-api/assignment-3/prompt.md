@@ -6,7 +6,7 @@
 - **CKA domain:** Services & Networking (20%)
 - **Competencies covered:** Use the Gateway API to manage Ingress traffic (primary emphasis of the 2026 CKA exam)
 - **Course sections referenced:** S9 (lectures 238-240, Gateway API)
-- **Prerequisites:** `services/assignment-1`, `ingress-and-gateway-api/assignment-2` recommended (for the Ingress-vs-Gateway contrast)
+- **Prerequisites:** `08-services/assignment-1`, `11-ingress-and-gateway-api/assignment-2` recommended (for the Ingress-vs-Gateway contrast)
 
 ## Scope declaration
 
@@ -86,12 +86,12 @@ All CKA resources are in scope. Exercises primarily use GatewayClass, Gateway, H
 ## Cross-references
 
 **Prerequisites (must be completed first):**
-- `exercises/services/assignment-1`: Services are the backends for HTTPRoute
-- `exercises/ingress-and-gateway-api/assignment-2` (recommended, not strict): provides the Ingress-API context for appreciating Gateway API improvements
+- `exercises/08-08-services/assignment-1`: Services are the backends for HTTPRoute
+- `exercises/11-11-ingress-and-gateway-api/assignment-2` (recommended, not strict): provides the Ingress-API context for appreciating Gateway API improvements
 
 **Adjacent topics:**
-- `exercises/ingress-and-gateway-api/assignment-4`: advanced Gateway API routing with NGINX Gateway Fabric
-- `exercises/ingress-and-gateway-api/assignment-5`: migration from Ingress to Gateway API
+- `exercises/11-11-ingress-and-gateway-api/assignment-4`: advanced Gateway API routing with NGINX Gateway Fabric
+- `exercises/11-11-ingress-and-gateway-api/assignment-5`: migration from Ingress to Gateway API
 
 **Forward references:**
-- `exercises/troubleshooting/assignment-4`: network troubleshooting including Gateway API failures
+- `exercises/19-19-troubleshooting/assignment-4`: network troubleshooting including Gateway API failures

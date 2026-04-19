@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed services/assignment-1 (ClusterIP Services)
+- I have completed 08-services/assignment-1 (ClusterIP Services)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -52,11 +52,11 @@ This assignment covers DNS record formats for services and pods, DNS policies, s
 
 **Out of scope (covered in other assignments, do not include):**
 
-- CoreDNS Deployment and configuration (exercises/coredns/assignment-2)
-- Corefile structure and plugins (exercises/coredns/assignment-2)
-- DNS troubleshooting (exercises/coredns/assignment-3)
-- Service creation (exercises/services/assignment-1)
-- Network Policies affecting DNS (exercises/network-policies/)
+- CoreDNS Deployment and configuration (exercises/09-09-coredns/assignment-2)
+- Corefile structure and plugins (exercises/09-09-coredns/assignment-2)
+- DNS troubleshooting (exercises/09-09-coredns/assignment-3)
+- Service creation (exercises/08-08-services/assignment-1)
+- Network Policies affecting DNS (exercises/10-network-policies/)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -112,7 +112,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of DNS Fundamentals assignment
-   - Prerequisites: services/assignment-1
+   - Prerequisites: 08-services/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: multi-node kind cluster
    - Recommended workflow
@@ -141,11 +141,11 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/services/assignment-1: Service basics
+  - exercises/08-08-services/assignment-1: Service basics
 
 - **Follow-up assignments:**
-  - exercises/coredns/assignment-2: CoreDNS configuration
-  - exercises/coredns/assignment-3: DNS troubleshooting
+  - exercises/09-09-coredns/assignment-2: CoreDNS configuration
+  - exercises/09-09-coredns/assignment-3: DNS troubleshooting
 
 COURSE MATERIAL REFERENCE:
 - S9 (Lectures 227-230): DNS in Kubernetes, CoreDNS

@@ -22,7 +22,7 @@ Level 1 covers basic construction: a single Job that runs once, a simple CronJob
 
 ## Prerequisites
 
-Complete `exercises/pods/assignment-7` (Workload Controllers) before this assignment; Jobs and CronJobs are workload controllers that produce pods from a template, and the reconciliation model from ReplicaSets carries directly over. You should also be comfortable with pod spec fundamentals (`exercises/pods/assignment-1`) because the Job's pod template is a full pod spec with one constraint: `restartPolicy` must be `OnFailure` or `Never`, never `Always`.
+Complete `exercises/01-01-pods/assignment-7` (Workload Controllers) before this assignment; Jobs and CronJobs are workload controllers that produce pods from a template, and the reconciliation model from ReplicaSets carries directly over. You should also be comfortable with pod spec fundamentals (`exercises/01-01-pods/assignment-1`) because the Job's pod template is a full pod spec with one constraint: `restartPolicy` must be `OnFailure` or `Never`, never `Always`.
 
 ## Cluster Requirements
 
@@ -36,7 +36,7 @@ Plan for about 45 to 60 minutes on the tutorial if you work through every comman
 
 ## Scope Boundary and What Comes Next
 
-This assignment covers finite-duration workloads. The long-running workload controllers (ReplicaSets, Deployments, DaemonSets) are `exercises/pods/assignment-7` territory; stateful workloads with ordered identity are covered in `exercises/statefulsets/`; horizontal autoscaling targets long-running workloads and is in `exercises/autoscaling/`. Scheduling constraints on the pod template (node affinity, taints, tolerations) are covered in `exercises/pods/assignment-4`, and resource requests and limits are `exercises/pods/assignment-5`; those fields all exist on the Job's pod template, but this assignment does not introduce them, leaning on the prerequisite assignments instead. Batch-workload troubleshooting at cross-domain scope reappears in `exercises/troubleshooting/assignment-1`.
+This assignment covers finite-duration workloads. The long-running workload controllers (ReplicaSets, Deployments, DaemonSets) are `exercises/01-01-pods/assignment-7` territory; stateful workloads with ordered identity are covered in `exercises/03-statefulsets/`; horizontal autoscaling targets long-running workloads and is in `exercises/04-autoscaling/`. Scheduling constraints on the pod template (node affinity, taints, tolerations) are covered in `exercises/01-01-pods/assignment-4`, and resource requests and limits are `exercises/01-01-pods/assignment-5`; those fields all exist on the Job's pod template, but this assignment does not introduce them, leaning on the prerequisite assignments instead. Batch-workload troubleshooting at cross-domain scope reappears in `exercises/19-19-troubleshooting/assignment-1`.
 
 ## Key Takeaways After Completing This Assignment
 

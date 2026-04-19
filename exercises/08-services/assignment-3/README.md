@@ -12,8 +12,8 @@ This assignment also teaches systematic troubleshooting skills for diagnosing an
 
 Before starting this assignment, you should have completed:
 
-- **exercises/services/assignment-1 (Service Fundamentals):** ClusterIP services, selectors, endpoints, service discovery
-- **exercises/services/assignment-2 (External Service Types):** NodePort, LoadBalancer, ExternalName, manual endpoints
+- **exercises/08-08-services/assignment-1 (Service Fundamentals):** ClusterIP services, selectors, endpoints, service discovery
+- **exercises/08-08-services/assignment-2 (External Service Types):** NodePort, LoadBalancer, ExternalName, manual endpoints
 
 You should be comfortable creating and debugging basic service configurations.
 
@@ -74,6 +74,6 @@ KIND_EXPERIMENTAL_PROVIDER=nerdctl kind create cluster --config kind-multi-node.
 
 After completing this assignment, you have finished the Services series. Continue with:
 
-- **exercises/coredns/assignment-1:** DNS configuration and debugging for service discovery
-- **exercises/network-policies/assignment-1:** Filtering traffic to services with Network Policies
-- **exercises/troubleshooting/assignment-4:** Network troubleshooting, including cross-domain service issues
+- **exercises/09-09-coredns/assignment-1:** DNS configuration and debugging for service discovery
+- **exercises/10-10-network-policies/assignment-1:** Filtering traffic to services with Network Policies
+- **exercises/19-19-troubleshooting/assignment-4:** Network troubleshooting, including cross-domain service issues

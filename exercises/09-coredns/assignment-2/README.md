@@ -6,7 +6,7 @@ This is the second of three assignments covering DNS in Kubernetes. This assignm
 
 Before starting this assignment, you should have completed:
 
-- exercises/coredns/assignment-1 (DNS Fundamentals)
+- exercises/09-09-coredns/assignment-1 (DNS Fundamentals)
 
 You should understand service and pod DNS formats, DNS policies, and how to query DNS from within pods.
 

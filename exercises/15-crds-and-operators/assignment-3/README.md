@@ -6,8 +6,8 @@ This assignment covers the operator pattern, installing existing operators, oper
 
 Before starting this assignment, you should have completed:
 
-- exercises/crds-and-operators/assignment-1 (CRD creation)
-- exercises/crds-and-operators/assignment-2 (Custom resources and RBAC)
+- exercises/15-15-crds-and-operators/assignment-1 (CRD creation)
+- exercises/15-15-crds-and-operators/assignment-2 (Custom resources and RBAC)
 
 ## Estimated Time
 

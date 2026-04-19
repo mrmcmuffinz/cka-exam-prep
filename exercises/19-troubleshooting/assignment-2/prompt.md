@@ -58,10 +58,10 @@ This assignment covers control plane component failures: API server, scheduler, 
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Application troubleshooting (exercises/troubleshooting/assignment-1)
-- Node and kubelet issues (exercises/troubleshooting/assignment-3)
-- Network troubleshooting (exercises/troubleshooting/assignment-4)
-- etcd backup/restore (exercises/cluster-lifecycle/assignment-3)
+- Application troubleshooting (exercises/19-19-troubleshooting/assignment-1)
+- Node and kubelet issues (exercises/19-19-troubleshooting/assignment-3)
+- Network troubleshooting (exercises/19-19-troubleshooting/assignment-4)
+- etcd backup/restore (exercises/17-17-cluster-lifecycle/assignment-3)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -145,12 +145,12 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/cluster-lifecycle/ assignments
-  - exercises/tls-and-certificates/ assignments
+  - exercises/17-cluster-lifecycle/ assignments
+  - exercises/18-tls-and-certificates/ assignments
 
 - **Follow-up assignments:**
-  - exercises/troubleshooting/assignment-3: Node troubleshooting
-  - exercises/troubleshooting/assignment-4: Network troubleshooting
+  - exercises/19-19-troubleshooting/assignment-3: Node troubleshooting
+  - exercises/19-19-troubleshooting/assignment-4: Network troubleshooting
 
 COURSE MATERIAL REFERENCE:
 - S14 (Lectures 289-291): Control plane failure

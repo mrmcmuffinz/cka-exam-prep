@@ -22,7 +22,7 @@ Level 1 is PVC basics: create a PVC that binds, mount a PVC in a pod, list and i
 
 ## Prerequisites
 
-Complete `exercises/storage/assignment-1` first. This assignment assumes you can author a PV spec and understand the five PV lifecycle phases. The exercises build PVs alongside PVCs; if you have not internalized the PV side, the binding logic will feel mysterious.
+Complete `exercises/07-07-storage/assignment-1` first. This assignment assumes you can author a PV spec and understand the five PV lifecycle phases. The exercises build PVs alongside PVCs; if you have not internalized the PV side, the binding logic will feel mysterious.
 
 ## Cluster Requirements
 
@@ -34,7 +34,7 @@ The tutorial takes 45 to 60 minutes. The 15 exercises together take four to six 
 
 ## Scope Boundary and What Comes Next
 
-This assignment covers PVC creation, the binding algorithm, and reclaim-policy behavior. StorageClasses (which automate PV creation via a provisioner) are covered in `exercises/storage/assignment-3`. StatefulSet volume claim templates (which create one PVC per replica automatically) are `exercises/statefulsets/assignment-1`. `fsGroup` and file ownership on mounted volumes are `exercises/security-contexts/assignment-1`. Storage-related troubleshooting cross-referenced from other domains is in `exercises/troubleshooting/`.
+This assignment covers PVC creation, the binding algorithm, and reclaim-policy behavior. StorageClasses (which automate PV creation via a provisioner) are covered in `exercises/07-07-storage/assignment-3`. StatefulSet volume claim templates (which create one PVC per replica automatically) are `exercises/03-03-statefulsets/assignment-1`. `fsGroup` and file ownership on mounted volumes are `exercises/13-13-security-contexts/assignment-1`. Storage-related troubleshooting cross-referenced from other domains is in `exercises/19-troubleshooting/`.
 
 ## Key Takeaways After Completing This Assignment
 

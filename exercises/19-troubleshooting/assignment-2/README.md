@@ -22,7 +22,7 @@ Level 1 practices component status verification and log reading on a cluster tha
 
 ## Prerequisites
 
-Complete `exercises/cluster-lifecycle/assignment-1` through `assignment-3` so that kubeadm's role, static pod mechanics, and etcd fundamentals are already familiar. Complete `exercises/tls-and-certificates/` so that certificate structure (subject, issuer, NotAfter, SANs) and the cluster PKI layout (`/etc/kubernetes/pki/`) are not new material. Complete `exercises/troubleshooting/assignment-1` first; the diagnostic sequence from that assignment (`get pod` then `describe pod` then `logs` then `get events`) carries over directly to the control plane pods.
+Complete `exercises/17-17-cluster-lifecycle/assignment-1` through `assignment-3` so that kubeadm's role, static pod mechanics, and etcd fundamentals are already familiar. Complete `exercises/18-tls-and-certificates/` so that certificate structure (subject, issuer, NotAfter, SANs) and the cluster PKI layout (`/etc/kubernetes/pki/`) are not new material. Complete `exercises/19-19-troubleshooting/assignment-1` first; the diagnostic sequence from that assignment (`get pod` then `describe pod` then `logs` then `get events`) carries over directly to the control plane pods.
 
 ## Cluster Requirements
 
@@ -40,7 +40,7 @@ Plan for 60 to 90 minutes on the tutorial; the tutorial walks the four diagnosti
 
 ## Scope Boundary and What Comes Next
 
-This assignment covers the control plane components: API server, scheduler, controller manager, etcd, and the supporting static pod manifests and certificates. It does not cover application troubleshooting, which is `exercises/troubleshooting/assignment-1`. It does not cover node and kubelet issues (node `NotReady`, DiskPressure, MemoryPressure, kubelet systemd failures), which are `exercises/troubleshooting/assignment-3`. It does not cover network issues (DNS, Services, NetworkPolicies, CNI), which are `exercises/troubleshooting/assignment-4`. It does not cover etcd backup and restore workflows, which are `exercises/cluster-lifecycle/assignment-3` territory; this assignment uses etcd availability debugging only, not state preservation. Admission control and Pod Security admission are handled in their own topic directories and do not appear as control plane failures here.
+This assignment covers the control plane components: API server, scheduler, controller manager, etcd, and the supporting static pod manifests and certificates. It does not cover application troubleshooting, which is `exercises/19-19-troubleshooting/assignment-1`. It does not cover node and kubelet issues (node `NotReady`, DiskPressure, MemoryPressure, kubelet systemd failures), which are `exercises/19-19-troubleshooting/assignment-3`. It does not cover network issues (DNS, Services, NetworkPolicies, CNI), which are `exercises/19-19-troubleshooting/assignment-4`. It does not cover etcd backup and restore workflows, which are `exercises/17-17-cluster-lifecycle/assignment-3` territory; this assignment uses etcd availability debugging only, not state preservation. Admission control and Pod Security admission are handled in their own topic directories and do not appear as control plane failures here.
 
 ## Key Takeaways After Completing This Assignment
 

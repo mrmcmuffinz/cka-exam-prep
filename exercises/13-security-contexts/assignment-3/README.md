@@ -1,6 +1,6 @@
 # Assignment 3: Read-Only Root Filesystem and seccomp Profiles
 
-This is the third and final Security Contexts assignment. Assignment 1 covered identity (UID, GID, `fsGroup`, `supplementalGroups`). Assignment 2 covered Linux capabilities and `allowPrivilegeEscalation`. This assignment covers two remaining layers: `readOnlyRootFilesystem`, which makes the container's root filesystem immutable at runtime, and `seccompProfile`, which filters what syscalls the container process can make. Together with Pod Security Admission (`exercises/pod-security/assignment-1`), these three assignments cover every field the Restricted profile cares about.
+This is the third and final Security Contexts assignment. Assignment 1 covered identity (UID, GID, `fsGroup`, `supplementalGroups`). Assignment 2 covered Linux capabilities and `allowPrivilegeEscalation`. This assignment covers two remaining layers: `readOnlyRootFilesystem`, which makes the container's root filesystem immutable at runtime, and `seccompProfile`, which filters what syscalls the container process can make. Together with Pod Security Admission (`exercises/14-14-pod-security/assignment-1`), these three assignments cover every field the Restricted profile cares about.
 
 ## Files
 
@@ -22,7 +22,7 @@ Level 1 is read-only root basics: enable the flag, observe the failure, add an `
 
 ## Prerequisites
 
-Complete `exercises/security-contexts/assignment-1` (identity) and `exercises/security-contexts/assignment-2` (capabilities and privilege escalation) first. This assignment combines them; some exercises require `runAsNonRoot: true` plus `capabilities.drop: ["ALL"]` plus the fields introduced here.
+Complete `exercises/13-13-security-contexts/assignment-1` (identity) and `exercises/13-13-security-contexts/assignment-2` (capabilities and privilege escalation) first. This assignment combines them; some exercises require `runAsNonRoot: true` plus `capabilities.drop: ["ALL"]` plus the fields introduced here.
 
 ## Cluster Requirements
 
@@ -34,7 +34,7 @@ The tutorial takes 60 to 90 minutes because custom seccomp profiles require a ha
 
 ## Scope Boundary and What Comes Next
 
-This assignment covers `readOnlyRootFilesystem`, `seccompProfile`, and the combination of every securityContext field across the three assignments into a hardened baseline. Pod Security Admission (how a namespace-level label enforces these settings across every pod) is `exercises/pod-security/assignment-1`. Admission webhooks and ValidatingAdmissionPolicy (arbitrary policy beyond PSS) are `exercises/admission-controllers/assignment-1`. Network policy (which complements workload hardening at the network layer) is `exercises/network-policies/`. AppArmor and SELinux are referenced but not exercised; their production use generally requires distro-specific tooling outside the CKA scope.
+This assignment covers `readOnlyRootFilesystem`, `seccompProfile`, and the combination of every securityContext field across the three assignments into a hardened baseline. Pod Security Admission (how a namespace-level label enforces these settings across every pod) is `exercises/14-14-pod-security/assignment-1`. Admission webhooks and ValidatingAdmissionPolicy (arbitrary policy beyond PSS) are `exercises/16-16-admission-controllers/assignment-1`. Network policy (which complements workload hardening at the network layer) is `exercises/10-network-policies/`. AppArmor and SELinux are referenced but not exercised; their production use generally requires distro-specific tooling outside the CKA scope.
 
 ## Key Takeaways After Completing This Assignment
 

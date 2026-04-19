@@ -6,8 +6,8 @@ This assignment covers creating and managing custom resources, configuring RBAC 
 
 Before starting this assignment, you should have completed:
 
-- exercises/crds-and-operators/assignment-1 (CRD creation)
-- exercises/rbac/assignment-1 (RBAC fundamentals, helpful but not required)
+- exercises/15-15-crds-and-operators/assignment-1 (CRD creation)
+- exercises/12-12-rbac/assignment-1 (RBAC fundamentals, helpful but not required)
 
 You should understand how to create CRDs, define schemas, and configure versioning.
 

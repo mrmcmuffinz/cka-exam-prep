@@ -6,7 +6,7 @@
 - **CKA domain:** Workloads & Scheduling (15%)
 - **Competencies covered:** Configure workload autoscaling (HorizontalPodAutoscaler, VerticalPodAutoscaler concepts, in-place pod resize)
 - **Course sections referenced:** S5 (lectures 122-129, Autoscaling HPA, VPA, in-place resize), S4 (lectures 88-91, metrics-server)
-- **Prerequisites:** `pods/assignment-5` (Resources and QoS), `pods/assignment-7` (Workload Controllers)
+- **Prerequisites:** `01-pods/assignment-5` (Resources and QoS), `01-pods/assignment-7` (Workload Controllers)
 
 ## Scope declaration
 
@@ -52,8 +52,8 @@
 
 ### Out of scope (covered in other assignments, do not include)
 
-- Static resource requests and limits (covered in `pods/assignment-5`)
-- Deployment creation and rollouts (covered in `pods/assignment-7`)
+- Static resource requests and limits (covered in `01-pods/assignment-5`)
+- Deployment creation and rollouts (covered in `01-pods/assignment-7`)
 - Custom metrics API and external metrics (the API and concept are in scope at a conceptual level; writing a custom metrics adapter is out of scope)
 - Cluster-level node autoscaling (requires cloud provider integration, out of CKA)
 - PodDisruptionBudget (not on CKA curriculum)
@@ -80,12 +80,12 @@ All CKA resources are in scope. The assignment uses Deployments as HPA targets, 
 ## Cross-references
 
 **Prerequisites (must be completed first):**
-- `exercises/pods/assignment-5`: requests, limits, QoS classes
-- `exercises/pods/assignment-7`: Deployments (HPA's primary target)
+- `exercises/01-01-pods/assignment-5`: requests, limits, QoS classes
+- `exercises/01-01-pods/assignment-7`: Deployments (HPA's primary target)
 
 **Adjacent topics:**
-- `exercises/jobs-and-cronjobs/`: batch workloads that HPA does not target
-- `exercises/statefulsets/`: HPA can target StatefulSets; one exercise exercises this
+- `exercises/02-jobs-and-cronjobs/`: batch workloads that HPA does not target
+- `exercises/03-statefulsets/`: HPA can target StatefulSets; one exercise exercises this
 
 **Forward references:**
-- `exercises/troubleshooting/assignment-1`: application troubleshooting will include "HPA not scaling" as a diagnostic scenario
+- `exercises/19-19-troubleshooting/assignment-1`: application troubleshooting will include "HPA not scaling" as a diagnostic scenario

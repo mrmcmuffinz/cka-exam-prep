@@ -14,7 +14,7 @@ Before starting this tutorial, ensure you have:
 
 - A multi-node kind cluster running (1 control-plane, 3 workers)
 - metallb installed for LoadBalancer service testing
-- Completed services/assignment-1 (ClusterIP fundamentals)
+- Completed 08-services/assignment-1 (ClusterIP fundamentals)
 - kubectl configured to communicate with your cluster
 
 Verify your cluster and metallb are ready:

@@ -65,9 +65,9 @@ This assignment covers CRD structure, schema definition, versioning, validation 
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Custom resource CRUD operations (exercises/crds-and-operators/assignment-2)
-- RBAC for custom resources (exercises/crds-and-operators/assignment-2)
-- Operators and controllers (exercises/crds-and-operators/assignment-3)
+- Custom resource CRUD operations (exercises/15-15-crds-and-operators/assignment-2)
+- RBAC for custom resources (exercises/15-15-crds-and-operators/assignment-2)
+- Operators and controllers (exercises/15-15-crds-and-operators/assignment-3)
 - Writing custom controllers in Go (not in CKA scope)
 - Admission webhooks for CRDs (not in CKA scope)
 
@@ -154,8 +154,8 @@ CROSS-REFERENCES:
   - General Kubernetes resource familiarity
 
 - **Follow-up assignments:**
-  - exercises/crds-and-operators/assignment-2: Custom resources and RBAC
-  - exercises/crds-and-operators/assignment-3: Operators and controllers
+  - exercises/15-15-crds-and-operators/assignment-2: Custom resources and RBAC
+  - exercises/15-15-crds-and-operators/assignment-3: Operators and controllers
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 184-187): CRDs, custom controllers, operator framework

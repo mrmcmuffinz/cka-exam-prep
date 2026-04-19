@@ -16,16 +16,16 @@ Persistent storage in Kubernetes encompasses volume types, PersistentVolumes, Pe
 | Assignment | Description | Prerequisites |
 |---|---|---|
 | assignment-1 | Volumes and PersistentVolumes | Volume types overview (emptyDir, hostPath, PVC), PersistentVolume spec (capacity, accessModes, persistentVolumeReclaimPolicy), PV lifecycle phases (Available, Bound, Released, Failed), static PV provisioning, PV label selectors and node affinity, inspecting PVs | None |
-| assignment-2 | PersistentVolumeClaims and Binding | PVC spec (resources.requests.storage, accessModes, storageClassName), PV-to-PVC binding mechanics (capacity, access mode, storage class matching), using PVCs in pod specs, access modes (ReadWriteOnce, ReadOnlyMany, ReadWriteMany, ReadWriteOncePod), reclaim policies (Retain, Delete), troubleshooting binding failures | storage/assignment-1 |
-| assignment-3 | StorageClasses and Dynamic Provisioning | StorageClass resources and provisioner field, dynamic provisioning workflow, default StorageClass annotation, StorageClass parameters and provisioner-specific options, volume expansion (allowVolumeExpansion), VolumeBindingMode (Immediate vs WaitForFirstConsumer) | storage/assignment-2 |
+| assignment-2 | PersistentVolumeClaims and Binding | PVC spec (resources.requests.storage, accessModes, storageClassName), PV-to-PVC binding mechanics (capacity, access mode, storage class matching), using PVCs in pod specs, access modes (ReadWriteOnce, ReadOnlyMany, ReadWriteMany, ReadWriteOncePod), reclaim policies (Retain, Delete), troubleshooting binding failures | 07-storage/assignment-1 |
+| assignment-3 | StorageClasses and Dynamic Provisioning | StorageClass resources and provisioner field, dynamic provisioning workflow, default StorageClass annotation, StorageClass parameters and provisioner-specific options, volume expansion (allowVolumeExpansion), VolumeBindingMode (Immediate vs WaitForFirstConsumer) | 07-storage/assignment-2 |
 
 ## Scope Boundaries
 
 This topic covers persistent data in Kubernetes. The following related areas are handled by other topics:
 
-- **ConfigMap and Secret volumes** (in-memory, not persistent): covered in `pods/assignment-2`
-- **emptyDir for inter-container sharing** (ephemeral, not persistent): covered in `pods/assignment-6`
-- **fsGroup and volume permissions** (security contexts affecting mounted volumes): covered in `security-contexts/assignment-1`
+- **ConfigMap and Secret volumes** (in-memory, not persistent): covered in `01-pods/assignment-2`
+- **emptyDir for inter-container sharing** (ephemeral, not persistent): covered in `01-pods/assignment-6`
+- **fsGroup and volume permissions** (security contexts affecting mounted volumes): covered in `13-security-contexts/assignment-1`
 - **StatefulSets** (controllers with stable storage identity): covered in `statefulsets/`
 
 Assignment-1 focuses on PersistentVolume resources and static provisioning. Assignment-2 focuses on PVC binding and consumption. Assignment-3 focuses on StorageClass automation and dynamic provisioning.
@@ -36,7 +36,7 @@ Single-node kind cluster for all three assignments. Kind includes a default `sta
 
 ## Recommended Order
 
-1. No strict prerequisites, though familiarity with pod specs (pods/assignment-1) and volume mounts (pods/assignment-2) is assumed
+1. No strict prerequisites, though familiarity with pod specs (01-pods/assignment-1) and volume mounts (01-pods/assignment-2) is assumed
 2. Work through assignments 1, 2, 3 sequentially
 3. Assignment-2 assumes understanding of PV structure from assignment-1
 4. Assignment-3 assumes understanding of PV/PVC binding mechanics from assignments 1 and 2

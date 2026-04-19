@@ -15,14 +15,14 @@ Kubernetes offers three mechanisms for adjusting workload resources in response 
 
 | Assignment | Description | Prerequisites |
 |---|---|---|
-| assignment-1 | Workload Autoscaling | metrics-server installation and verification, HPA spec (`autoscaling/v2`, scaleTargetRef, minReplicas, maxReplicas, metrics array), CPU-based HPA, memory-based HPA, HPA behavior configuration (scaleUp/scaleDown policies, stabilizationWindowSeconds), in-place pod resize (resize policies, restartPolicy per-resource), VPA concepts (Auto, Initial, Off update modes), HPA diagnostics (unable to fetch metrics, selector mismatches, scale-to-zero) | pods/assignment-5 (Resources and QoS), pods/assignment-7 (Workload Controllers) |
+| assignment-1 | Workload Autoscaling | metrics-server installation and verification, HPA spec (`autoscaling/v2`, scaleTargetRef, minReplicas, maxReplicas, metrics array), CPU-based HPA, memory-based HPA, HPA behavior configuration (scaleUp/scaleDown policies, stabilizationWindowSeconds), in-place pod resize (resize policies, restartPolicy per-resource), VPA concepts (Auto, Initial, Off update modes), HPA diagnostics (unable to fetch metrics, selector mismatches, scale-to-zero) | 01-pods/assignment-5 (Resources and QoS), 01-pods/assignment-7 (Workload Controllers) |
 
 ## Scope Boundaries
 
 This topic covers autoscaling controllers. The following related areas are handled by other topics.
 
-- **Static resource requests and limits, QoS classes**: covered in `pods/assignment-5`
-- **Long-running workloads that HPA scales**: covered in `pods/assignment-7`
+- **Static resource requests and limits, QoS classes**: covered in `01-pods/assignment-5`
+- **Long-running workloads that HPA scales**: covered in `01-pods/assignment-7`
 - **Custom metrics adapters and external metrics**: conceptual only in this assignment; deep custom metrics work is out of CKA scope
 - **Cluster autoscaling** (node scaling): out of scope for CKA, relies on cloud-provider integration
 - **PodDisruptionBudgets** (coordinate with voluntary disruptions during scale-down): not on the CKA curriculum but worth mentioning as context
@@ -33,7 +33,7 @@ Multi-node kind cluster so that horizontal scaling is observable across workers.
 
 ## Recommended Order
 
-Complete `pods/assignment-5` (Resources and QoS) and `pods/assignment-7` (Workload Controllers) before this topic. HPA targets Deployments and StatefulSets, which are taught there. The in-place resize material builds on the requests/limits semantics from assignment-5.
+Complete `01-pods/assignment-5` (Resources and QoS) and `01-pods/assignment-7` (Workload Controllers) before this topic. HPA targets Deployments and StatefulSets, which are taught there. The in-place resize material builds on the requests/limits semantics from assignment-5.
 
 ---
 

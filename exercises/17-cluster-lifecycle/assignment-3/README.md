@@ -10,8 +10,8 @@ Since kind runs single-node etcd and does not support HA control planes, exercis
 
 ## Prerequisites
 
-- **exercises/cluster-lifecycle/assignment-1:** Cluster installation
-- **exercises/cluster-lifecycle/assignment-2:** Cluster maintenance
+- **exercises/17-17-cluster-lifecycle/assignment-1:** Cluster installation
+- **exercises/17-17-cluster-lifecycle/assignment-2:** Cluster maintenance
 
 ## Estimated Time
 
@@ -33,5 +33,5 @@ Multi-node kind cluster (1 control-plane, 3 workers).
 
 ## What Comes Next
 
-- **exercises/tls-and-certificates/assignment-1:** Certificate management
-- **exercises/troubleshooting/assignment-2:** Control plane troubleshooting
+- **exercises/18-18-tls-and-certificates/assignment-1:** Certificate management
+- **exercises/19-19-troubleshooting/assignment-2:** Control plane troubleshooting

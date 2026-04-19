@@ -15,17 +15,17 @@ StatefulSets provide three guarantees that Deployments do not: stable pod networ
 
 | Assignment | Description | Prerequisites |
 |---|---|---|
-| assignment-1 | StatefulSets | StatefulSet spec structure, headless Service (ClusterIP: None) requirement, stable pod network identity (pod-0, pod-1, ... DNS), ordered pod creation and deletion, `podManagementPolicy` (OrderedReady vs Parallel), `volumeClaimTemplates` and per-pod storage, `updateStrategy` (RollingUpdate with partition, OnDelete), scaling StatefulSets, diagnostic workflow for stuck or failed StatefulSets | pods/assignment-7 (Workload Controllers), services/assignment-1 (headless Services), storage/assignment-2 (PVCs) |
+| assignment-1 | StatefulSets | StatefulSet spec structure, headless Service (ClusterIP: None) requirement, stable pod network identity (pod-0, pod-1, ... DNS), ordered pod creation and deletion, `podManagementPolicy` (OrderedReady vs Parallel), `volumeClaimTemplates` and per-pod storage, `updateStrategy` (RollingUpdate with partition, OnDelete), scaling StatefulSets, diagnostic workflow for stuck or failed StatefulSets | 01-pods/assignment-7 (Workload Controllers), 08-services/assignment-1 (headless Services), 07-storage/assignment-2 (PVCs) |
 
 ## Scope Boundaries
 
 This topic covers the StatefulSet controller. The following related areas are handled by other topics.
 
-- **Stateless workloads** (ReplicaSets, Deployments, DaemonSets): covered in `pods/assignment-7`
+- **Stateless workloads** (ReplicaSets, Deployments, DaemonSets): covered in `01-pods/assignment-7`
 - **Batch workloads** (Jobs, CronJobs): covered in `jobs-and-cronjobs/`
-- **Services** (the headless Service used by a StatefulSet): covered in `services/assignment-1`
-- **Persistent storage** (PV, PVC, StorageClass mechanics that `volumeClaimTemplates` uses): covered in `storage/assignment-1` through `storage/assignment-3`
-- **DNS resolution** (how pod DNS names resolve to pod IPs): covered in `coredns/assignment-1`
+- **Services** (the headless Service used by a StatefulSet): covered in `08-services/assignment-1`
+- **Persistent storage** (PV, PVC, StorageClass mechanics that `volumeClaimTemplates` uses): covered in `07-storage/assignment-1` through `07-storage/assignment-3`
+- **DNS resolution** (how pod DNS names resolve to pod IPs): covered in `09-coredns/assignment-1`
 
 ## Cluster Requirements
 
@@ -33,7 +33,7 @@ Multi-node kind cluster so that StatefulSet pod distribution across workers and 
 
 ## Recommended Order
 
-Complete `pods/assignment-7` (Workload Controllers), `services/assignment-1` (for headless Services), and at least `storage/assignment-2` (for PVC fundamentals) before this topic. StatefulSets combine all three.
+Complete `01-pods/assignment-7` (Workload Controllers), `08-services/assignment-1` (for headless Services), and at least `07-storage/assignment-2` (for PVC fundamentals) before this topic. StatefulSets combine all three.
 
 ---
 

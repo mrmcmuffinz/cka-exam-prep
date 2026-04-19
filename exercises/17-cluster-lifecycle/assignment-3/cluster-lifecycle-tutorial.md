@@ -9,7 +9,7 @@ Etcd is the distributed key-value store that holds all Kubernetes cluster state:
 ## Prerequisites
 
 - Multi-node kind cluster running
-- Completed cluster-lifecycle/assignment-1 and assignment-2
+- Completed 17-cluster-lifecycle/assignment-1 and assignment-2
 
 ## Tutorial Setup
 

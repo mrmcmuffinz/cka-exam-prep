@@ -6,7 +6,7 @@
 - **CKA domain:** Services & Networking (20%)
 - **Competencies covered:** Know how to use Ingress controllers and Ingress resources (the Ingress API is frozen but still tested)
 - **Course sections referenced:** S9 (lectures 231-237, Ingress controllers and resources)
-- **Prerequisites:** `services/assignment-1`
+- **Prerequisites:** `08-services/assignment-1`
 
 ## Scope declaration
 
@@ -72,11 +72,11 @@ All CKA resources are in scope. Exercises primarily use Ingress, IngressClass, S
 ## Cross-references
 
 **Prerequisites (must be completed first):**
-- `exercises/services/assignment-1`: ClusterIP Services are the backends
+- `exercises/08-08-services/assignment-1`: ClusterIP Services are the backends
 
 **Adjacent topics:**
-- `exercises/ingress-and-gateway-api/assignment-2`: advanced Ingress patterns with HAProxy Ingress
-- `exercises/ingress-and-gateway-api/assignment-3`: Gateway API fundamentals (the modern replacement)
+- `exercises/11-11-ingress-and-gateway-api/assignment-2`: advanced Ingress patterns with HAProxy Ingress
+- `exercises/11-11-ingress-and-gateway-api/assignment-3`: Gateway API fundamentals (the modern replacement)
 
 **Forward references:**
-- `exercises/ingress-and-gateway-api/assignment-5`: migration from Ingress to Gateway API
+- `exercises/11-11-ingress-and-gateway-api/assignment-5`: migration from Ingress to Gateway API

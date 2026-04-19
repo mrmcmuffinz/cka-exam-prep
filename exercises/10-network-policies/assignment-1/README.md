@@ -6,7 +6,7 @@ This is the first of three assignments covering Network Policies in Kubernetes. 
 
 Before starting this assignment, you should have completed:
 
-- exercises/services/assignment-1 (Service Basics)
+- exercises/08-08-services/assignment-1 (Service Basics)
 
 You should understand Services, Pods, and basic Kubernetes networking concepts.
 

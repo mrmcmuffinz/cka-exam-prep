@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed kustomize/assignment-1 (Kustomize Fundamentals)
+- I have completed 06-kustomize/assignment-1 (Kustomize Fundamentals)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -54,10 +54,10 @@ This assignment covers strategic merge patches, JSON 6902 patches, inline patche
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Basic kustomization.yaml (exercises/kustomize/assignment-1)
-- Common transformers (exercises/kustomize/assignment-1)
-- Overlays (exercises/kustomize/assignment-3)
-- Components (exercises/kustomize/assignment-3)
+- Basic kustomization.yaml (exercises/06-06-kustomize/assignment-1)
+- Common transformers (exercises/06-06-kustomize/assignment-1)
+- Overlays (exercises/06-06-kustomize/assignment-3)
+- Components (exercises/06-06-kustomize/assignment-3)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -113,7 +113,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of Patches and Transformers assignment
-   - Prerequisites: kustomize/assignment-1
+   - Prerequisites: 06-kustomize/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Recommended workflow
@@ -138,10 +138,10 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/kustomize/assignment-1: Kustomize fundamentals
+  - exercises/06-06-kustomize/assignment-1: Kustomize fundamentals
 
 - **Follow-up assignments:**
-  - exercises/kustomize/assignment-3: Overlays and components
+  - exercises/06-06-kustomize/assignment-3: Overlays and components
 
 COURSE MATERIAL REFERENCE:
 - S13 (Lectures 263-284): Kustomize patches, transformers, generators

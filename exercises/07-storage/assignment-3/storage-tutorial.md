@@ -6,7 +6,7 @@ kind ships with a default StorageClass named `standard` backed by the `rancher.i
 
 ## Prerequisites
 
-Any single-node kind cluster works. See `docs/cluster-setup.md#single-node-kind-cluster` for the creation command. Complete `exercises/storage/assignment-1` and `/assignment-2` first; this tutorial assumes fluency with PVs and PVCs.
+Any single-node kind cluster works. See `docs/cluster-setup.md#single-node-kind-cluster` for the creation command. Complete `exercises/07-07-storage/assignment-1` and `/assignment-2` first; this tutorial assumes fluency with PVs and PVCs.
 
 Verify the cluster and the default StorageClass.
 

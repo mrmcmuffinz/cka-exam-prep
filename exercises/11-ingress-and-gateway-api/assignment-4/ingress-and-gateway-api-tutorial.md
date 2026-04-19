@@ -6,7 +6,7 @@ NGINX Gateway Fabric is NGINX Inc.'s conformant Gateway API implementation. It t
 
 ## Prerequisites
 
-Complete `exercises/ingress-and-gateway-api/assignment-3` first and keep Envoy Gateway installed. Gateway API CRDs must be in place (`docs/cluster-setup.md#gateway-api-crds`). Use the multi-node kind cluster from earlier assignments (`docs/cluster-setup.md#multi-node-kind-cluster`).
+Complete `exercises/11-11-ingress-and-gateway-api/assignment-3` first and keep Envoy Gateway installed. Gateway API CRDs must be in place (`docs/cluster-setup.md#gateway-api-crds`). Use the multi-node kind cluster from earlier assignments (`docs/cluster-setup.md#multi-node-kind-cluster`).
 
 Verify.
 

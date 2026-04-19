@@ -9,7 +9,7 @@ The Certificates API provides a Kubernetes-native way to request and approve cer
 ## Prerequisites
 
 - Single-node kind cluster running
-- Completed tls-and-certificates/assignment-1
+- Completed 18-tls-and-certificates/assignment-1
 
 ## Tutorial Setup
 

@@ -15,17 +15,17 @@ Jobs run a set of pods to completion and then stop. CronJobs wrap Jobs with a sc
 
 | Assignment | Description | Prerequisites |
 |---|---|---|
-| assignment-1 | Jobs and CronJobs | Job spec (completions, parallelism, backoffLimit, activeDeadlineSeconds), Indexed vs NonIndexed completions, Job restart policies, CronJob spec (schedule, concurrencyPolicy, startingDeadlineSeconds), history limits, TTL for finished Jobs, diagnostic workflow for failed batch workloads | pods/assignment-7 (Workload Controllers) |
+| assignment-1 | Jobs and CronJobs | Job spec (completions, parallelism, backoffLimit, activeDeadlineSeconds), Indexed vs NonIndexed completions, Job restart policies, CronJob spec (schedule, concurrencyPolicy, startingDeadlineSeconds), history limits, TTL for finished Jobs, diagnostic workflow for failed batch workloads | 01-pods/assignment-7 (Workload Controllers) |
 
 ## Scope Boundaries
 
 This topic covers finite-duration workloads. The following related areas are handled by other topics.
 
-- **Long-running workloads** (ReplicaSets, Deployments, DaemonSets): covered in `pods/assignment-7`
+- **Long-running workloads** (ReplicaSets, Deployments, DaemonSets): covered in `01-pods/assignment-7`
 - **Stateful workloads with ordered identity**: covered in `statefulsets/`
 - **Autoscaling** (HPA for long-running workloads, not Jobs): covered in `autoscaling/`
-- **Scheduling constraints on pods** (node affinity, taints): covered in `pods/assignment-4`
-- **Resource requests and limits**: covered in `pods/assignment-5`
+- **Scheduling constraints on pods** (node affinity, taints): covered in `01-pods/assignment-4`
+- **Resource requests and limits**: covered in `01-pods/assignment-5`
 
 ## Cluster Requirements
 
@@ -33,7 +33,7 @@ Single-node kind cluster is sufficient for all Job and CronJob exercises. CronJo
 
 ## Recommended Order
 
-Complete `pods/assignment-7` (Workload Controllers) before this topic. Jobs and CronJobs are controllers that produce pods, so the same mental model from ReplicaSets applies. This topic can be generated and worked any time after the S5 course section (Application Lifecycle Management) is complete.
+Complete `01-pods/assignment-7` (Workload Controllers) before this topic. Jobs and CronJobs are controllers that produce pods, so the same mental model from ReplicaSets applies. This topic can be generated and worked any time after the S5 course section (Application Lifecycle Management) is complete.
 
 ---
 

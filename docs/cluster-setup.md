@@ -100,7 +100,7 @@ Expected: four nodes (1 control-plane, 3 workers) all in `Ready` status.
 
 ## Multi-node with Calico (NetworkPolicy support)
 
-Required for `network-policies/` assignments and `troubleshooting/assignment-4`.
+Required for `network-policies/` assignments and `19-troubleshooting/assignment-4`.
 Kind's default CNI (kindnet) does not enforce `NetworkPolicy` resources, so
 Calico is installed in its place. This differs from the plain multi-node setup
 by disabling the default CNI before install.
@@ -149,7 +149,7 @@ All nodes should be `Ready` and kube-system pods `Running`.
 
 ## MetalLB for LoadBalancer services
 
-Required for `services/assignment-1` and `services/assignment-2` LoadBalancer
+Required for `08-services/assignment-1` and `08-services/assignment-2` LoadBalancer
 exercises. Kind does not natively provision external load balancers, so MetalLB
 provides an IP address pool drawn from the kind network.
 
@@ -211,7 +211,7 @@ The `EXTERNAL-IP` column should show an address from the configured pool.
 
 ## Metrics-server
 
-Required for `troubleshooting/assignment-1` and any exercise using
+Required for `19-troubleshooting/assignment-1` and any exercise using
 `kubectl top`. The `--kubelet-insecure-tls` flag is needed on kind because
 kind's kubelet uses self-signed certificates.
 
@@ -232,7 +232,7 @@ kubectl top nodes
 
 ## Gateway API CRDs
 
-Required for all `ingress-and-gateway-api/assignment-3` and later assignments
+Required for all `11-ingress-and-gateway-api/assignment-3` and later assignments
 using Gateway API. Gateway API resources are delivered as CRDs that must be
 installed before any Gateway API implementation.
 
@@ -266,11 +266,11 @@ for reference.
 
 | Assignment | Controller | Version | API |
 |---|---|---|---|
-| `ingress-and-gateway-api/assignment-1` | Traefik | v3.6.13 | Ingress v1 |
-| `ingress-and-gateway-api/assignment-2` | HAProxy Ingress | v3.2.6 | Ingress v1 |
-| `ingress-and-gateway-api/assignment-3` | Envoy Gateway | v1.7.2 | Gateway API |
-| `ingress-and-gateway-api/assignment-4` | NGINX Gateway Fabric | v2.5.1 | Gateway API |
-| `ingress-and-gateway-api/assignment-5` | Traefik and Envoy Gateway from prior assignments, plus the `Ingress2Gateway` CLI v1.0.0 | n/a (reuses prior installs) | Both (migration) |
+| `11-ingress-and-gateway-api/assignment-1` | Traefik | v3.6.13 | Ingress v1 |
+| `11-ingress-and-gateway-api/assignment-2` | HAProxy Ingress | v3.2.6 | Ingress v1 |
+| `11-ingress-and-gateway-api/assignment-3` | Envoy Gateway | v1.7.2 | Gateway API |
+| `11-ingress-and-gateway-api/assignment-4` | NGINX Gateway Fabric | v2.5.1 | Gateway API |
+| `11-ingress-and-gateway-api/assignment-5` | Traefik and Envoy Gateway from prior assignments, plus the `Ingress2Gateway` CLI v1.0.0 | n/a (reuses prior installs) | Both (migration) |
 
 All controller versions verified against each project's official releases page
 on 2026-04-18. The per-assignment tutorial for each ingress assignment contains
@@ -312,7 +312,7 @@ source for each pin so future maintenance can re-verify efficiently.
 | MetalLB | v0.15.3 | `metallb.io/installation/`, `github.com/metallb/metallb/releases` | 2026-04-18 |
 | metrics-server | v0.8.1 | `github.com/kubernetes-sigs/metrics-server` compatibility table | 2026-04-18 |
 | Gateway API CRDs | v1.5.1 | `github.com/kubernetes-sigs/gateway-api/releases/tag/v1.5.1` (latest standard-channel release, March 2025) | 2026-04-18 |
-| Traefik (ingress-and-gateway-api/assignment-1) | v3.6.13 | `github.com/traefik/traefik/releases` | 2026-04-18 |
+| Traefik (11-ingress-and-gateway-api/assignment-1) | v3.6.13 | `github.com/traefik/traefik/releases` | 2026-04-18 |
 | HAProxy Kubernetes Ingress (assignment-2) | v3.2.6 | `github.com/haproxytech/kubernetes-ingress/releases` | 2026-04-18 |
 | Envoy Gateway (assignment-3) | v1.7.2 | `github.com/envoyproxy/gateway/releases` | 2026-04-18 |
 | NGINX Gateway Fabric (assignment-4) | v2.5.1 | `github.com/nginx/nginx-gateway-fabric/releases` | 2026-04-18 |

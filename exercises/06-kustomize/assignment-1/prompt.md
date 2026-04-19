@@ -43,11 +43,11 @@ This assignment covers kustomization.yaml structure, resource references, common
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Strategic merge patches (exercises/kustomize/assignment-2)
-- JSON 6902 patches (exercises/kustomize/assignment-2)
-- ConfigMap/Secret generators (exercises/kustomize/assignment-2)
-- Overlays (exercises/kustomize/assignment-3)
-- Components (exercises/kustomize/assignment-3)
+- Strategic merge patches (exercises/06-06-kustomize/assignment-2)
+- JSON 6902 patches (exercises/06-06-kustomize/assignment-2)
+- ConfigMap/Secret generators (exercises/06-06-kustomize/assignment-2)
+- Overlays (exercises/06-06-kustomize/assignment-3)
+- Components (exercises/06-06-kustomize/assignment-3)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -131,8 +131,8 @@ CROSS-REFERENCES:
   - General Kubernetes familiarity
 
 - **Follow-up assignments:**
-  - exercises/kustomize/assignment-2: Patches and transformers
-  - exercises/kustomize/assignment-3: Overlays and components
+  - exercises/06-06-kustomize/assignment-2: Patches and transformers
+  - exercises/06-06-kustomize/assignment-3: Overlays and components
 
 COURSE MATERIAL REFERENCE:
 - S13 (Lectures 263-284): Kustomize basics, transformers

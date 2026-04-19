@@ -22,7 +22,7 @@ Level 1 is HAProxy basics: deploy an Ingress under the `haproxy` IngressClass, v
 
 ## Prerequisites
 
-Complete `exercises/ingress-and-gateway-api/assignment-1` (Ingress v1 with Traefik) first; this assignment assumes you can author Ingresses, debug routing, and read HAProxy controller logs with the same fluency. Complete `exercises/tls-and-certificates/assignment-1` (certificate creation with openssl) because the TLS exercises here consume certificates without reteaching their creation in detail.
+Complete `exercises/11-11-ingress-and-gateway-api/assignment-1` (Ingress v1 with Traefik) first; this assignment assumes you can author Ingresses, debug routing, and read HAProxy controller logs with the same fluency. Complete `exercises/18-18-tls-and-certificates/assignment-1` (certificate creation with openssl) because the TLS exercises here consume certificates without reteaching their creation in detail.
 
 ## Cluster Requirements
 
@@ -34,7 +34,7 @@ The tutorial takes 60 to 90 minutes. The 15 exercises together take four to six 
 
 ## Scope Boundary and What Comes Next
 
-This assignment covers advanced Ingress patterns, TLS, and HAProxy-specific annotations. Gateway API resources are assignment 3. Migration from Ingress to Gateway API is assignment 5. Detailed certificate creation with openssl is `exercises/tls-and-certificates/assignment-1`. Certificate rotation and expiry troubleshooting are `exercises/tls-and-certificates/assignment-3`. HAProxy-specific advanced features (TCP/UDP services, ModSecurity) are out of CKA scope.
+This assignment covers advanced Ingress patterns, TLS, and HAProxy-specific annotations. Gateway API resources are assignment 3. Migration from Ingress to Gateway API is assignment 5. Detailed certificate creation with openssl is `exercises/18-18-tls-and-certificates/assignment-1`. Certificate rotation and expiry troubleshooting are `exercises/18-18-tls-and-certificates/assignment-3`. HAProxy-specific advanced features (TCP/UDP services, ModSecurity) are out of CKA scope.
 
 ## Key Takeaways After Completing This Assignment
 

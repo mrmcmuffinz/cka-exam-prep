@@ -22,7 +22,7 @@ Level 1 practices the three volume types: a pod with `emptyDir`, a pod with `hos
 
 ## Prerequisites
 
-Complete `exercises/pods/assignment-1` (pod fundamentals) and `exercises/pods/assignment-2` (volume mounts). This assignment assumes you can author a pod spec with volume mounts; it adds the PV resource on top and does not reteach volume-mount syntax.
+Complete `exercises/01-01-pods/assignment-1` (pod fundamentals) and `exercises/01-01-pods/assignment-2` (volume mounts). This assignment assumes you can author a pod spec with volume mounts; it adds the PV resource on top and does not reteach volume-mount syntax.
 
 ## Cluster Requirements
 
@@ -34,7 +34,7 @@ The tutorial takes 45 to 60 minutes. The 15 exercises together take four to six 
 
 ## Scope Boundary and What Comes Next
 
-This assignment covers PersistentVolumes and volume types only. PersistentVolumeClaims (which consume PVs) are covered in `exercises/storage/assignment-2`. StorageClasses and dynamic provisioning are covered in `exercises/storage/assignment-3`. StatefulSets (which use `volumeClaimTemplates` to request PVCs automatically) live in `exercises/statefulsets/assignment-1`. `fsGroup` and volume permissions are `exercises/security-contexts/assignment-1`. The CSI driver install and write-your-own-provisioner topics are outside the CKA scope and are not exercised in this repo.
+This assignment covers PersistentVolumes and volume types only. PersistentVolumeClaims (which consume PVs) are covered in `exercises/07-07-storage/assignment-2`. StorageClasses and dynamic provisioning are covered in `exercises/07-07-storage/assignment-3`. StatefulSets (which use `volumeClaimTemplates` to request PVCs automatically) live in `exercises/03-03-statefulsets/assignment-1`. `fsGroup` and volume permissions are `exercises/13-13-security-contexts/assignment-1`. The CSI driver install and write-your-own-provisioner topics are outside the CKA scope and are not exercised in this repo.
 
 ## Key Takeaways After Completing This Assignment
 

@@ -8,7 +8,7 @@ While manual certificate creation works, Kubernetes provides the Certificates AP
 
 ## Prerequisites
 
-- **exercises/tls-and-certificates/assignment-1:** Manual certificate creation
+- **exercises/18-18-tls-and-certificates/assignment-1:** Manual certificate creation
 
 ## Estimated Time
 
@@ -30,5 +30,5 @@ Single-node kind cluster.
 
 ## What Comes Next
 
-- **exercises/tls-and-certificates/assignment-3:** Certificate troubleshooting
-- **exercises/rbac/assignment-1:** Using certificate-based authentication with RBAC
+- **exercises/18-18-tls-and-certificates/assignment-3:** Certificate troubleshooting
+- **exercises/12-12-rbac/assignment-1:** Using certificate-based authentication with RBAC

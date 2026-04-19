@@ -15,9 +15,9 @@ Security contexts control runtime security settings for pods and containers: whi
 
 | Assignment | Description | Prerequisites |
 |---|---|---|
-| assignment-1 | User and Group Security | Pod-level securityContext (runAsUser, runAsGroup, fsGroup, supplementalGroups), container-level securityContext (runAsUser, runAsNonRoot), fsGroup interaction with volumes, volume ownership and permission propagation, security context precedence (container overrides pod), verification via exec | pods/assignment-1, pods/assignment-2 |
-| assignment-2 | Capabilities and Privilege Control | Linux capabilities overview, adding capabilities (NET_ADMIN, SYS_TIME, SYS_ADMIN), dropping capabilities (CAP_NET_RAW, CAP_SETUID), default capabilities from container runtime, allowPrivilegeEscalation flag and implications, privilege escalation prevention patterns | security-contexts/assignment-1 |
-| assignment-3 | Filesystem and seccomp Profiles | readOnlyRootFilesystem flag, combining readOnlyRootFilesystem with writable emptyDir mounts, seccomp profiles (RuntimeDefault, Localhost, Unconfined), creating custom seccomp profiles, seccomp profile debugging, security context best practices and defense in depth | security-contexts/assignment-2 |
+| assignment-1 | User and Group Security | Pod-level securityContext (runAsUser, runAsGroup, fsGroup, supplementalGroups), container-level securityContext (runAsUser, runAsNonRoot), fsGroup interaction with volumes, volume ownership and permission propagation, security context precedence (container overrides pod), verification via exec | 01-pods/assignment-1, 01-pods/assignment-2 |
+| assignment-2 | Capabilities and Privilege Control | Linux capabilities overview, adding capabilities (NET_ADMIN, SYS_TIME, SYS_ADMIN), dropping capabilities (CAP_NET_RAW, CAP_SETUID), default capabilities from container runtime, allowPrivilegeEscalation flag and implications, privilege escalation prevention patterns | 13-security-contexts/assignment-1 |
+| assignment-3 | Filesystem and seccomp Profiles | readOnlyRootFilesystem flag, combining readOnlyRootFilesystem with writable emptyDir mounts, seccomp profiles (RuntimeDefault, Localhost, Unconfined), creating custom seccomp profiles, seccomp profile debugging, security context best practices and defense in depth | 13-security-contexts/assignment-2 |
 
 ## Scope Boundaries
 
@@ -36,7 +36,7 @@ Single-node kind cluster for all three assignments. Security context enforcement
 
 ## Recommended Order
 
-1. Complete `pods/assignment-1` (pod spec fundamentals) and `pods/assignment-2` (volume mounts, needed for fsGroup exercises) before this series
+1. Complete `01-pods/assignment-1` (pod spec fundamentals) and `01-pods/assignment-2` (volume mounts, needed for fsGroup exercises) before this series
 2. Work through assignments 1, 2, 3 sequentially
 3. Assignment-2 assumes understanding of basic security context structure from assignment-1
 4. Assignment-3 assumes understanding of both identity controls and capability management from assignments 1 and 2

@@ -4,7 +4,7 @@ CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
 - I have completed the following CKA course sections: S1-S6 (through lecture 142, covering Core Concepts, Scheduling, Logging & Monitoring, Application Lifecycle Management, and Cluster Maintenance)
-- I have completed all pod assignments (1-7) and rbac/assignment-1
+- I have completed all pod assignments (1-7) and 12-rbac/assignment-1
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -54,17 +54,17 @@ This assignment covers cluster installation using kubeadm, including node prereq
 
 **Out of scope (covered in other assignments, do not include):**
 
-- TLS certificate creation, viewing, or management (exercises/tls-and-certificates/assignment-1)
-- Certificates API for user certificates (exercises/tls-and-certificates/assignment-2)
-- Certificate troubleshooting (exercises/tls-and-certificates/assignment-3)
-- Cluster version upgrades with kubeadm upgrade (exercises/cluster-lifecycle/assignment-2)
-- Node drain, cordon, uncordon operations (exercises/cluster-lifecycle/assignment-2)
-- etcd backup and restore (exercises/cluster-lifecycle/assignment-3)
-- HA control plane configuration (exercises/cluster-lifecycle/assignment-3)
-- RBAC configuration (exercises/rbac/). This assignment uses cluster-admin access.
-- Network Policies (exercises/network-policies/). CNI installation is in scope, but policy configuration is not.
-- Detailed troubleshooting of control plane failures (exercises/troubleshooting/assignment-2)
-- Detailed troubleshooting of node failures (exercises/troubleshooting/assignment-3)
+- TLS certificate creation, viewing, or management (exercises/18-18-tls-and-certificates/assignment-1)
+- Certificates API for user certificates (exercises/18-18-tls-and-certificates/assignment-2)
+- Certificate troubleshooting (exercises/18-18-tls-and-certificates/assignment-3)
+- Cluster version upgrades with kubeadm upgrade (exercises/17-17-cluster-lifecycle/assignment-2)
+- Node drain, cordon, uncordon operations (exercises/17-17-cluster-lifecycle/assignment-2)
+- etcd backup and restore (exercises/17-17-cluster-lifecycle/assignment-3)
+- HA control plane configuration (exercises/17-17-cluster-lifecycle/assignment-3)
+- RBAC configuration (exercises/12-rbac/). This assignment uses cluster-admin access.
+- Network Policies (exercises/10-network-policies/). CNI installation is in scope, but policy configuration is not.
+- Detailed troubleshooting of control plane failures (exercises/19-19-troubleshooting/assignment-2)
+- Detailed troubleshooting of node failures (exercises/19-19-troubleshooting/assignment-3)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -126,7 +126,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of the Cluster Installation assignment and its place in the CKA exam prep series
-   - Prerequisites: pods/assignment-7, rbac/assignment-1
+   - Prerequisites: 01-pods/assignment-7, 12-rbac/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: multi-node kind cluster (1 control-plane, 2-3 workers)
    - Note about kind abstracting kubeadm (exercises use exec to examine artifacts)
@@ -184,13 +184,13 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites (must be completed first):**
-  - exercises/pods/assignment-7 (Workload Controllers): Understanding Deployments and DaemonSets helps understand control plane components
-  - exercises/rbac/assignment-1 (RBAC namespace-scoped): Understanding ServiceAccounts and RBAC for verifying permissions
+  - exercises/01-01-pods/assignment-7 (Workload Controllers): Understanding Deployments and DaemonSets helps understand control plane components
+  - exercises/12-12-rbac/assignment-1 (RBAC namespace-scoped): Understanding ServiceAccounts and RBAC for verifying permissions
 
 - **Follow-up assignments:**
-  - exercises/cluster-lifecycle/assignment-2: Cluster upgrades and maintenance operations
-  - exercises/cluster-lifecycle/assignment-3: etcd operations and HA control plane
-  - exercises/tls-and-certificates/assignment-1: TLS fundamentals and certificate creation
+  - exercises/17-17-cluster-lifecycle/assignment-2: Cluster upgrades and maintenance operations
+  - exercises/17-17-cluster-lifecycle/assignment-3: etcd operations and HA control plane
+  - exercises/18-18-tls-and-certificates/assignment-1: TLS fundamentals and certificate creation
 
 COURSE MATERIAL REFERENCE:
 This assignment aligns with Mumshad CKA course sections:

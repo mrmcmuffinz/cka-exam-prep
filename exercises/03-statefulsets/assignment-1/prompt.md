@@ -6,7 +6,7 @@
 - **CKA domain:** Workloads & Scheduling (15%)
 - **Competencies covered:** Understand application deployments (stateful workloads with stable identity), self-healing primitives for stateful workloads
 - **Course sections referenced:** S2 (pods and controllers), S8 (storage for the `volumeClaimTemplates` portion), S9 (for headless Services)
-- **Prerequisites:** `pods/assignment-7` (Workload Controllers), `services/assignment-1` (headless Services), `storage/assignment-2` (PVC fundamentals)
+- **Prerequisites:** `01-pods/assignment-7` (Workload Controllers), `08-services/assignment-1` (headless Services), `07-storage/assignment-2` (PVC fundamentals)
 
 ## Scope declaration
 
@@ -57,10 +57,10 @@
 
 ### Out of scope (covered in other assignments, do not include)
 
-- Long-running stateless workloads (ReplicaSets, Deployments): covered in `pods/assignment-7`
+- Long-running stateless workloads (ReplicaSets, Deployments): covered in `01-pods/assignment-7`
 - PV/PVC mechanics (StorageClass, access modes, reclaim policy): covered in the `storage/` series
-- Headless Service mechanics beyond the StatefulSet requirement: covered in `services/assignment-1`
-- Pod DNS format: covered in `coredns/assignment-1`
+- Headless Service mechanics beyond the StatefulSet requirement: covered in `08-services/assignment-1`
+- Pod DNS format: covered in `09-coredns/assignment-1`
 - Backup and restore of stateful application data (out of CKA scope)
 - Operator-based stateful workload management: covered in `crds-and-operators/`
 
@@ -85,13 +85,13 @@ All CKA resources are in scope. The assignment uses StatefulSets, headless Servi
 ## Cross-references
 
 **Prerequisites (must be completed first):**
-- `exercises/pods/assignment-7`: Deployments and reconciliation model
-- `exercises/services/assignment-1`: headless Services
-- `exercises/storage/assignment-2`: PVC fundamentals
+- `exercises/01-01-pods/assignment-7`: Deployments and reconciliation model
+- `exercises/08-08-services/assignment-1`: headless Services
+- `exercises/07-07-storage/assignment-2`: PVC fundamentals
 
 **Adjacent topics:**
-- `exercises/jobs-and-cronjobs/`: batch workloads (contrasts with long-running stateful)
-- `exercises/autoscaling/`: HPA can target StatefulSets (one exercise in the autoscaling assignment covers this)
+- `exercises/02-jobs-and-cronjobs/`: batch workloads (contrasts with long-running stateful)
+- `exercises/04-autoscaling/`: HPA can target StatefulSets (one exercise in the autoscaling assignment covers this)
 
 **Forward references:**
-- `exercises/troubleshooting/assignment-1`: application-layer troubleshooting will include StatefulSet-specific scenarios (stuck rolling update, per-pod storage issues)
+- `exercises/19-19-troubleshooting/assignment-1`: application-layer troubleshooting will include StatefulSet-specific scenarios (stuck rolling update, per-pod storage issues)

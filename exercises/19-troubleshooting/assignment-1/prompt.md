@@ -61,9 +61,9 @@ This assignment covers application-layer troubleshooting: pod failure states, cr
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Control plane failures (exercises/troubleshooting/assignment-2)
-- Node and kubelet issues (exercises/troubleshooting/assignment-3)
-- Network and DNS issues (exercises/troubleshooting/assignment-4)
+- Control plane failures (exercises/19-19-troubleshooting/assignment-2)
+- Node and kubelet issues (exercises/19-19-troubleshooting/assignment-3)
+- Network and DNS issues (exercises/19-19-troubleshooting/assignment-4)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -152,9 +152,9 @@ CROSS-REFERENCES:
   - All previous topic assignments
 
 - **Follow-up assignments:**
-  - exercises/troubleshooting/assignment-2: Control plane troubleshooting
-  - exercises/troubleshooting/assignment-3: Node troubleshooting
-  - exercises/troubleshooting/assignment-4: Network troubleshooting
+  - exercises/19-19-troubleshooting/assignment-2: Control plane troubleshooting
+  - exercises/19-19-troubleshooting/assignment-3: Node troubleshooting
+  - exercises/19-19-troubleshooting/assignment-4: Network troubleshooting
 
 COURSE MATERIAL REFERENCE:
 - S14 (Lectures 285-288): Application failure

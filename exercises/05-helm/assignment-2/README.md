@@ -16,7 +16,7 @@ Level 1 exercises cover upgrade operations: upgrading with new values and using 
 
 ## Prerequisites
 
-You need a running kind cluster created with rootless nerdctl, kubectl configured to talk to it, and the Helm CLI installed. You should have completed helm/assignment-1 (Helm Basics) so that repository management, installation, and basic --set usage are familiar.
+You need a running kind cluster created with rootless nerdctl, kubectl configured to talk to it, and the Helm CLI installed. You should have completed 05-helm/assignment-1 (Helm Basics) so that repository management, installation, and basic --set usage are familiar.
 
 ## Cluster Requirements
 

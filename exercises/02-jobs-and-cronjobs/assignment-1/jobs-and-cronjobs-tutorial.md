@@ -22,7 +22,7 @@ kubectl config set-context --current --namespace=tutorial-jobs-and-cronjobs
 
 If you prefer to be explicit, skip that second command and add `-n tutorial-jobs-and-cronjobs` to every command below.
 
-This tutorial assumes you have completed `exercises/pods/assignment-7` (Workload Controllers). A Job is a workload controller that manages pods, and the reconciliation behavior you saw with ReplicaSets applies directly.
+This tutorial assumes you have completed `exercises/01-01-pods/assignment-7` (Workload Controllers). A Job is a workload controller that manages pods, and the reconciliation behavior you saw with ReplicaSets applies directly.
 
 ## Part 1: The Simplest Job
 

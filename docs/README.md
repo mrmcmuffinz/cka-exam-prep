@@ -21,7 +21,7 @@ being made and to track progress against a coherent plan.
 These documents were produced on 2026-04-18 as the output of an end-to-end
 audit of the repository. The audit read the infrastructure files (devcontainer,
 skills, reference files), all 14 topic-level READMEs, both hand-crafted series
-(pods 1-7 and rbac/assignment-1) in depth, and representative assignments from
+(pods 1-7 and 12-rbac/assignment-1) in depth, and representative assignments from
 each of the 13 skill-generated topics. The conversation that produced this
 plan is preserved in the documents above in enough detail to resume work
 in a later session without losing context.
@@ -41,7 +41,7 @@ As of 2026-04-19:
   `pod-security/`. The `ingress-and-gateway-api/` topic is restructured from
   three to five assignments.
 - **Phase 4 (Content generation and regeneration):** Complete as of 2026-04-18. All 19 full-assignment regens are content-complete: `jobs-and-cronjobs/1`, `pod-security/1`, `rbac/2`, `statefulsets/1`, `troubleshooting/2`, `autoscaling/1`, `admission-controllers/1`, `troubleshooting/4`, `security-contexts/1-3`, `storage/1-3`, `ingress-and-gateway-api/1-5`. Three surgical regens complete (P4.6 cluster-lifecycle/1 homework, P4.7 crds-and-operators/1 Level 1, P4.8 troubleshooting/1 Exercise 1.2). All five new-topic curriculum gaps (G1, G2, G3, G5, G6) resolved. All stub READMEs regenerated. U7 duplicated-YAML finding resolved in storage/1-3. Ingress series fully converted to the D8 controller-diversity structure (Traefik, HAProxy Ingress, Envoy Gateway, NGINX Gateway Fabric, Ingress2Gateway CLI).
-- **Phase 5 (Technique weaving):** Complete as of 2026-04-19. `kubectl debug` (ephemeral containers and node debugging) weaved into `troubleshooting/assignment-1` and `/assignment-3`. `kubectl port-forward` weaved into `services/assignment-1`. Scheduler profiles and multiple schedulers acknowledged in `pods/assignment-4`. Curriculum gaps G4, G7, G8 resolved.
+- **Phase 5 (Technique weaving):** Complete as of 2026-04-19. `kubectl debug` (ephemeral containers and node debugging) weaved into `19-troubleshooting/assignment-1` and `/assignment-3`. `kubectl port-forward` weaved into `08-services/assignment-1`. Scheduler profiles and multiple schedulers acknowledged in `01-pods/assignment-4`. Curriculum gaps G4, G7, G8 resolved.
 - **Phase 6 (Verification and housekeeping):** Complete as of 2026-04-19. All seven audit tasks passed: series counters verified, cross-references validated, READMEs/tutorials/answer keys audited against quality gates, coverage matrix confirmed, audit-findings status sweep complete. Remediation plan closed.
 
 See `remediation-plan.md` for task-level detail.

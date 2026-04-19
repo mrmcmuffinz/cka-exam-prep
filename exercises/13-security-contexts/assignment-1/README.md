@@ -22,7 +22,7 @@ Level 1 exercises apply a single identity field at a time: run as a specific UID
 
 ## Prerequisites
 
-Complete `exercises/pods/assignment-1` (pod fundamentals) and `exercises/pods/assignment-2` (volume mounts). The exercises assume you can already author a pod spec and mount an `emptyDir` or projected volume; this assignment only adds the `securityContext` layer on top of those skills. Knowledge of Linux UID, GID, and supplementary groups from any general Linux background is assumed; the tutorial reinforces but does not teach these.
+Complete `exercises/01-01-pods/assignment-1` (pod fundamentals) and `exercises/01-01-pods/assignment-2` (volume mounts). The exercises assume you can already author a pod spec and mount an `emptyDir` or projected volume; this assignment only adds the `securityContext` layer on top of those skills. Knowledge of Linux UID, GID, and supplementary groups from any general Linux background is assumed; the tutorial reinforces but does not teach these.
 
 ## Cluster Requirements
 
@@ -34,7 +34,7 @@ The tutorial takes about 45 to 60 minutes if you run every command and read ever
 
 ## Scope Boundary and What Comes Next
 
-This assignment deliberately stops at identity. Linux capabilities (`capabilities.add`, `capabilities.drop`) and `allowPrivilegeEscalation` are covered in `exercises/security-contexts/assignment-2`. Filesystem constraints (`readOnlyRootFilesystem`) and seccomp profiles (`seccompProfile`) are covered in `exercises/security-contexts/assignment-3`. The namespace-level policy that enforces these fields cluster-wide (Pod Security Admission) is covered in `exercises/pod-security/assignment-1`. PersistentVolumes and their interaction with `fsGroup` live in the `exercises/storage/` series; this assignment uses only `emptyDir` and projected volumes so that the focus stays on identity rather than storage.
+This assignment deliberately stops at identity. Linux capabilities (`capabilities.add`, `capabilities.drop`) and `allowPrivilegeEscalation` are covered in `exercises/13-13-security-contexts/assignment-2`. Filesystem constraints (`readOnlyRootFilesystem`) and seccomp profiles (`seccompProfile`) are covered in `exercises/13-13-security-contexts/assignment-3`. The namespace-level policy that enforces these fields cluster-wide (Pod Security Admission) is covered in `exercises/14-14-pod-security/assignment-1`. PersistentVolumes and their interaction with `fsGroup` live in the `exercises/07-storage/` series; this assignment uses only `emptyDir` and projected volumes so that the focus stays on identity rather than storage.
 
 ## Key Takeaways After Completing This Assignment
 

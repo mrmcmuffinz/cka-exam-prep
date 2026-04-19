@@ -22,7 +22,7 @@ Level 1 covers the basics: label a namespace to enforce Baseline, label another 
 
 ## Prerequisites
 
-Complete the `exercises/security-contexts/` series first (at least assignments 1 and 3), because PSA enforces the `securityContext` fields those assignments taught. Complete `exercises/admission-controllers/assignment-1` for the mental model of where PSA sits in the admission pipeline, though this is not strictly required since PSA-specific exercises can stand alone.
+Complete the `exercises/13-security-contexts/` series first (at least assignments 1 and 3), because PSA enforces the `securityContext` fields those assignments taught. Complete `exercises/16-16-admission-controllers/assignment-1` for the mental model of where PSA sits in the admission pipeline, though this is not strictly required since PSA-specific exercises can stand alone.
 
 ## Cluster Requirements
 
@@ -34,7 +34,7 @@ Plan for about 45 to 60 minutes on the tutorial if you work through every comman
 
 ## Scope Boundary and What Comes Next
 
-This assignment covers namespace-level policy enforcement through PSA. The `securityContext` fields PSA evaluates are taught in `exercises/security-contexts/`; the broader admission-controller machinery (built-in plugins, `ValidatingAdmissionPolicy`, MutatingWebhook) lives in `exercises/admission-controllers/`; network-level security is `exercises/network-policies/`; RBAC for who can apply PSA labels or bypass enforcement is `exercises/rbac/`. PodSecurityPolicy, the predecessor removed in Kubernetes 1.25, is out of scope; do not reach for it in exercises.
+This assignment covers namespace-level policy enforcement through PSA. The `securityContext` fields PSA evaluates are taught in `exercises/13-security-contexts/`; the broader admission-controller machinery (built-in plugins, `ValidatingAdmissionPolicy`, MutatingWebhook) lives in `exercises/16-admission-controllers/`; network-level security is `exercises/10-network-policies/`; RBAC for who can apply PSA labels or bypass enforcement is `exercises/12-rbac/`. PodSecurityPolicy, the predecessor removed in Kubernetes 1.25, is out of scope; do not reach for it in exercises.
 
 ## Key Takeaways After Completing This Assignment
 

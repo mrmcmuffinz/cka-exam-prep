@@ -4,7 +4,7 @@ CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
 - I have completed the following CKA course sections: S1-S7 (through lecture 159)
-- I have completed tls-and-certificates/assignment-1 and assignment-2
+- I have completed 18-tls-and-certificates/assignment-1 and assignment-2
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -54,11 +54,11 @@ This assignment covers diagnosing and resolving certificate-related issues: expi
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Manual certificate creation from scratch (exercises/tls-and-certificates/assignment-1)
-- CSR resource creation and approval (exercises/tls-and-certificates/assignment-2)
-- kubeconfig structure basics (exercises/tls-and-certificates/assignment-2)
-- etcd backup/restore (exercises/cluster-lifecycle/assignment-3)
-- Control plane troubleshooting beyond certificates (exercises/troubleshooting/assignment-2)
+- Manual certificate creation from scratch (exercises/18-18-tls-and-certificates/assignment-1)
+- CSR resource creation and approval (exercises/18-18-tls-and-certificates/assignment-2)
+- kubeconfig structure basics (exercises/18-18-tls-and-certificates/assignment-2)
+- etcd backup/restore (exercises/17-17-cluster-lifecycle/assignment-3)
+- Control plane troubleshooting beyond certificates (exercises/19-19-troubleshooting/assignment-2)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -114,7 +114,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of Certificate Troubleshooting assignment
-   - Prerequisites: tls-and-certificates/assignment-1, assignment-2
+   - Prerequisites: 18-tls-and-certificates/assignment-1, assignment-2
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Recommended workflow
@@ -144,12 +144,12 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/tls-and-certificates/assignment-1: Certificate creation
-  - exercises/tls-and-certificates/assignment-2: Certificates API
+  - exercises/18-18-tls-and-certificates/assignment-1: Certificate creation
+  - exercises/18-18-tls-and-certificates/assignment-2: Certificates API
 
 - **Follow-up assignments:**
-  - exercises/rbac/assignment-2: Cluster-scoped RBAC with certificate-based auth
-  - exercises/troubleshooting/assignment-2: Control plane troubleshooting (cert issues)
+  - exercises/12-12-rbac/assignment-2: Cluster-scoped RBAC with certificate-based auth
+  - exercises/19-19-troubleshooting/assignment-2: Control plane troubleshooting (cert issues)
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 146-159): TLS, certificate viewing, troubleshooting

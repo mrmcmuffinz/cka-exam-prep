@@ -6,7 +6,7 @@ The CKA exam expects you to diagnose a PVC stuck in `Pending` by correlating the
 
 ## Prerequisites
 
-Any single-node kind cluster works. See `docs/cluster-setup.md#single-node-kind-cluster`. Complete `exercises/storage/assignment-1` first; this tutorial assumes you understand PVs. Verify the cluster.
+Any single-node kind cluster works. See `docs/cluster-setup.md#single-node-kind-cluster`. Complete `exercises/07-07-storage/assignment-1` first; this tutorial assumes you understand PVs. Verify the cluster.
 
 ```bash
 kubectl get nodes

@@ -6,8 +6,8 @@ This is the third of three assignments covering DNS in Kubernetes. This assignme
 
 Before starting this assignment, you should have completed:
 
-- exercises/coredns/assignment-1 (DNS Fundamentals)
-- exercises/coredns/assignment-2 (CoreDNS Configuration)
+- exercises/09-09-coredns/assignment-1 (DNS Fundamentals)
+- exercises/09-09-coredns/assignment-2 (CoreDNS Configuration)
 
 You should understand DNS record formats, DNS policies, CoreDNS Deployment and ConfigMap structure, and Corefile plugins.
 

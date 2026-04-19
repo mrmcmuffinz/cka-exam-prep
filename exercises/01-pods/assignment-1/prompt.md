@@ -189,12 +189,12 @@ CROSS-REFERENCES:
 - **Prerequisites:** None (first assignment)
 
 - **Follow-up assignments:**
-  - exercises/pods/assignment-2: Pod Configuration Injection (ConfigMaps, Secrets)
-  - exercises/pods/assignment-3: Pod Health and Observability (probes, hooks)
-  - exercises/pods/assignment-4: Pod Scheduling and Placement
-  - exercises/pods/assignment-5: Pod Resources and QoS
-  - exercises/pods/assignment-6: Multi-Container Patterns
-  - exercises/pods/assignment-7: Workload Controllers
+  - exercises/01-01-pods/assignment-2: Pod Configuration Injection (ConfigMaps, Secrets)
+  - exercises/01-01-pods/assignment-3: Pod Health and Observability (probes, hooks)
+  - exercises/01-01-pods/assignment-4: Pod Scheduling and Placement
+  - exercises/01-01-pods/assignment-5: Pod Resources and QoS
+  - exercises/01-01-pods/assignment-6: Multi-Container Patterns
+  - exercises/01-01-pods/assignment-7: Workload Controllers
 
 COURSE MATERIAL REFERENCE:
 This assignment aligns with Mumshad CKA course sections:

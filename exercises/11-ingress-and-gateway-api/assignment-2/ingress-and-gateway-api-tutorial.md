@@ -6,7 +6,7 @@ The CKA exam allows the Gateway API documentation set but has removed NGINX Ingr
 
 ## Prerequisites
 
-The same cluster as assignment 1 (multi-node kind with extraPortMappings for 80 and 443). Leave Traefik installed; this tutorial adds HAProxy Ingress alongside it. See `docs/cluster-setup.md#multi-node-kind-cluster` for the base cluster. Complete `exercises/tls-and-certificates/assignment-1` for the certificate creation workflow; this tutorial consumes certs without reteaching openssl.
+The same cluster as assignment 1 (multi-node kind with extraPortMappings for 80 and 443). Leave Traefik installed; this tutorial adds HAProxy Ingress alongside it. See `docs/cluster-setup.md#multi-node-kind-cluster` for the base cluster. Complete `exercises/18-18-tls-and-certificates/assignment-1` for the certificate creation workflow; this tutorial consumes certs without reteaching openssl.
 
 Verify the cluster and Traefik.
 

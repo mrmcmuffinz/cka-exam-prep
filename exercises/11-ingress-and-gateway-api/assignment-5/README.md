@@ -22,7 +22,7 @@ Level 1 is CLI familiarity: install the binary, translate simple Ingresses, read
 
 ## Prerequisites
 
-Complete `exercises/ingress-and-gateway-api/assignment-1` (Traefik install required for Ingress-side testing) and `exercises/ingress-and-gateway-api/assignment-3` (Envoy Gateway install required for Gateway-API-side testing). Complete assignments 2 and 4 as well for the annotation and advanced-routing material referenced in Level 3 and Level 5 exercises. The `ingress2gateway` CLI is a standalone Go binary installed locally on the host, not in the cluster.
+Complete `exercises/11-11-ingress-and-gateway-api/assignment-1` (Traefik install required for Ingress-side testing) and `exercises/11-11-ingress-and-gateway-api/assignment-3` (Envoy Gateway install required for Gateway-API-side testing). Complete assignments 2 and 4 as well for the annotation and advanced-routing material referenced in Level 3 and Level 5 exercises. The `ingress2gateway` CLI is a standalone Go binary installed locally on the host, not in the cluster.
 
 ## Cluster Requirements
 
@@ -34,7 +34,7 @@ The tutorial takes 60 to 90 minutes. The 15 exercises together take four to six 
 
 ## Scope Boundary and What Comes Next
 
-This assignment is the terminal assignment for the ingress-and-gateway-api series. Its scope is the migration workflow specifically; deep Gateway API patterns are covered in assignments 3 and 4. Ingress fundamentals and TLS are in assignments 1 and 2. Network policy that affects migration traffic is `exercises/network-policies/`. The 2026 CKA exam is expected to include migration content directly; candidate reports confirm the exam asks learners to translate Ingress YAML to Gateway API resources and reason about what does not translate cleanly.
+This assignment is the terminal assignment for the ingress-and-gateway-api series. Its scope is the migration workflow specifically; deep Gateway API patterns are covered in assignments 3 and 4. Ingress fundamentals and TLS are in assignments 1 and 2. Network policy that affects migration traffic is `exercises/10-network-policies/`. The 2026 CKA exam is expected to include migration content directly; candidate reports confirm the exam asks learners to translate Ingress YAML to Gateway API resources and reason about what does not translate cleanly.
 
 ## Key Takeaways After Completing This Assignment
 

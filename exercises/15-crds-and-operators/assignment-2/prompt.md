@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed crds-and-operators/assignment-1 (CRD creation)
+- I have completed 15-crds-and-operators/assignment-1 (CRD creation)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -54,11 +54,11 @@ This assignment covers creating and managing custom resources, RBAC permissions 
 
 **Out of scope (covered in other assignments, do not include):**
 
-- CRD creation and schema definition (exercises/crds-and-operators/assignment-1)
-- CRD versioning (exercises/crds-and-operators/assignment-1)
-- Operators and controllers (exercises/crds-and-operators/assignment-3)
-- RBAC fundamentals (exercises/rbac/assignment-1)
-- ClusterRoles for built-in resources (exercises/rbac/assignment-2)
+- CRD creation and schema definition (exercises/15-15-crds-and-operators/assignment-1)
+- CRD versioning (exercises/15-15-crds-and-operators/assignment-1)
+- Operators and controllers (exercises/15-15-crds-and-operators/assignment-3)
+- RBAC fundamentals (exercises/12-12-rbac/assignment-1)
+- ClusterRoles for built-in resources (exercises/12-12-rbac/assignment-2)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -113,7 +113,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of Custom Resources and RBAC assignment
-   - Prerequisites: crds-and-operators/assignment-1, rbac/assignment-1
+   - Prerequisites: 15-crds-and-operators/assignment-1, 12-rbac/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Recommended workflow
@@ -142,11 +142,11 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/crds-and-operators/assignment-1: CRD creation
-  - exercises/rbac/assignment-1: RBAC fundamentals (helpful)
+  - exercises/15-15-crds-and-operators/assignment-1: CRD creation
+  - exercises/12-12-rbac/assignment-1: RBAC fundamentals (helpful)
 
 - **Follow-up assignments:**
-  - exercises/crds-and-operators/assignment-3: Operators and controllers
+  - exercises/15-15-crds-and-operators/assignment-3: Operators and controllers
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 160-168): RBAC

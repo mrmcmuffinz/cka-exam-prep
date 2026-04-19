@@ -6,7 +6,7 @@
 - **CKA domain:** Services & Networking (20%)
 - **Competencies covered:** Use the Gateway API to manage Ingress traffic (advanced routing patterns); demonstrate that Gateway API is universal across implementations
 - **Course sections referenced:** S9 (lectures 238-240, Gateway API)
-- **Prerequisites:** `ingress-and-gateway-api/assignment-3` (Gateway API fundamentals with Envoy Gateway)
+- **Prerequisites:** `11-ingress-and-gateway-api/assignment-3` (Gateway API fundamentals with Envoy Gateway)
 
 ## Scope declaration
 
@@ -75,10 +75,10 @@ All CKA resources are in scope. Exercises primarily use GatewayClass, Gateway, H
 ## Cross-references
 
 **Prerequisites (must be completed first):**
-- `exercises/ingress-and-gateway-api/assignment-3`: Gateway API fundamentals with Envoy Gateway
+- `exercises/11-11-ingress-and-gateway-api/assignment-3`: Gateway API fundamentals with Envoy Gateway
 
 **Adjacent topics:**
-- `exercises/ingress-and-gateway-api/assignment-5`: migration from Ingress to Gateway API
+- `exercises/11-11-ingress-and-gateway-api/assignment-5`: migration from Ingress to Gateway API
 
 **Forward references:**
-- `exercises/troubleshooting/assignment-4`: network troubleshooting including Gateway API failure scenarios
+- `exercises/19-19-troubleshooting/assignment-4`: network troubleshooting including Gateway API failure scenarios

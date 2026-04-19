@@ -26,9 +26,9 @@ The large content-generation push (Phase 4) is complete. The remaining work is s
 - Phases 1, 2, 3, 4 all complete.
 - All 45 assignments content-complete.
 - Phase 5 (technique weaving) **not started**:
-  - P5.1: `kubectl debug` into `troubleshooting/assignment-1` and `/assignment-3` tutorials.
-  - P5.2: `kubectl port-forward` into `services/assignment-1` tutorial.
-  - P5.3: Custom scheduler profiles and multiple schedulers into `pods/assignment-4` tutorial (or acknowledge as a known thin area).
+  - P5.1: `kubectl debug` into `19-troubleshooting/assignment-1` and `/assignment-3` tutorials.
+  - P5.2: `kubectl port-forward` into `08-services/assignment-1` tutorial.
+  - P5.3: Custom scheduler profiles and multiple schedulers into `01-pods/assignment-4` tutorial (or acknowledge as a known thin area).
 - Phase 6 (verification and housekeeping) **not started**:
   - P6.1: Grep for stale `6 of 6` series counters across all READMEs.
   - P6.2: Verify every `exercises/X/assignment-Y` cross-reference points at a real path.

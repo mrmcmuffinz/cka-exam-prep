@@ -19,9 +19,9 @@ The total subtopic count across the five assignments is approximately 28, well w
 
 | Assignment | API | Controller | Focus | Prerequisites |
 |---|---|---|---|---|
-| assignment-1 | Ingress v1 | Traefik | Ingress API fundamentals (rules, paths, backends, path types, host-based routing, IngressClass) | `services/assignment-1` |
+| assignment-1 | Ingress v1 | Traefik | Ingress API fundamentals (rules, paths, backends, path types, host-based routing, IngressClass) | `08-services/assignment-1` |
 | assignment-2 | Ingress v1 | HAProxy Ingress | Advanced Ingress patterns with a second implementation (annotations, rewrite-target, TLS termination, multi-host and multi-path rules, default backends) | assignment-1 |
-| assignment-3 | Gateway API | Envoy Gateway | Gateway API fundamentals (GatewayClass, Gateway, HTTPRoute, ReferenceGrant, per-path routing) | `services/assignment-1`, assignment-2 recommended |
+| assignment-3 | Gateway API | Envoy Gateway | Gateway API fundamentals (GatewayClass, Gateway, HTTPRoute, ReferenceGrant, per-path routing) | `08-services/assignment-1`, assignment-2 recommended |
 | assignment-4 | Gateway API | NGINX Gateway Fabric | Advanced Gateway API routing with a second implementation (header and query-parameter matching, traffic splitting via weighted HTTPRoute backends, request/response filters) | assignment-3 |
 | assignment-5 | Both | Uses installations from assignments 1 and 3; introduces the `Ingress2Gateway` CLI | Migration from Ingress to Gateway API (translating Ingress resources, gap analysis, side-by-side running during migration) | assignments 1 and 3 |
 
@@ -44,7 +44,7 @@ Gateway API CRDs must be installed before any controller that consumes them. CRD
 
 ## Recommended Order
 
-1. Complete `services/assignment-1` first. Ingress and Gateway API route traffic to backend Services, which must be understood first.
+1. Complete `08-services/assignment-1` first. Ingress and Gateway API route traffic to backend Services, which must be understood first.
 2. Work through assignments 1 through 5 in order. Each builds on the vocabulary of the previous assignment.
 3. Assignment 5 requires that assignments 1 and 3 have been completed because it uses the Traefik and Envoy Gateway installations from those assignments to demonstrate side-by-side running during migration.
 

@@ -4,7 +4,7 @@ CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
 - I have completed the following CKA course sections: S1-S7 (through RBAC and Service Accounts)
-- I have completed pods/assignment-1 (pod fundamentals)
+- I have completed 01-pods/assignment-1 (pod fundamentals)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -65,13 +65,13 @@ This assignment covers namespace-scoped RBAC: Roles, RoleBindings, service accou
 
 **Out of scope (covered in other assignments, do not include):**
 
-- ClusterRoles and ClusterRoleBindings (exercises/rbac/assignment-2)
-- Cluster-scoped resources (nodes, PersistentVolumes, namespaces) (exercises/rbac/assignment-2)
-- Aggregated ClusterRoles (exercises/rbac/assignment-2)
-- RBAC for custom resources (exercises/crds-and-operators/assignment-2)
-- TLS certificate management in depth (exercises/tls-and-certificates/)
-- Certificates API (exercises/tls-and-certificates/assignment-2)
-- Network Policies (exercises/network-policies/)
+- ClusterRoles and ClusterRoleBindings (exercises/12-12-rbac/assignment-2)
+- Cluster-scoped resources (nodes, PersistentVolumes, namespaces) (exercises/12-12-rbac/assignment-2)
+- Aggregated ClusterRoles (exercises/12-12-rbac/assignment-2)
+- RBAC for custom resources (exercises/15-15-crds-and-operators/assignment-2)
+- TLS certificate management in depth (exercises/18-tls-and-certificates/)
+- Certificates API (exercises/18-18-tls-and-certificates/assignment-2)
+- Network Policies (exercises/10-network-policies/)
 - Admission controllers
 
 ASSIGNMENT REQUIREMENTS:
@@ -133,7 +133,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of RBAC (namespace-scoped) assignment
-   - Prerequisites: pods/assignment-1
+   - Prerequisites: 01-pods/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Note about user certificate creation
@@ -176,12 +176,12 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/pods/assignment-1: Pod fundamentals
+  - exercises/01-01-pods/assignment-1: Pod fundamentals
 
 - **Follow-up assignments:**
-  - exercises/rbac/assignment-2: Cluster-scoped RBAC
-  - exercises/tls-and-certificates/assignment-1: TLS fundamentals (certificate creation)
-  - exercises/crds-and-operators/assignment-2: RBAC for custom resources
+  - exercises/12-12-rbac/assignment-2: Cluster-scoped RBAC
+  - exercises/18-18-tls-and-certificates/assignment-1: TLS fundamentals (certificate creation)
+  - exercises/15-15-crds-and-operators/assignment-2: RBAC for custom resources
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 143-145): Security primitives, authentication

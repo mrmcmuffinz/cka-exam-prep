@@ -4,7 +4,7 @@ CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
 - I have completed the following CKA course sections: S1-S6 (through lecture 142)
-- I have completed cluster-lifecycle/assignment-1 and assignment-2
+- I have completed 17-cluster-lifecycle/assignment-1 and assignment-2
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -57,12 +57,12 @@ This assignment covers etcd architecture, backup and restore operations using et
 
 **Out of scope (covered in other assignments, do not include):**
 
-- kubeadm init and join basic workflows (exercises/cluster-lifecycle/assignment-1)
-- Cluster upgrades (exercises/cluster-lifecycle/assignment-2)
-- Node drain and maintenance (exercises/cluster-lifecycle/assignment-2)
-- TLS certificate creation and management (exercises/tls-and-certificates/). Only reference certificate paths for etcdctl authentication.
-- Detailed etcd troubleshooting for corrupted data (exercises/troubleshooting/assignment-2)
-- API server, scheduler, controller manager troubleshooting (exercises/troubleshooting/assignment-2)
+- kubeadm init and join basic workflows (exercises/17-17-cluster-lifecycle/assignment-1)
+- Cluster upgrades (exercises/17-17-cluster-lifecycle/assignment-2)
+- Node drain and maintenance (exercises/17-17-cluster-lifecycle/assignment-2)
+- TLS certificate creation and management (exercises/18-tls-and-certificates/). Only reference certificate paths for etcdctl authentication.
+- Detailed etcd troubleshooting for corrupted data (exercises/19-19-troubleshooting/assignment-2)
+- API server, scheduler, controller manager troubleshooting (exercises/19-19-troubleshooting/assignment-2)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -118,7 +118,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of etcd Operations and HA assignment
-   - Prerequisites: cluster-lifecycle/assignment-1, assignment-2
+   - Prerequisites: 17-cluster-lifecycle/assignment-1, assignment-2
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: multi-node kind cluster
    - Note about kind limitations for HA exercises
@@ -147,12 +147,12 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/cluster-lifecycle/assignment-1: Cluster installation
-  - exercises/cluster-lifecycle/assignment-2: Cluster maintenance
+  - exercises/17-17-cluster-lifecycle/assignment-1: Cluster installation
+  - exercises/17-17-cluster-lifecycle/assignment-2: Cluster maintenance
 
 - **Follow-up assignments:**
-  - exercises/tls-and-certificates/assignment-1: Certificate management (etcd certs)
-  - exercises/troubleshooting/assignment-2: Control plane troubleshooting (etcd failures)
+  - exercises/18-18-tls-and-certificates/assignment-1: Certificate management (etcd certs)
+  - exercises/19-19-troubleshooting/assignment-2: Control plane troubleshooting (etcd failures)
 
 COURSE MATERIAL REFERENCE:
 - S2 (Lectures 6-17): etcd architecture introduction

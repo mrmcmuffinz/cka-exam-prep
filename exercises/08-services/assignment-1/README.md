@@ -12,8 +12,8 @@ The assignment covers ClusterIP, NodePort, LoadBalancer, ExternalName, and headl
 
 Before starting this assignment, you should have completed:
 
-- **exercises/pods/assignment-7 (Workload Controllers):** You need to understand Deployments, which serve as service backends throughout this assignment
-- **exercises/pods/assignment-3 (Pod Health and Observability):** Understanding readiness probes is necessary because Services only include Ready pods in their endpoints
+- **exercises/01-01-pods/assignment-7 (Workload Controllers):** You need to understand Deployments, which serve as service backends throughout this assignment
+- **exercises/01-01-pods/assignment-3 (Pod Health and Observability):** Understanding readiness probes is necessary because Services only include Ready pods in their endpoints
 
 You should also be comfortable with basic kubectl operations and have a conceptual understanding of networking (IP addresses, ports, TCP/UDP).
 
@@ -111,7 +111,7 @@ EOF
 
 After completing this assignment, continue with:
 
-- **exercises/services/assignment-2 (External Service Types):** Deep dive into NodePort, LoadBalancer, ExternalName, and manual endpoints
-- **exercises/services/assignment-3 (Service Patterns and Troubleshooting):** Multi-port services, session affinity, traffic policies, and systematic troubleshooting
-- **exercises/coredns/assignment-1:** DNS configuration and debugging
-- **exercises/network-policies/assignment-1:** Filtering traffic to services with Network Policies
+- **exercises/08-08-services/assignment-2 (External Service Types):** Deep dive into NodePort, LoadBalancer, ExternalName, and manual endpoints
+- **exercises/08-08-services/assignment-3 (Service Patterns and Troubleshooting):** Multi-port services, session affinity, traffic policies, and systematic troubleshooting
+- **exercises/09-09-coredns/assignment-1:** DNS configuration and debugging
+- **exercises/10-10-network-policies/assignment-1:** Filtering traffic to services with Network Policies

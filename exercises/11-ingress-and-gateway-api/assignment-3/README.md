@@ -22,7 +22,7 @@ Level 1 is Gateway API basics: confirm the installed GatewayClass, create a mini
 
 ## Prerequisites
 
-Complete `exercises/services/assignment-1` (Services are the backends that HTTPRoute points at). Complete `exercises/ingress-and-gateway-api/assignment-2` as well; the persistent Ingress-vs-Gateway-API contrast makes the new model much easier to internalize when you have the old one in recent memory. The Gateway API CRDs must be installed on the cluster (see cluster requirements).
+Complete `exercises/08-08-services/assignment-1` (Services are the backends that HTTPRoute points at). Complete `exercises/11-11-ingress-and-gateway-api/assignment-2` as well; the persistent Ingress-vs-Gateway-API contrast makes the new model much easier to internalize when you have the old one in recent memory. The Gateway API CRDs must be installed on the cluster (see cluster requirements).
 
 ## Cluster Requirements
 

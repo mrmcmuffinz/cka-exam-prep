@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed helm/assignment-1 (Helm Basics)
+- I have completed 05-helm/assignment-1 (Helm Basics)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -55,10 +55,10 @@ This assignment covers upgrading releases, values files, rollbacks, release hist
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Repository management (exercises/helm/assignment-1)
-- Chart installation basics (exercises/helm/assignment-1)
-- helm template (exercises/helm/assignment-3)
-- Helm hooks (exercises/helm/assignment-3)
+- Repository management (exercises/05-05-helm/assignment-1)
+- Chart installation basics (exercises/05-05-helm/assignment-1)
+- helm template (exercises/05-05-helm/assignment-3)
+- Helm hooks (exercises/05-05-helm/assignment-3)
 - Chart authoring (not in CKA scope)
 
 ASSIGNMENT REQUIREMENTS:
@@ -116,7 +116,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of Helm Lifecycle Management assignment
-   - Prerequisites: helm/assignment-1
+   - Prerequisites: 05-helm/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Recommended workflow
@@ -141,10 +141,10 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/helm/assignment-1: Helm basics
+  - exercises/05-05-helm/assignment-1: Helm basics
 
 - **Follow-up assignments:**
-  - exercises/helm/assignment-3: Helm templates and debugging
+  - exercises/05-05-helm/assignment-3: Helm templates and debugging
 
 COURSE MATERIAL REFERENCE:
 - S12 (Lectures 252-262): Helm lifecycle management

@@ -33,7 +33,7 @@ status, see `docs/remediation-plan.md`.
 
 ## Assignments
 
-### exercises/pods/assignment-1: Pod Fundamentals
+### exercises/01-pods/assignment-1: Pod Fundamentals
 
 **Series:** Pod-focused (1 of 7)
 **CKA domain:** Workloads & Scheduling
@@ -64,7 +64,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/pods/assignment-2: Pod Configuration Injection
+### exercises/01-pods/assignment-2: Pod Configuration Injection
 
 **Series:** Pod-focused (2 of 7)
 **CKA domain:** Workloads & Scheduling
@@ -83,7 +83,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/pods/assignment-3: Pod Health and Observability
+### exercises/01-pods/assignment-3: Pod Health and Observability
 
 **Series:** Pod-focused (3 of 7)
 **CKA domain:** Workloads & Scheduling
@@ -104,7 +104,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/pods/assignment-4: Pod Scheduling and Placement
+### exercises/01-pods/assignment-4: Pod Scheduling and Placement
 
 **Series:** Pod-focused (4 of 7)
 **CKA domain:** Workloads & Scheduling
@@ -124,7 +124,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/pods/assignment-5: Pod Resources and QoS
+### exercises/01-pods/assignment-5: Pod Resources and QoS
 
 **Series:** Pod-focused (5 of 7)
 **CKA domain:** Workloads & Scheduling
@@ -144,7 +144,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/pods/assignment-6: Multi-Container Patterns
+### exercises/01-pods/assignment-6: Multi-Container Patterns
 
 **Series:** Pod-focused (6 of 7)
 **CKA domain:** Workloads & Scheduling
@@ -164,7 +164,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/pods/assignment-7: Workload Controllers
+### exercises/01-pods/assignment-7: Workload Controllers
 
 **Series:** Pod-focused (7 of 7)
 **CKA domain:** Workloads & Scheduling
@@ -185,7 +185,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/rbac/assignment-1: RBAC (namespace-scoped)
+### exercises/12-rbac/assignment-1: RBAC (namespace-scoped)
 
 **Series:** RBAC (1 of 2)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -206,7 +206,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/cluster-lifecycle/assignment-1: Cluster Installation
+### exercises/17-cluster-lifecycle/assignment-1: Cluster Installation
 
 **Series:** Cluster Lifecycle (1 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -226,7 +226,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/cluster-lifecycle/assignment-2: Cluster Upgrades and Maintenance
+### exercises/17-cluster-lifecycle/assignment-2: Cluster Upgrades and Maintenance
 
 **Series:** Cluster Lifecycle (2 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -246,7 +246,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/cluster-lifecycle/assignment-3: etcd Operations and High Availability
+### exercises/17-cluster-lifecycle/assignment-3: etcd Operations and High Availability
 
 **Series:** Cluster Lifecycle (3 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -266,7 +266,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/tls-and-certificates/assignment-1: TLS Fundamentals and Certificate Creation
+### exercises/18-tls-and-certificates/assignment-1: TLS Fundamentals and Certificate Creation
 
 **Series:** TLS and Certificates (1 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -286,7 +286,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/tls-and-certificates/assignment-2: Certificates API and kubeconfig
+### exercises/18-tls-and-certificates/assignment-2: Certificates API and kubeconfig
 
 **Series:** TLS and Certificates (2 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -306,7 +306,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/tls-and-certificates/assignment-3: Certificate Troubleshooting
+### exercises/18-tls-and-certificates/assignment-3: Certificate Troubleshooting
 
 **Series:** TLS and Certificates (3 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -326,7 +326,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/rbac/assignment-2: RBAC (cluster-scoped)
+### exercises/12-rbac/assignment-2: RBAC (cluster-scoped)
 
 **Series:** RBAC (2 of 2)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -347,7 +347,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/security-contexts/assignment-1: User and Group Security
+### exercises/13-security-contexts/assignment-1: User and Group Security
 
 **Series:** Security Contexts (1 of 3)
 **CKA domain:** Workloads & Scheduling
@@ -367,7 +367,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/security-contexts/assignment-2: Capabilities and Privilege Control
+### exercises/13-security-contexts/assignment-2: Capabilities and Privilege Control
 
 **Series:** Security Contexts (2 of 3)
 **CKA domain:** Workloads & Scheduling
@@ -387,7 +387,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/security-contexts/assignment-3: Filesystem and seccomp Profiles
+### exercises/13-security-contexts/assignment-3: Filesystem and seccomp Profiles
 
 **Series:** Security Contexts (3 of 3)
 **CKA domain:** Workloads & Scheduling
@@ -407,7 +407,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/crds-and-operators/assignment-1: Custom Resource Definitions
+### exercises/15-crds-and-operators/assignment-1: Custom Resource Definitions
 
 **Series:** CRDs and Operators (1 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -427,7 +427,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/crds-and-operators/assignment-2: Custom Resources and RBAC
+### exercises/15-crds-and-operators/assignment-2: Custom Resources and RBAC
 
 **Series:** CRDs and Operators (2 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -447,7 +447,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/crds-and-operators/assignment-3: Operators and Controllers
+### exercises/15-crds-and-operators/assignment-3: Operators and Controllers
 
 **Series:** CRDs and Operators (3 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -467,7 +467,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/storage/assignment-1: Volumes and PersistentVolumes
+### exercises/07-storage/assignment-1: Volumes and PersistentVolumes
 
 **Series:** Storage (1 of 3)
 **CKA domain:** Storage
@@ -487,7 +487,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/storage/assignment-2: PersistentVolumeClaims and Binding
+### exercises/07-storage/assignment-2: PersistentVolumeClaims and Binding
 
 **Series:** Storage (2 of 3)
 **CKA domain:** Storage
@@ -507,7 +507,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/storage/assignment-3: StorageClasses and Dynamic Provisioning
+### exercises/07-storage/assignment-3: StorageClasses and Dynamic Provisioning
 
 **Series:** Storage (3 of 3)
 **CKA domain:** Storage
@@ -527,7 +527,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/services/assignment-1: ClusterIP Services
+### exercises/08-services/assignment-1: ClusterIP Services
 
 **Series:** Services (1 of 3)
 **CKA domain:** Services & Networking
@@ -547,7 +547,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/services/assignment-2: External Service Types
+### exercises/08-services/assignment-2: External Service Types
 
 **Series:** Services (2 of 3)
 **CKA domain:** Services & Networking
@@ -567,7 +567,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/services/assignment-3: Service Patterns and Troubleshooting
+### exercises/08-services/assignment-3: Service Patterns and Troubleshooting
 
 **Series:** Services (3 of 3)
 **CKA domain:** Services & Networking
@@ -587,7 +587,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/coredns/assignment-1: DNS Fundamentals
+### exercises/09-coredns/assignment-1: DNS Fundamentals
 
 **Series:** CoreDNS (1 of 3)
 **CKA domain:** Services & Networking
@@ -607,7 +607,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/coredns/assignment-2: CoreDNS Configuration
+### exercises/09-coredns/assignment-2: CoreDNS Configuration
 
 **Series:** CoreDNS (2 of 3)
 **CKA domain:** Services & Networking
@@ -627,7 +627,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/coredns/assignment-3: DNS Troubleshooting
+### exercises/09-coredns/assignment-3: DNS Troubleshooting
 
 **Series:** CoreDNS (3 of 3)
 **CKA domain:** Services & Networking
@@ -647,7 +647,7 @@ status, see `docs/remediation-plan.md`.
 
 ---
 
-### exercises/network-policies/assignment-1: NetworkPolicy Fundamentals
+### exercises/10-network-policies/assignment-1: NetworkPolicy Fundamentals
 
 **Series:** Network Policies (1 of 3)
 **CKA domain:** Services & Networking
@@ -670,7 +670,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 
 ---
 
-### exercises/network-policies/assignment-2: Advanced Selectors and Isolation
+### exercises/10-network-policies/assignment-2: Advanced Selectors and Isolation
 
 **Series:** Network Policies (2 of 3)
 **CKA domain:** Services & Networking
@@ -691,7 +691,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 
 ---
 
-### exercises/network-policies/assignment-3: Network Policy Debugging
+### exercises/10-network-policies/assignment-3: Network Policy Debugging
 
 **Series:** Network Policies (3 of 3)
 **CKA domain:** Services & Networking
@@ -711,7 +711,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 
 ---
 
-### exercises/ingress-and-gateway-api/assignment-1: Ingress Fundamentals
+### exercises/11-ingress-and-gateway-api/assignment-1: Ingress Fundamentals
 
 **Series:** Ingress and Gateway API (1 of 3)
 **CKA domain:** Services & Networking
@@ -731,7 +731,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 
 ---
 
-### exercises/ingress-and-gateway-api/assignment-2: Advanced Ingress and TLS
+### exercises/11-ingress-and-gateway-api/assignment-2: Advanced Ingress and TLS
 
 **Series:** Ingress and Gateway API (2 of 3)
 **CKA domain:** Services & Networking
@@ -751,7 +751,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 
 ---
 
-### exercises/ingress-and-gateway-api/assignment-3: Gateway API
+### exercises/11-ingress-and-gateway-api/assignment-3: Gateway API
 
 **Series:** Ingress and Gateway API (3 of 3)
 **CKA domain:** Services & Networking
@@ -771,7 +771,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 
 ---
 
-### exercises/helm/assignment-1: Helm Basics
+### exercises/05-helm/assignment-1: Helm Basics
 
 **Series:** Helm (1 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -790,7 +790,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 
 ---
 
-### exercises/helm/assignment-2: Helm Lifecycle Management
+### exercises/05-helm/assignment-2: Helm Lifecycle Management
 
 **Series:** Helm (2 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -810,7 +810,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 
 ---
 
-### exercises/helm/assignment-3: Helm Templates and Debugging
+### exercises/05-helm/assignment-3: Helm Templates and Debugging
 
 **Series:** Helm (3 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -830,7 +830,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 
 ---
 
-### exercises/kustomize/assignment-1: Kustomize Fundamentals
+### exercises/06-kustomize/assignment-1: Kustomize Fundamentals
 
 **Series:** Kustomize (1 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -850,7 +850,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 
 ---
 
-### exercises/kustomize/assignment-2: Patches and Transformers
+### exercises/06-kustomize/assignment-2: Patches and Transformers
 
 **Series:** Kustomize (2 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -870,7 +870,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 
 ---
 
-### exercises/kustomize/assignment-3: Overlays and Components
+### exercises/06-kustomize/assignment-3: Overlays and Components
 
 **Series:** Kustomize (3 of 3)
 **CKA domain:** Cluster Architecture, Installation & Configuration
@@ -890,7 +890,7 @@ Assignment-1 tutorial must include instructions for installing Calico on kind cl
 
 ---
 
-### exercises/troubleshooting/assignment-1: Application Troubleshooting
+### exercises/19-troubleshooting/assignment-1: Application Troubleshooting
 
 **Series:** Troubleshooting (1 of 4)
 **CKA domain:** Troubleshooting
@@ -911,7 +911,7 @@ topic areas (broken deployment + wrong service selector + missing configmap).
 
 ---
 
-### exercises/troubleshooting/assignment-2: Control Plane Troubleshooting
+### exercises/19-troubleshooting/assignment-2: Control Plane Troubleshooting
 
 **Series:** Troubleshooting (2 of 4)
 **CKA domain:** Troubleshooting
@@ -932,7 +932,7 @@ The prompt should identify which scenarios work in kind and which are conceptual
 
 ---
 
-### exercises/troubleshooting/assignment-3: Node and Kubelet Troubleshooting
+### exercises/19-troubleshooting/assignment-3: Node and Kubelet Troubleshooting
 
 **Series:** Troubleshooting (3 of 4)
 **CKA domain:** Troubleshooting
@@ -953,7 +953,7 @@ bare-metal. The prompt should note where kind behavior diverges from real cluste
 
 ---
 
-### exercises/troubleshooting/assignment-4: Network Troubleshooting
+### exercises/19-troubleshooting/assignment-4: Network Troubleshooting
 
 **Series:** Troubleshooting (4 of 4)
 **CKA domain:** Troubleshooting

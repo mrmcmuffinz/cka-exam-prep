@@ -59,15 +59,15 @@ This assignment covers how Kubernetes Services expose applications, how pods dis
 
 **Out of scope (covered in other assignments, do not include):**
 
-- CoreDNS configuration, Corefile structure, DNS debugging with nslookup/dig (exercises/coredns/assignment-1). DNS discovery is in scope, but DNS troubleshooting and CoreDNS internals are not.
-- Network Policies for filtering traffic to services (exercises/network-policies/assignment-1)
-- Ingress resources and Ingress controllers (exercises/ingress-and-gateway-api/assignment-1)
-- Gateway API (GatewayClass, Gateway, HTTPRoute) (exercises/ingress-and-gateway-api/assignment-1)
-- TLS termination at the service or ingress layer (exercises/ingress-and-gateway-api/assignment-1)
-- Pod scheduling, node affinity, taints, tolerations (exercises/pods/assignment-4). Exercises may use nodeSelector for simple placement, but scheduling is not the focus.
-- Resource requests and limits, QoS classes (exercises/pods/assignment-5). Service backends may specify resources, but tuning them is not the focus.
-- Multi-container patterns beyond simple Deployment backends (exercises/pods/assignment-6)
-- Deployment strategies, rollouts, rollbacks (exercises/pods/assignment-7). Deployments are used as service backends, but rollout mechanics are assumed knowledge.
+- CoreDNS configuration, Corefile structure, DNS debugging with nslookup/dig (exercises/09-09-coredns/assignment-1). DNS discovery is in scope, but DNS troubleshooting and CoreDNS internals are not.
+- Network Policies for filtering traffic to services (exercises/10-10-network-policies/assignment-1)
+- Ingress resources and Ingress controllers (exercises/11-11-ingress-and-gateway-api/assignment-1)
+- Gateway API (GatewayClass, Gateway, HTTPRoute) (exercises/11-11-ingress-and-gateway-api/assignment-1)
+- TLS termination at the service or ingress layer (exercises/11-11-ingress-and-gateway-api/assignment-1)
+- Pod scheduling, node affinity, taints, tolerations (exercises/01-01-pods/assignment-4). Exercises may use nodeSelector for simple placement, but scheduling is not the focus.
+- Resource requests and limits, QoS classes (exercises/01-01-pods/assignment-5). Service backends may specify resources, but tuning them is not the focus.
+- Multi-container patterns beyond simple Deployment backends (exercises/01-01-pods/assignment-6)
+- Deployment strategies, rollouts, rollbacks (exercises/01-01-pods/assignment-7). Deployments are used as service backends, but rollout mechanics are assumed knowledge.
 - StatefulSets and their integration with headless services (not covered in CKA exam, only headless service mechanics are in scope)
 - Service mesh concepts (Istio, Linkerd, etc.)
 - External load balancer provider configuration beyond metallb setup for kind
@@ -142,7 +142,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of the Services assignment and its place in the CKA exam prep series
-   - Prerequisites: pods/assignment-7 (Deployments), basic networking understanding
+   - Prerequisites: 01-pods/assignment-7 (Deployments), basic networking understanding
    - Estimated time commitment: 4-6 hours (tutorial 2 hours, homework 2-3 hours, review 1 hour)
    - Cluster requirements: multi-node kind cluster (1 control-plane, 3 workers)
    - metallb setup instructions for LoadBalancer services in kind
@@ -159,7 +159,7 @@ RESOURCE GATE:
 All CKA resources are in scope. This assignment unlocks after the Networking section (generation order 4), so learners have encountered Deployments, ConfigMaps, Secrets, and all pod-related resources. Exercises may use any resource type covered in prior assignments (pods, Deployments, ConfigMaps) as needed to demonstrate service functionality.
 
 KIND CLUSTER SETUP:
-Learners should already have the multi-node kind cluster from exercises/pods/assignment-4. If not, provide the kind config file for creating a multi-node cluster:
+Learners should already have the multi-node kind cluster from exercises/01-01-pods/assignment-4. If not, provide the kind config file for creating a multi-node cluster:
 
 ```yaml
 kind: Cluster
@@ -197,16 +197,16 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites (must be completed first):**
-  - exercises/pods/assignment-7 (Workload Controllers): Learners need to understand Deployments, which serve as service backends throughout this assignment
-  - exercises/pods/assignment-3 (Pod Health and Observability): Understanding readiness probes is necessary to understand how services manage endpoints based on pod readiness
+  - exercises/01-01-pods/assignment-7 (Workload Controllers): Learners need to understand Deployments, which serve as service backends throughout this assignment
+  - exercises/01-01-pods/assignment-3 (Pod Health and Observability): Understanding readiness probes is necessary to understand how services manage endpoints based on pod readiness
 
 - **Follow-up assignments (reference these in the README for what comes next):**
-  - exercises/coredns/assignment-1: DNS configuration, CoreDNS internals, DNS debugging with nslookup/dig
-  - exercises/network-policies/assignment-1: Filtering traffic to services using Network Policies
-  - exercises/ingress-and-gateway-api/assignment-1: L7 routing to services with Ingress and Gateway API
+  - exercises/09-09-coredns/assignment-1: DNS configuration, CoreDNS internals, DNS debugging with nslookup/dig
+  - exercises/10-10-network-policies/assignment-1: Filtering traffic to services using Network Policies
+  - exercises/11-11-ingress-and-gateway-api/assignment-1: L7 routing to services with Ingress and Gateway API
 
 - **Related assignments:**
-  - exercises/troubleshooting/assignment-4: Network troubleshooting, which includes service resolution failures and endpoint debugging
+  - exercises/19-19-troubleshooting/assignment-4: Network troubleshooting, which includes service resolution failures and endpoint debugging
 
 COURSE MATERIAL REFERENCE:
 This assignment aligns with Mumshad CKA course sections:

@@ -1,6 +1,6 @@
 # Helm Lifecycle Management Homework
 
-This homework file contains 15 progressive exercises organized into five difficulty levels. The exercises assume you have worked through `helm-tutorial.md` and completed helm/assignment-1 (Helm Basics). Each exercise uses its own namespace where applicable. Complete the exercises in order; the progression is designed to build skills incrementally.
+This homework file contains 15 progressive exercises organized into five difficulty levels. The exercises assume you have worked through `helm-tutorial.md` and completed 05-helm/assignment-1 (Helm Basics). Each exercise uses its own namespace where applicable. Complete the exercises in order; the progression is designed to build skills incrementally.
 
 ## Setup
 

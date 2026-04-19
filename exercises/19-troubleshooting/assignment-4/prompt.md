@@ -57,9 +57,9 @@ This assignment covers network layer troubleshooting: service connectivity, DNS 
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Application troubleshooting (exercises/troubleshooting/assignment-1)
-- Control plane troubleshooting (exercises/troubleshooting/assignment-2)
-- Node troubleshooting (exercises/troubleshooting/assignment-3)
+- Application troubleshooting (exercises/19-19-troubleshooting/assignment-1)
+- Control plane troubleshooting (exercises/19-19-troubleshooting/assignment-2)
+- Node troubleshooting (exercises/19-19-troubleshooting/assignment-3)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -146,10 +146,10 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/services/ assignments
-  - exercises/coredns/ assignments
-  - exercises/network-policies/ assignments
-  - exercises/ingress-and-gateway-api/ assignments
+  - exercises/08-services/ assignments
+  - exercises/09-coredns/ assignments
+  - exercises/10-network-policies/ assignments
+  - exercises/11-ingress-and-gateway-api/ assignments
 
 COURSE MATERIAL REFERENCE:
 - S14 (Lectures 295-296): Network troubleshooting

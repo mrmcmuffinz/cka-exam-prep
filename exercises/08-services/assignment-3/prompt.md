@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed services/assignment-1 and assignment-2
+- I have completed 08-services/assignment-1 and assignment-2
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -59,12 +59,12 @@ This assignment covers advanced service patterns (multi-port, session affinity, 
 
 **Out of scope (covered in other assignments, do not include):**
 
-- ClusterIP basics (exercises/services/assignment-1)
-- External service types (exercises/services/assignment-2)
-- DNS resolution (exercises/coredns/)
-- Network Policies (exercises/network-policies/)
-- Ingress (exercises/ingress-and-gateway-api/)
-- Cross-domain troubleshooting (exercises/troubleshooting/assignment-4)
+- ClusterIP basics (exercises/08-08-services/assignment-1)
+- External service types (exercises/08-08-services/assignment-2)
+- DNS resolution (exercises/09-coredns/)
+- Network Policies (exercises/10-network-policies/)
+- Ingress (exercises/11-ingress-and-gateway-api/)
+- Cross-domain troubleshooting (exercises/19-19-troubleshooting/assignment-4)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -119,7 +119,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of Service Patterns and Troubleshooting assignment
-   - Prerequisites: services/assignment-1, assignment-2
+   - Prerequisites: 08-services/assignment-1, assignment-2
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: multi-node kind cluster
    - Recommended workflow
@@ -148,13 +148,13 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/services/assignment-1: ClusterIP services
-  - exercises/services/assignment-2: External service types
+  - exercises/08-08-services/assignment-1: ClusterIP services
+  - exercises/08-08-services/assignment-2: External service types
 
 - **Follow-up assignments:**
-  - exercises/coredns/assignment-1: DNS for service discovery
-  - exercises/network-policies/assignment-1: Filtering service traffic
-  - exercises/troubleshooting/assignment-4: Network troubleshooting
+  - exercises/09-09-coredns/assignment-1: DNS for service discovery
+  - exercises/10-10-network-policies/assignment-1: Filtering service traffic
+  - exercises/19-19-troubleshooting/assignment-4: Network troubleshooting
 
 COURSE MATERIAL REFERENCE:
 - S2 (Lectures 33-37): Services

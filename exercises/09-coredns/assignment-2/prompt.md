@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed coredns/assignment-1 (DNS Fundamentals)
+- I have completed 09-coredns/assignment-1 (DNS Fundamentals)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -57,9 +57,9 @@ This assignment covers CoreDNS Deployment, ConfigMap, Corefile structure, plugin
 
 **Out of scope (covered in other assignments, do not include):**
 
-- DNS fundamentals (exercises/coredns/assignment-1)
-- DNS troubleshooting (exercises/coredns/assignment-3)
-- Network Policies (exercises/network-policies/)
+- DNS fundamentals (exercises/09-09-coredns/assignment-1)
+- DNS troubleshooting (exercises/09-09-coredns/assignment-3)
+- Network Policies (exercises/10-network-policies/)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -115,7 +115,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of CoreDNS Configuration assignment
-   - Prerequisites: coredns/assignment-1
+   - Prerequisites: 09-coredns/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: multi-node kind cluster
    - Warning about careful ConfigMap editing
@@ -143,10 +143,10 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/coredns/assignment-1: DNS fundamentals
+  - exercises/09-09-coredns/assignment-1: DNS fundamentals
 
 - **Follow-up assignments:**
-  - exercises/coredns/assignment-3: DNS troubleshooting
+  - exercises/09-09-coredns/assignment-3: DNS troubleshooting
 
 COURSE MATERIAL REFERENCE:
 - S9 (Lectures 227-230): DNS in Kubernetes, CoreDNS

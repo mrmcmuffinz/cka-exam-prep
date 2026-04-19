@@ -9,7 +9,7 @@ Certificate problems cause errors like "x509: certificate has expired" or "certi
 ## Prerequisites
 
 - Single-node kind cluster running
-- Completed tls-and-certificates/assignment-1 and assignment-2
+- Completed 18-tls-and-certificates/assignment-1 and assignment-2
 
 ## Tutorial Setup
 

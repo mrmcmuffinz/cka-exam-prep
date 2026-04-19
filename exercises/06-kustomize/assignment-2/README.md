@@ -16,7 +16,7 @@ Level 1 exercises cover strategic merge patches: modifying replicas, adding envi
 
 ## Prerequisites
 
-You need a running kind cluster created with rootless nerdctl and kubectl configured to talk to it. You should have completed kustomize/assignment-1 (Kustomize Fundamentals) so that basic kustomization structure is familiar.
+You need a running kind cluster created with rootless nerdctl and kubectl configured to talk to it. You should have completed 06-kustomize/assignment-1 (Kustomize Fundamentals) so that basic kustomization structure is familiar.
 
 ## Cluster Requirements
 

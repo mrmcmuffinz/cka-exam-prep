@@ -16,8 +16,8 @@ Cluster lifecycle encompasses cluster installation with kubeadm, cluster version
 | Assignment | Description | Prerequisites |
 |---|---|---|
 | assignment-1 | Cluster Installation | Node prerequisites and preparation, kubeadm init workflow and configuration, kubeadm join for worker nodes, control plane component verification, extension interfaces (CNI, CSI, CRI) at conceptual level, cluster health checks | None (foundational topic) |
-| assignment-2 | Cluster Upgrades and Maintenance | Upgrade planning (kubeadm upgrade plan, version compatibility), control plane node upgrade workflow, worker node upgrade workflow, node drain best practices and scenarios, node cordon and uncordon, post-upgrade verification | cluster-lifecycle/assignment-1 |
-| assignment-3 | etcd Operations and High Availability | etcd architecture in Kubernetes, etcd backup with etcdctl snapshot save, etcd restore with etcdctl snapshot restore, etcd health and data integrity verification, HA control plane with stacked etcd, HA control plane with external etcd | cluster-lifecycle/assignment-2 |
+| assignment-2 | Cluster Upgrades and Maintenance | Upgrade planning (kubeadm upgrade plan, version compatibility), control plane node upgrade workflow, worker node upgrade workflow, node drain best practices and scenarios, node cordon and uncordon, post-upgrade verification | 17-cluster-lifecycle/assignment-1 |
+| assignment-3 | etcd Operations and High Availability | etcd architecture in Kubernetes, etcd backup with etcdctl snapshot save, etcd restore with etcdctl snapshot restore, etcd health and data integrity verification, HA control plane with stacked etcd, HA control plane with external etcd | 17-cluster-lifecycle/assignment-2 |
 
 ## Scope Boundaries
 
@@ -25,8 +25,8 @@ This topic covers cluster bootstrapping, lifecycle management, and data operatio
 
 - **TLS certificates and PKI** (cluster certificates, certificate creation, Certificates API): covered in `tls-and-certificates/`
 - **RBAC** (cluster-admin permissions, bootstrap tokens): covered in `rbac/`
-- **Troubleshooting control plane failures** (API server down, etcd corruption, certificate expiration): covered in `troubleshooting/assignment-2`
-- **Troubleshooting node failures** (kubelet not running, node NotReady): covered in `troubleshooting/assignment-3`
+- **Troubleshooting control plane failures** (API server down, etcd corruption, certificate expiration): covered in `19-troubleshooting/assignment-2`
+- **Troubleshooting node failures** (kubelet not running, node NotReady): covered in `19-troubleshooting/assignment-3`
 
 Assignment-1 focuses on successful cluster creation. Assignment-2 focuses on successful upgrades and planned maintenance. Assignment-3 focuses on etcd operations and HA architecture. The troubleshooting series adds failure scenarios where these operations go wrong.
 
@@ -38,7 +38,7 @@ Multi-node kind cluster for assignments 1 and 2 (1 control-plane, 2-3 workers). 
 
 ## Recommended Order
 
-1. Complete `cluster-lifecycle/assignment-1` first (prerequisite for understanding cluster structure)
+1. Complete `17-cluster-lifecycle/assignment-1` first (prerequisite for understanding cluster structure)
 2. Work through assignments 1, 2, 3 sequentially
 3. Assignment-2 assumes understanding of kubeadm-managed clusters from assignment-1
 4. Assignment-3 assumes understanding of cluster upgrades and node operations from assignment-2

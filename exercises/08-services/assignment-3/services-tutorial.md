@@ -13,7 +13,7 @@ Equally important is the ability to troubleshoot service issues systematically. 
 Before starting this tutorial, ensure you have:
 
 - A multi-node kind cluster running (1 control-plane, 3 workers)
-- Completed services/assignment-1 and assignment-2
+- Completed 08-services/assignment-1 and assignment-2
 - kubectl configured to communicate with your cluster
 
 ## Tutorial Setup

@@ -39,19 +39,19 @@ Look at `docs/remediation-plan.md` Phase 5 or Phase 6. Tasks that are `Not start
 
 **All Phase 4 tasks complete as of 2026-04-18:**
 - P3.6 fully: all five new-topic assignments content complete
-- P4.1: `rbac/assignment-2` content
-- P4.2: `security-contexts/assignment-1`, `-2`, `-3` content
-- P4.3: `storage/assignment-1`, `-2`, `-3` content (U7 duplicated-YAML finding resolved)
-- P4.4: `troubleshooting/assignment-2` content
-- P4.5: `troubleshooting/assignment-4` content
-- P4.6: `cluster-lifecycle/assignment-1` homework regen
-- P4.7: `crds-and-operators/assignment-1` Level 1 regen
-- P4.8: `troubleshooting/assignment-1` Exercise 1.2 single-failure fix
-- P4.9: `ingress-and-gateway-api/assignment-1` content with Traefik v3.6.13
-- P4.10: `ingress-and-gateway-api/assignment-2` content with HAProxy Ingress v3.2.6
-- P4.11: `ingress-and-gateway-api/assignment-3` content with Envoy Gateway v1.7.2
-- P4.12: `ingress-and-gateway-api/assignment-4` content with NGINX Gateway Fabric v2.5.1 (new)
-- P4.13: `ingress-and-gateway-api/assignment-5` content with Ingress2Gateway CLI v1.0.0 (new)
+- P4.1: `12-rbac/assignment-2` content
+- P4.2: `13-security-contexts/assignment-1`, `-2`, `-3` content
+- P4.3: `07-storage/assignment-1`, `-2`, `-3` content (U7 duplicated-YAML finding resolved)
+- P4.4: `19-troubleshooting/assignment-2` content
+- P4.5: `19-troubleshooting/assignment-4` content
+- P4.6: `17-cluster-lifecycle/assignment-1` homework regen
+- P4.7: `15-crds-and-operators/assignment-1` Level 1 regen
+- P4.8: `19-troubleshooting/assignment-1` Exercise 1.2 single-failure fix
+- P4.9: `11-ingress-and-gateway-api/assignment-1` content with Traefik v3.6.13
+- P4.10: `11-ingress-and-gateway-api/assignment-2` content with HAProxy Ingress v3.2.6
+- P4.11: `11-ingress-and-gateway-api/assignment-3` content with Envoy Gateway v1.7.2
+- P4.12: `11-ingress-and-gateway-api/assignment-4` content with NGINX Gateway Fabric v2.5.1 (new)
+- P4.13: `11-ingress-and-gateway-api/assignment-5` content with Ingress2Gateway CLI v1.0.0 (new)
 
 **All phases complete.** No remaining remediation work. The repository is in its final audited state with 45 content-complete assignments across 17 topics. (already in progress)
 
@@ -121,8 +121,8 @@ Do not push through context exhaustion; the quality of later work degrades and m
 When generating any new content (Phase 5 weaving or Phase 6 audits), read one of the reference assignments first so the style is fresh in context. All of these demonstrate the full set of Phase 2 hard gates:
 
 **Hand-crafted originals (canonical references):**
-- `exercises/pods/assignment-1/` — narrative bar for tutorials; defaults and failure modes taught in prose
-- `exercises/rbac/assignment-1/` — subject-oriented topic; narrative bar for auth-vs-authz
+- `exercises/01-01-pods/assignment-1/` — narrative bar for tutorials; defaults and failure modes taught in prose
+- `exercises/12-12-rbac/assignment-1/` — subject-oriented topic; narrative bar for auth-vs-authz
 
 **Phase 4 skill-generated (all 19 meet the same bar):**
 - Workload controllers: `jobs-and-cronjobs/1`, `statefulsets/1`
@@ -134,7 +134,7 @@ When generating any new content (Phase 5 weaving or Phase 6 audits), read one of
 - Ingress and Gateway API: `ingress-and-gateway-api/1` (Traefik), `/2` (HAProxy + TLS), `/3` (Envoy Gateway), `/4` (NGINX Gateway Fabric), `/5` (migration)
 - Troubleshooting: `troubleshooting/2` (control plane), `/4` (network)
 
-Pick whichever is most shape-adjacent. For the Phase 5 `kubectl debug` weave, `troubleshooting/assignment-2` is the nearest shape for ephemeral-container workflows. For the Phase 5 `port-forward` weave, `services/assignment-1` is the target itself.
+Pick whichever is most shape-adjacent. For the Phase 5 `kubectl debug` weave, `19-troubleshooting/assignment-2` is the nearest shape for ephemeral-container workflows. For the Phase 5 `port-forward` weave, `08-services/assignment-1` is the target itself.
 
 ---
 
@@ -193,6 +193,6 @@ All six phases are complete. The remediation plan is closed.
 - **Technique weaving** for kubectl debug, kubectl port-forward, and scheduler profiles (G4, G7, G8)
 - **Phase 6 verification** confirmed: series counters correct, cross-references valid, READMEs/tutorials/answers meet quality gates
 
-The reference quality bar is set by the 19 skill-generated Phase 4 assignments plus the two hand-crafted originals (`pods/assignment-1`, `rbac/assignment-1`). Any future content work must meet the same bar.
+The reference quality bar is set by the 19 skill-generated Phase 4 assignments plus the two hand-crafted originals (`01-pods/assignment-1`, `12-rbac/assignment-1`). Any future content work must meet the same bar.
 
 For future maintenance, continue the practice of updating `remediation-plan.md` and `audit-findings.md` in the same commit as any content changes.

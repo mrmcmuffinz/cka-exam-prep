@@ -6,7 +6,7 @@
 - **CKA domain:** Workloads & Scheduling (15%)
 - **Competencies covered:** Configure Pod admission (Pod Security Standards, Pod Security Admission)
 - **Course sections referenced:** S7 (lectures 175-178, security contexts); new material per the 2025 CKA curriculum refresh that added PSA
-- **Prerequisites:** `pods/assignment-1`, `security-contexts/assignment-1`, `security-contexts/assignment-3`
+- **Prerequisites:** `01-pods/assignment-1`, `13-security-contexts/assignment-1`, `13-security-contexts/assignment-3`
 
 ## Scope declaration
 
@@ -78,14 +78,14 @@ All CKA resources are in scope. The assignment uses Namespaces (with PSA labels)
 ## Cross-references
 
 **Prerequisites (must be completed first):**
-- `exercises/pods/assignment-1`: pod spec fundamentals
-- `exercises/security-contexts/assignment-1`: runAsUser, runAsNonRoot, fsGroup
-- `exercises/security-contexts/assignment-3`: readOnlyRootFilesystem, seccomp
+- `exercises/01-01-pods/assignment-1`: pod spec fundamentals
+- `exercises/13-13-security-contexts/assignment-1`: runAsUser, runAsNonRoot, fsGroup
+- `exercises/13-13-security-contexts/assignment-3`: readOnlyRootFilesystem, seccomp
 
 **Adjacent topics:**
-- `exercises/admission-controllers/`: PSA is one admission controller among many
-- `exercises/security-contexts/`: the fields PSA enforces
-- `exercises/rbac/`: who can bypass PSA enforcement or label namespaces
+- `exercises/16-admission-controllers/`: PSA is one admission controller among many
+- `exercises/13-security-contexts/`: the fields PSA enforces
+- `exercises/12-rbac/`: who can bypass PSA enforcement or label namespaces
 
 **Forward references:**
-- `exercises/troubleshooting/assignment-1`: application-layer troubleshooting includes PSA rejections as a failure category
+- `exercises/19-19-troubleshooting/assignment-1`: application-layer troubleshooting includes PSA rejections as a failure category

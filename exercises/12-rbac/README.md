@@ -27,7 +27,7 @@ cross-namespace permission reuse.
 
 | Assignment | Title | Covers | Prerequisites |
 |---|---|---|---|
-| assignment-1 | RBAC (namespace-scoped) | Roles, RoleBindings, service accounts, user cert creation for kind, kubeconfig contexts, kubectl auth can-i | pods/assignment-1 |
+| assignment-1 | RBAC (namespace-scoped) | Roles, RoleBindings, service accounts, user cert creation for kind, kubeconfig contexts, kubectl auth can-i | 01-pods/assignment-1 |
 | assignment-2 | RBAC (cluster-scoped) | ClusterRoles, ClusterRoleBindings, cluster-scoped resources, aggregated ClusterRoles, default ClusterRoles, ClusterRole + RoleBinding pattern | assignment-1 |
 
 ## Scope Boundaries
@@ -39,7 +39,7 @@ other topics:
 - **Security contexts** (what containers can do at runtime): covered in `security-contexts/`
 - **Network Policies** (network-level access control between pods): covered in `network-policies/`
 - **RBAC for custom resources**: covered in `crds-and-operators/`
-- **Admission controllers** (validating and mutating): covered in the pod series (pods/assignment-4 area, via the Mumshad course scheduling section)
+- **Admission controllers** (validating and mutating): covered in the pod series (01-pods/assignment-4 area, via the Mumshad course scheduling section)
 
 ## Cluster Requirements
 
@@ -49,4 +49,4 @@ existing CA and kubeconfig infrastructure.
 ## Recommended Order
 
 1. Complete assignment-1 before assignment-2 (cluster-scoped RBAC builds on namespace-scoped fundamentals)
-2. Complete `tls-and-certificates/assignment-2` before `rbac/assignment-2` (certificate-based authentication feeds RBAC authorization)
+2. Complete `18-tls-and-certificates/assignment-2` before `12-rbac/assignment-2` (certificate-based authentication feeds RBAC authorization)

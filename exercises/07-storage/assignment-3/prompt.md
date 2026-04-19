@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed storage/assignment-1 and assignment-2
+- I have completed 07-storage/assignment-1 and assignment-2
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -55,8 +55,8 @@ This assignment covers StorageClass resources, dynamic provisioning workflows, d
 
 **Out of scope (covered in other assignments, do not include):**
 
-- PV creation in depth (exercises/storage/assignment-1)
-- PVC binding mechanics (exercises/storage/assignment-2)
+- PV creation in depth (exercises/07-07-storage/assignment-1)
+- PVC binding mechanics (exercises/07-07-storage/assignment-2)
 - CSI driver installation (cluster setup, not exercise)
 - Cloud-specific storage configuration
 - Snapshot and clone features (advanced, may not be in CKA)
@@ -115,7 +115,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of StorageClasses and Dynamic Provisioning assignment
-   - Prerequisites: storage/assignment-1, assignment-2
+   - Prerequisites: 07-storage/assignment-1, assignment-2
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster (has local-path provisioner)
    - Recommended workflow
@@ -144,12 +144,12 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/storage/assignment-1: PersistentVolumes
-  - exercises/storage/assignment-2: PersistentVolumeClaims
+  - exercises/07-07-storage/assignment-1: PersistentVolumes
+  - exercises/07-07-storage/assignment-2: PersistentVolumeClaims
 
 - **Follow-up assignments:**
-  - exercises/security-contexts/assignment-1: fsGroup affects mounted volume permissions
-  - exercises/troubleshooting/assignment-1: Storage-related troubleshooting
+  - exercises/13-13-security-contexts/assignment-1: fsGroup affects mounted volume permissions
+  - exercises/19-19-troubleshooting/assignment-1: Storage-related troubleshooting
 
 COURSE MATERIAL REFERENCE:
 - S8 (Lectures 201-203): Storage classes

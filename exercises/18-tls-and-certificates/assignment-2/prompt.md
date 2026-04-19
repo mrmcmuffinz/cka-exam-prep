@@ -4,7 +4,7 @@ CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
 - I have completed the following CKA course sections: S1-S7 (through lecture 159)
-- I have completed tls-and-certificates/assignment-1 (manual certificate creation)
+- I have completed 18-tls-and-certificates/assignment-1 (manual certificate creation)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -52,11 +52,11 @@ This assignment covers the Kubernetes Certificates API for automated CSR workflo
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Manual certificate creation with openssl (exercises/tls-and-certificates/assignment-1)
-- Certificate file locations and PKI structure (exercises/tls-and-certificates/assignment-1)
-- Certificate troubleshooting (exercises/tls-and-certificates/assignment-3)
-- RBAC authorization (happens after authentication) (exercises/rbac/)
-- Service account tokens (exercises/rbac/assignment-1)
+- Manual certificate creation with openssl (exercises/18-18-tls-and-certificates/assignment-1)
+- Certificate file locations and PKI structure (exercises/18-18-tls-and-certificates/assignment-1)
+- Certificate troubleshooting (exercises/18-18-tls-and-certificates/assignment-3)
+- RBAC authorization (happens after authentication) (exercises/12-rbac/)
+- Service account tokens (exercises/12-12-rbac/assignment-1)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -113,7 +113,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of Certificates API and kubeconfig assignment
-   - Prerequisites: tls-and-certificates/assignment-1
+   - Prerequisites: 18-tls-and-certificates/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Recommended workflow
@@ -143,12 +143,12 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/tls-and-certificates/assignment-1: Manual certificate creation
+  - exercises/18-18-tls-and-certificates/assignment-1: Manual certificate creation
 
 - **Follow-up assignments:**
-  - exercises/tls-and-certificates/assignment-3: Certificate troubleshooting
-  - exercises/rbac/assignment-1: RBAC for authenticated users
-  - exercises/rbac/assignment-2: Cluster-scoped RBAC
+  - exercises/18-18-tls-and-certificates/assignment-3: Certificate troubleshooting
+  - exercises/12-12-rbac/assignment-1: RBAC for authenticated users
+  - exercises/12-12-rbac/assignment-2: Cluster-scoped RBAC
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 146-159): TLS, Certificates API, KubeConfig

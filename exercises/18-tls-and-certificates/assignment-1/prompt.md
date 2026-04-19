@@ -4,7 +4,7 @@ CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
 - I have completed the following CKA course sections: S1-S7 (through lecture 159, covering Security through KubeConfig)
-- I have completed cluster-lifecycle/assignment-1 (understanding of control plane components)
+- I have completed 17-cluster-lifecycle/assignment-1 (understanding of control plane components)
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -60,11 +60,11 @@ This assignment covers the Kubernetes PKI structure, certificate anatomy, creati
 
 **Out of scope (covered in other assignments, do not include):**
 
-- CertificateSigningRequest resource in Kubernetes (exercises/tls-and-certificates/assignment-2)
-- kubeconfig file structure and management (exercises/tls-and-certificates/assignment-2)
-- Certificate troubleshooting (expiration, mismatches, wrong CA) (exercises/tls-and-certificates/assignment-3)
-- etcd operations beyond certificate location (exercises/cluster-lifecycle/assignment-3)
-- RBAC (authorization happens after authentication) (exercises/rbac/)
+- CertificateSigningRequest resource in Kubernetes (exercises/18-18-tls-and-certificates/assignment-2)
+- kubeconfig file structure and management (exercises/18-18-tls-and-certificates/assignment-2)
+- Certificate troubleshooting (expiration, mismatches, wrong CA) (exercises/18-18-tls-and-certificates/assignment-3)
+- etcd operations beyond certificate location (exercises/17-17-cluster-lifecycle/assignment-3)
+- RBAC (authorization happens after authentication) (exercises/12-rbac/)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -121,7 +121,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of TLS Fundamentals assignment
-   - Prerequisites: cluster-lifecycle/assignment-1
+   - Prerequisites: 17-cluster-lifecycle/assignment-1
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Tools needed: openssl
@@ -160,12 +160,12 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/cluster-lifecycle/assignment-1: Understanding control plane components
+  - exercises/17-17-cluster-lifecycle/assignment-1: Understanding control plane components
 
 - **Follow-up assignments:**
-  - exercises/tls-and-certificates/assignment-2: Certificates API and kubeconfig
-  - exercises/tls-and-certificates/assignment-3: Certificate troubleshooting
-  - exercises/rbac/assignment-1: Using certificate-based authentication with RBAC
+  - exercises/18-18-tls-and-certificates/assignment-2: Certificates API and kubeconfig
+  - exercises/18-18-tls-and-certificates/assignment-3: Certificate troubleshooting
+  - exercises/12-12-rbac/assignment-1: Using certificate-based authentication with RBAC
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 143-145): Security primitives, authentication

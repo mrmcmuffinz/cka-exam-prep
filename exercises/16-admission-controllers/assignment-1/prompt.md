@@ -6,7 +6,7 @@
 - **CKA domain:** Workloads & Scheduling (15%) and Cluster Architecture (25%)
 - **Competencies covered:** Configure Pod admission and scheduling (admission controllers, validating and mutating); understand request flow from authentication through authorization to admission
 - **Course sections referenced:** S3 (lectures 82-87, admission controllers), S7 (security primitives)
-- **Prerequisites:** `pods/assignment-1` (pod spec fundamentals), `rbac/assignment-1` (for testing with different subjects)
+- **Prerequisites:** `01-pods/assignment-1` (pod spec fundamentals), `12-rbac/assignment-1` (for testing with different subjects)
 
 ## Scope declaration
 
@@ -59,7 +59,7 @@
 - Authentication mechanisms (certificates, tokens): covered in `tls-and-certificates/` and `rbac/`
 - Authorization mechanisms (RBAC, ABAC): covered in `rbac/`
 - Pod Security Standards and Pod Security Admission specifically: covered in `pod-security/`
-- LimitRange and ResourceQuota resource specs: covered in `pods/assignment-5` (their admission enforcement is a single talking point here)
+- LimitRange and ResourceQuota resource specs: covered in `01-pods/assignment-5` (their admission enforcement is a single talking point here)
 - Writing custom admission webhook servers (Go or otherwise): out of CKA scope
 - Dynamic admission webhook configuration: in scope conceptually but do not deep-dive webhook authentication/signing; the assignment focuses on ValidatingAdmissionPolicy since it does not require a webhook server
 
@@ -85,12 +85,12 @@ All CKA resources are in scope. The assignment uses ValidatingAdmissionPolicy, V
 ## Cross-references
 
 **Prerequisites (must be completed first):**
-- `exercises/pods/assignment-1`: pod spec fundamentals
-- `exercises/rbac/assignment-1`: `kubectl auth can-i --as=USER` for testing admission decisions under different identities
+- `exercises/01-01-pods/assignment-1`: pod spec fundamentals
+- `exercises/12-12-rbac/assignment-1`: `kubectl auth can-i --as=USER` for testing admission decisions under different identities
 
 **Adjacent topics:**
-- `exercises/pod-security/`: Pod Security Admission, which is a specific admission controller
-- `exercises/rbac/assignment-2`: cluster-scoped RBAC (some admission-related resources are cluster-scoped)
+- `exercises/14-pod-security/`: Pod Security Admission, which is a specific admission controller
+- `exercises/12-12-rbac/assignment-2`: cluster-scoped RBAC (some admission-related resources are cluster-scoped)
 
 **Forward references:**
-- `exercises/troubleshooting/assignment-1`: application troubleshooting includes admission denials as a failure category (pod never creates because admission rejects it)
+- `exercises/19-19-troubleshooting/assignment-1`: application troubleshooting includes admission denials as a failure category (pod never creates because admission rejects it)

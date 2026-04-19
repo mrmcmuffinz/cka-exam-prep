@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed crds-and-operators/assignment-1 and assignment-2
+- I have completed 15-crds-and-operators/assignment-1 and assignment-2
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -53,11 +53,11 @@ This assignment covers the operator pattern, installing existing operators, oper
 
 **Out of scope (covered in other assignments, do not include):**
 
-- CRD creation (exercises/crds-and-operators/assignment-1)
-- Custom resource CRUD (exercises/crds-and-operators/assignment-2)
+- CRD creation (exercises/15-15-crds-and-operators/assignment-1)
+- Custom resource CRUD (exercises/15-15-crds-and-operators/assignment-2)
 - Writing custom controllers in Go (not in CKA scope)
 - Admission webhooks (not in CKA scope)
-- Helm in depth (exercises/helm/)
+- Helm in depth (exercises/05-helm/)
 
 ASSIGNMENT REQUIREMENTS:
 
@@ -113,7 +113,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of Operators and Controllers assignment
-   - Prerequisites: crds-and-operators/assignment-1, assignment-2
+   - Prerequisites: 15-crds-and-operators/assignment-1, assignment-2
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Note about operator image requirements
@@ -142,12 +142,12 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/crds-and-operators/assignment-1: CRD creation
-  - exercises/crds-and-operators/assignment-2: Custom resources and RBAC
+  - exercises/15-15-crds-and-operators/assignment-1: CRD creation
+  - exercises/15-15-crds-and-operators/assignment-2: Custom resources and RBAC
 
 - **Follow-up assignments:**
-  - exercises/helm/assignment-1: Helm (operators often installed via Helm)
-  - exercises/troubleshooting/assignment-1: Application troubleshooting
+  - exercises/05-05-helm/assignment-1: Helm (operators often installed via Helm)
+  - exercises/19-19-troubleshooting/assignment-1: Application troubleshooting
 
 COURSE MATERIAL REFERENCE:
 - S7 (Lectures 184-187): CRDs, custom controllers, operator framework

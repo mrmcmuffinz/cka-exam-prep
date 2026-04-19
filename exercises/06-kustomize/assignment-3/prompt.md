@@ -3,7 +3,7 @@ I need you to create a comprehensive Kubernetes homework assignment to help me p
 CONTEXT:
 - I'm studying for the CKA (Certified Kubernetes Administrator) exam
 - I'm using a kind cluster with nerdctl (rootless containers, not Docker)
-- I have completed kustomize/assignment-1 and assignment-2
+- I have completed 06-kustomize/assignment-1 and assignment-2
 - I want to build real-world skills, not just pass the exam
 
 SCOPE (IMPORTANT):
@@ -50,8 +50,8 @@ This assignment covers base and overlay directory structure, environment-specifi
 
 **Out of scope (covered in other assignments, do not include):**
 
-- Basic kustomization.yaml (exercises/kustomize/assignment-1)
-- Patches and generators (exercises/kustomize/assignment-2)
+- Basic kustomization.yaml (exercises/06-06-kustomize/assignment-1)
+- Patches and generators (exercises/06-06-kustomize/assignment-2)
 - GitOps workflows (not in CKA scope)
 
 ASSIGNMENT REQUIREMENTS:
@@ -108,7 +108,7 @@ ASSIGNMENT REQUIREMENTS:
 4. **README File for the Assignment**
    - Create: README.md
    - Overview of Overlays and Components assignment
-   - Prerequisites: kustomize/assignment-1, assignment-2
+   - Prerequisites: 06-kustomize/assignment-1, assignment-2
    - Estimated time commitment: 4-6 hours
    - Cluster requirements: single-node kind cluster
    - Recommended workflow
@@ -133,11 +133,11 @@ CONVENTIONS:
 
 CROSS-REFERENCES:
 - **Prerequisites:**
-  - exercises/kustomize/assignment-1: Kustomize fundamentals
-  - exercises/kustomize/assignment-2: Patches and transformers
+  - exercises/06-06-kustomize/assignment-1: Kustomize fundamentals
+  - exercises/06-06-kustomize/assignment-2: Patches and transformers
 
 - **Follow-up assignments:**
-  - exercises/helm/assignment-1: Alternative manifest management
+  - exercises/05-05-helm/assignment-1: Alternative manifest management
 
 COURSE MATERIAL REFERENCE:
 - S13 (Lectures 263-284): Kustomize overlays, components, best practices
