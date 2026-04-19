@@ -2,7 +2,7 @@
 
 This document explains how to continue the remediation work across Claude Code sessions. It is intended for the repo maintainer (Abe) or any future assistant resuming Phase 4 content generation.
 
-**Last updated:** 2026-04-18 (Phase 4 complete: all 19 full-assignment regens plus the three surgical regens P4.6, P4.7, P4.8. Phases 1-4 all closed. Remaining work: Phase 5 technique weaving and Phase 6 verification and housekeeping.)
+**Last updated:** 2026-04-19 (Phase 5 complete: kubectl debug, kubectl port-forward, and scheduler profiles weaved into existing tutorials. Phases 1-5 all closed. Remaining work: Phase 6 verification and housekeeping.)
 
 ---
 
@@ -16,7 +16,7 @@ As of 2026-04-18:
 | 2. Skill asset strengthening | Complete | base-template.md, SKILL.md, cluster-setup.md, registry refresh |
 | 3. Topic scoping | Complete | 5 new topic READMEs + prompts; ingress restructured to 5 assignments with updated prompts |
 | 4. Content generation | Complete | All 19 full-assignment regens done plus 3 surgical regens. security-contexts/1-3, storage/1-3, ingress/1-5 closed under P4.2, P4.3, and P4.9-P4.13 on 2026-04-18 alongside the earlier completions |
-| 5. Technique weaving | Not started | kubectl debug, port-forward, scheduler profiles |
+| 5. Technique weaving | Complete | kubectl debug (ephemeral containers, node debugging), kubectl port-forward (services/pods), scheduler profiles (acknowledged in pods/4) |
 | 6. Verification and housekeeping | Not started | cross-reference audit, final consistency sweep |
 
 ---
@@ -53,14 +53,9 @@ Look at `docs/remediation-plan.md` Phase 5 or Phase 6. Tasks that are `Not start
 - P4.12: `ingress-and-gateway-api/assignment-4` content with NGINX Gateway Fabric v2.5.1 (new)
 - P4.13: `ingress-and-gateway-api/assignment-5` content with Ingress2Gateway CLI v1.0.0 (new)
 
-**Next up (Phase 5 and Phase 6):**
+**Next up (Phase 6 only):**
 
-1. **Phase 5 — technique weaving into existing tutorials** (small additions, Sonnet 4.6 at 200k is sufficient)
-   - P5.1: `kubectl debug` weave into `troubleshooting/assignment-1` and `/assignment-3` tutorials
-   - P5.2: `kubectl port-forward` weave into `services/assignment-1` tutorial
-   - P5.3: Scheduler profiles and multiple-schedulers content in `pods/assignment-4` (or acknowledge the thin area)
-
-2. **Phase 6 — verification and housekeeping** (mostly auditing, can be done in one focused session)
+**Phase 6 — verification and housekeeping** (mostly auditing, can be done in one focused session)
    - P6.1: `6 of 6` typo sweep
    - P6.2: Cross-reference audit (grep for `exercises/X/assignment-Y`)
    - P6.3: Audit all README shapes against the 9-section canonical
@@ -70,14 +65,6 @@ Look at `docs/remediation-plan.md` Phase 5 or Phase 6. Tasks that are `Not start
    - P6.7: Final `docs/audit-findings.md` status sweep (already in progress)
 
 ### Step 3: Follow the task-appropriate workflow
-
-**For a Phase 5 weaving task:**
-
-1. Read the target tutorial file end-to-end so the new section integrates with the existing narrative.
-2. Check which docs the existing tutorial references and maintain the same cross-reference style.
-3. Add one or two new sections (not a full rewrite). Match the per-field spec-documentation pattern (valid values, defaults, failure mode) already used in the tutorial.
-4. Update `docs/remediation-plan.md`: mark the task Complete with date; add a progress-log entry.
-5. Commit with a clear message.
 
 **For a Phase 6 audit task:**
 
@@ -206,9 +193,9 @@ Tick every item before marking any full-assignment regeneration task Complete. P
 
 ## Summary
 
-Phase 4 is complete. All 19 full-assignment regens plus the 3 surgical regens are done. All five new-topic curriculum gaps (G1, G2, G3, G5, G6) are closed. All stub READMEs (P4.1, P4.4, P4.5) are regenerated. All thin tutorials (P4.2 security-contexts, P4.3 storage) are rewritten under the Phase 2 quality gates, with the U7 duplicated-YAML finding resolved in storage/1-3. All five ingress assignments are regenerated under the D8 controller-diversity restructure (Traefik, HAProxy Ingress, Envoy Gateway, NGINX Gateway Fabric, Ingress2Gateway CLI).
+Phases 1-5 are complete. All 19 full-assignment regens plus the 3 surgical regens are done (Phase 4). All five new-topic curriculum gaps (G1, G2, G3, G5, G6) are closed. All stub READMEs are regenerated. All thin tutorials are rewritten under the Phase 2 quality gates. All five ingress assignments are regenerated under the D8 controller-diversity restructure. Phase 5 technique weaving is complete: `kubectl debug` weaved into troubleshooting/1 and /3, `kubectl port-forward` weaved into services/1, scheduler profiles acknowledged in pods/4. Curriculum gaps G4, G7, G8 are now resolved.
 
-Remaining work: Phase 5 technique weaving (3 small tasks: `kubectl debug`, `kubectl port-forward`, scheduler profiles) and Phase 6 verification and housekeeping (7 audit tasks). Neither phase requires new full-assignment generation; all fits comfortably on Sonnet 4.6 at 200k context.
+Remaining work: Phase 6 verification and housekeeping (7 audit tasks). No new full-assignment generation required; all fits comfortably on Sonnet 4.6 at 200k context.
 
 The reference quality bar is set by the 19 skill-generated Phase 4 assignments plus the two hand-crafted originals (`pods/assignment-1`, `rbac/assignment-1`). Any future content work must meet the same bar.
 
