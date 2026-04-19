@@ -13,7 +13,7 @@ being made and to track progress against a coherent plan.
 | `audit-findings.md` | Full audit of the repository across organization, usability, explainability, and CKA curriculum coverage. Each finding has a status line showing whether it is resolved, partially resolved, or pending. |
 | `remediation-plan.md` | Phased plan for addressing the audit findings. Every task has an explicit status that is updated as work progresses. Includes the key decisions made during planning and a progress log. |
 | `cluster-setup.md` | Single source of truth for kind cluster configurations and the component version matrix. Every assignment README and tutorial references sections of this document by anchor rather than inlining cluster commands. |
-| `session-handoff.md` | How to continue Phase 4 content generation across Claude Code sessions: current status, next-task priority, model and context-size recommendations, reference quality bar, pre-commit checklist. |
+| `session-handoff.md` | How to resume work across Claude Code sessions: current status, next-task priority, model and context-size recommendations, reference quality bar, workflow guidance for audit tasks. |
 | `next-session-prompt.md` | A ready-to-use prompt to start a new Claude Code session. Copy the block between the marker lines and paste as the first message in a fresh session. Update the "Current state" block after each completed assignment. |
 
 ## Origin
@@ -41,7 +41,7 @@ As of 2026-04-19:
   `pod-security/`. The `ingress-and-gateway-api/` topic is restructured from
   three to five assignments.
 - **Phase 4 (Content generation and regeneration):** Complete as of 2026-04-18. All 19 full-assignment regens are content-complete: `jobs-and-cronjobs/1`, `pod-security/1`, `rbac/2`, `statefulsets/1`, `troubleshooting/2`, `autoscaling/1`, `admission-controllers/1`, `troubleshooting/4`, `security-contexts/1-3`, `storage/1-3`, `ingress-and-gateway-api/1-5`. Three surgical regens complete (P4.6 cluster-lifecycle/1 homework, P4.7 crds-and-operators/1 Level 1, P4.8 troubleshooting/1 Exercise 1.2). All five new-topic curriculum gaps (G1, G2, G3, G5, G6) resolved. All stub READMEs regenerated. U7 duplicated-YAML finding resolved in storage/1-3. Ingress series fully converted to the D8 controller-diversity structure (Traefik, HAProxy Ingress, Envoy Gateway, NGINX Gateway Fabric, Ingress2Gateway CLI).
-- **Phase 5 (Technique weaving):** Not started. Three small tasks: `kubectl debug` into troubleshooting tutorials; `kubectl port-forward` into services tutorial; scheduler profiles into pods scheduling tutorial.
+- **Phase 5 (Technique weaving):** Complete as of 2026-04-19. `kubectl debug` (ephemeral containers and node debugging) weaved into `troubleshooting/assignment-1` and `/assignment-3`. `kubectl port-forward` weaved into `services/assignment-1`. Scheduler profiles and multiple schedulers acknowledged in `pods/assignment-4`. Curriculum gaps G4, G7, G8 resolved.
 - **Phase 6 (Verification and housekeeping):** Not started. Seven audit tasks for final consistency.
 
 See `remediation-plan.md` for task-level detail.

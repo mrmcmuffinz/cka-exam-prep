@@ -76,7 +76,7 @@ cka-exam-prep/
     └── pod-security/                  # Pod Security Standards and Pod Security Admission (1, content complete)
 ```
 
-"Content complete" means the four content files (README, tutorial, homework, answers) exist. As of 2026-04-19, every assignment in the corpus is content-complete. Phase 5 (technique weaving) and Phase 6 (verification and housekeeping) in `docs/remediation-plan.md` track small follow-up work.
+"Content complete" means the four content files (README, tutorial, homework, answers) exist. As of 2026-04-19, every assignment in the corpus is content-complete. Phases 1-5 are all complete. Phase 6 (verification and housekeeping) in `docs/remediation-plan.md` tracks final consistency audits.
 
 Each topic directory contains a topic-level `README.md` that explains why the topic has its number of assignments, what each one covers, scope boundaries, cluster requirements, and recommended order. This is the scoping document that determines how a topic is decomposed before any assignment content is generated.
 

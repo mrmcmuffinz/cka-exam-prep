@@ -118,9 +118,9 @@ Each topic directory contains a topic-level `README.md` that scopes the number o
 assignments and what each covers. Each assignment subdirectory contains five files:
 `prompt.md` (the generation input), `README.md` (assignment overview for the learner),
 `<topic>-tutorial.md`, `<topic>-homework.md`, `<topic>-homework-answers.md`. Every
-assignment in the corpus is content-complete as of 2026-04-19; Phase 5 (technique
-weaving) and Phase 6 (verification and housekeeping) remain as small follow-up
-work in `docs/remediation-plan.md`.
+assignment in the corpus is content-complete as of 2026-04-19. Phases 1-5 are all
+complete. Phase 6 (verification and housekeeping) remains as final consistency
+audit work in `docs/remediation-plan.md`.
 
 ## Environment
 
@@ -191,5 +191,6 @@ original-scope assignments were generated under that sequence. The subsequent
 plan of work is captured in `docs/remediation-plan.md`. Phase 4 (content
 regeneration of under-delivering assignments, content generation for the
 five new topics, and the ingress restructure from 3 to 5 assignments) is
-now complete. Phases 5 (technique weaving) and 6 (verification and
-housekeeping) remain as small follow-up work.
+complete as of 2026-04-18. Phase 5 (technique weaving) is complete as of
+2026-04-19. Phase 6 (verification and housekeeping) remains as final
+consistency audit work.
