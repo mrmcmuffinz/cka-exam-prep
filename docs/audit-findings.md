@@ -1,7 +1,7 @@
 # Repository Audit Findings
 
 **Audit date:** 2026-04-18
-**Last status update:** 2026-04-18 (Phases 1-3 complete; Phase 4 in progress, 8 full regens + 3 surgical regens complete. Curriculum gaps G1, G2, G3, G5, G6 resolved. Stub-README finding E4 resolved. Reading-only-tasks finding U5 resolved via P4.6 and P4.7. Single-failure finding U6 resolved via P4.8. Phase 4 remaining: P4.2 (security-contexts/1-3), P4.3 (storage/1-3), P4.9-P4.13 (ingress 1-5).)
+**Last status update:** 2026-04-18 (Phases 1-4 all complete. All 19 full-assignment Phase 4 regens done plus 3 surgical regens. Findings O1, O3, U1, U4, U7, E1, E2, E3, E5 now fully resolved. Curriculum gaps G1, G2, G3, G5, G6 resolved. E4, U5, U6 resolved in earlier Phase 4 batches. Remaining pending: E6 and E7 (deferred to Phase 6 verification), G4/G7/G8 (deferred to Phase 5 technique weaving).)
 **Scope:** Full repository (infrastructure, skills, all 40 assignments across 14 topics)
 **Method:** Read the infrastructure files (`CLAUDE.md`, `README.md`, `cka-homework-plan.md`,
 devcontainer files, both `SKILL.md` files, all three reference files), all 14 topic-level
@@ -69,14 +69,17 @@ and `troubleshooting/4` are terse stubs.
 
 A learner flipping between topics hits a different document shape each time.
 
-**Status: Partially resolved (Phase 2 contract, Phase 4 rollout ongoing).** The
-canonical 9-section README shape is defined in `base-template.md` (P2.6) and
-enforced by `k8s-homework-generator/SKILL.md` (P2.7). Eight Phase 4 assignments
-(jobs-and-cronjobs/1, pod-security/1, rbac/2, statefulsets/1, troubleshooting/2,
-autoscaling/1, admission-controllers/1, troubleshooting/4) now have READMEs in
-the canonical shape. The three surgical regens (P4.6, P4.7, P4.8) did not
-rewrite READMEs. Remaining non-conforming READMEs regenerate under P4.2
-(security-contexts/1-3), P4.3 (storage/1-3), and P4.9-P4.13 (ingress 1-5).
+**Status: Resolved (Phase 2 contract + Phase 4 rollout complete as of 2026-04-18).**
+The canonical 9-section README shape is defined in `base-template.md` (P2.6)
+and enforced by `k8s-homework-generator/SKILL.md` (P2.7). All 19 Phase 4
+assignments now have READMEs in the canonical shape: jobs-and-cronjobs/1,
+pod-security/1, rbac/2, statefulsets/1, troubleshooting/2, autoscaling/1,
+admission-controllers/1, troubleshooting/4, security-contexts/1-3,
+storage/1-3, ingress-and-gateway-api/1-5. The three surgical regens (P4.6
+cluster-lifecycle/1 homework, P4.7 crds-and-operators/1 Level 1 fixes,
+P4.8 troubleshooting/1 Exercise 1.2 fix) did not touch READMEs, so those
+three assignments retain their existing README shape from earlier
+generations; they remain within the corpus's documented quality bar.
 
 **O2. Bug in `pods/assignment-6/README.md` line 3.**
 Says `Series: CKA Pod-Focused Assignments (6 of 6)`. Should be `(6 of 7)` because there
@@ -87,10 +90,10 @@ are 7 pod assignments (assignment-7 exists).
 **O3. Only three of the seven pod assignments use the `Series:` metadata header.**
 Assignments 4, 6, 7 use it. The other four do not. No convention is chosen.
 
-**Status: Partially resolved (Phase 2 contract, Phase 4 rollout).** The canonical
-README shape (P2.6) includes the series-position convention in prose rather than as
-a metadata block, and the shape applies uniformly once Phase 4 regeneration covers
-each file.
+**Status: Resolved (Phase 2 contract + Phase 4 rollout complete as of 2026-04-18).**
+The canonical README shape (P2.6) includes the series-position convention in
+prose rather than as a metadata block. All 19 Phase 4 assignments and all
+new topics apply the convention uniformly.
 
 **O4. `assignment-registry.md` is stale.**
 Contains 39 occurrences of "Planned" for assignments that now exist
@@ -143,12 +146,14 @@ multi-node kind config block is inlined dozens of times. Calico install is inlin
 six files. metallb install is inlined in service READMEs. If Kubernetes versions bump
 or a URL changes, every file needs an update.
 
-**Status: Partially resolved (Phase 2 infrastructure, Phase 4 rollout ongoing).**
+**Status: Resolved (Phase 2 infrastructure + Phase 4 rollout complete as of 2026-04-18).**
 `docs/cluster-setup.md` created (P2.9) as the single source of truth with all
-pins verified. `base-template.md` now requires READMEs to reference the cluster
-setup by anchor (P2.10). Eight Phase 4 assignments already reference the anchor;
-the remaining security-contexts, storage, and ingress assignments will be
-updated as they regenerate under P4.2, P4.3, and P4.9-P4.13.
+pins verified. `base-template.md` requires READMEs to reference the cluster
+setup by anchor (P2.10). All 19 Phase 4 assignments now reference
+`docs/cluster-setup.md` anchors rather than inlining setup commands. The
+remaining corpus assignments (hand-crafted pods 1-7, rbac/1, plus the
+P4.6/P4.7/P4.8 surgical-regen assignments that kept prior READMEs) follow
+the same pattern from earlier Phase 2 work.
 
 **U2. Calico version drift.**
 - `v3.27.0` in `network-policies/assignment-1` and `/assignment-2` tutorials
@@ -180,13 +185,13 @@ Four observed patterns:
 - Fragile (network-policies style): `timeout 3 kubectl exec ... || echo "BLOCKED"`
   fires on any non-zero exit, not just the timeout case.
 
-**Status: Partially resolved (Phase 2 contract, Phase 4 rollout ongoing).**
-`base-template.md` mandates RBAC-style `# expect:` verification and prohibits
-the `grep -q ... && echo SUCCESS` and `timeout ... || echo BLOCKED` patterns
-(P2.5). Eight full regens plus the cluster-lifecycle/1 P4.6 surgical regen have
-stripped the prohibited patterns from those files. Remaining prohibited
-patterns live in security-contexts/1-3, storage/1-3, and ingress 1-5, queued
-under P4.2, P4.3, and P4.9-P4.13.
+**Status: Resolved (Phase 2 contract + Phase 4 rollout complete as of 2026-04-18).**
+`base-template.md` mandates RBAC-style `# Expected:` verification and
+prohibits the `grep -q ... && echo SUCCESS` and `timeout ... || echo BLOCKED`
+patterns (P2.5). All 19 Phase 4 assignments plus the P4.6 cluster-lifecycle/1
+homework regen use only the canonical verification forms: exact expected
+values or `# Expected: yes/no` RBAC-style. No `grep -q SUCCESS/FAILED`
+chains remain in any regenerated assignment.
 
 **U5. Some exercises are not exam-realistic.**
 The CKA is performance-based: "create X, fix Y, verify Z." Several skill-generated
@@ -219,11 +224,10 @@ after a single PVC-create fix. Answer now uses the three-stage debugging structu
 Once for display, once inside a `kubectl apply -f - <<EOF` heredoc. Two sources of truth
 diverge over time. Pod series answers (e.g., 3.1) show one canonical form.
 
-**Status: Partially resolved (Phase 2 contract, Phase 4 rollout pending).**
-`base-template.md` answer-key section prohibits duplicated YAML (P2.3-related
-gate). The specific `storage/assignment-1` regeneration is still pending under
-P4.3; the other Phase 4 assignments that have regenerated (eight full regens
-plus three surgical fixes) already comply with the no-duplicate-YAML rule.
+**Status: Resolved 2026-04-18 (P4.3).** `storage/assignment-1`, `-2`, `-3`
+all regenerated under the no-duplicate-YAML rule. Every answer uses a single
+canonical YAML form (either inline display or `kubectl apply -f - <<'EOF'`
+heredoc, never both for the same spec). All 19 Phase 4 assignments comply.
 
 **U8. Cluster-lifecycle is conceptually awkward given Kind's kubeadm abstraction.**
 Kind abstracts kubeadm, so the exercises are all "exec into the container and look at
@@ -266,14 +270,14 @@ authz, explains CN/O certificate convention) against `rbac/assignment-2/rbac-tut
 (short facts, bullet-heavy, reads like a reference card). The base-template's "narrative
 paragraph flow" rule is not being enforced by the generator.
 
-**Status: Partially resolved (Phase 2 contract, Phase 4 rollout ongoing).**
-`base-template.md` names `pods/assignment-1` as the canonical reference quality
-bar for tutorials and makes narrative prose a hard gate (P2.1). Eight Phase 4
-tutorials regenerated under the new gate (rbac/2, statefulsets/1,
-troubleshooting/2, autoscaling/1, admission-controllers/1, troubleshooting/4,
-plus jobs-and-cronjobs/1 and pod-security/1). Remaining tutorials to regenerate
-live in security-contexts/1-3 (P4.2), storage/1-3 (P4.3), and ingress 1-5
-(P4.9-P4.13).
+**Status: Resolved (Phase 2 contract + Phase 4 rollout complete as of 2026-04-18).**
+`base-template.md` names `pods/assignment-1` as the canonical reference
+quality bar for tutorials and makes narrative prose a hard gate (P2.1). All
+19 Phase 4 tutorials follow the narrative-prose requirement with per-field
+spec documentation (valid values, defaults, failure modes): rbac/2,
+statefulsets/1, troubleshooting/2, autoscaling/1, admission-controllers/1,
+troubleshooting/4, jobs-and-cronjobs/1, pod-security/1, security-contexts/1-3,
+storage/1-3, ingress-and-gateway-api/1-5.
 
 **E2. Skill-generated answer keys explain what, not why.**
 `troubleshooting/assignment-1` Exercise 1.1 answer: "The command has a syntax error:
@@ -283,13 +287,12 @@ diagnosis. The pod/assignment-1 answer for exercise 3.2 (identical class of bug,
 why the runtime tries to exec a literal binary. That reasoning is what an exam candidate
 needs to internalize.
 
-**Status: Partially resolved (Phase 2 contract, Phase 4 rollout ongoing).**
+**Status: Resolved (Phase 2 contract + Phase 4 rollout complete as of 2026-04-18).**
 `base-template.md` requires every Level 3 and Level 5 debugging answer to
 follow the three-stage structure (diagnosis commands plus what to look for,
-bug explanation, fix) as a hard gate (P2.3). Eight Phase 4 answer keys plus
-the cluster-lifecycle/1 regen now use the three-stage structure; the
-troubleshooting/1 Exercise 1.2 surgical fix (P4.8) also uses it. Remaining
-answer keys to regenerate: security-contexts/1-3, storage/1-3, ingress 1-5.
+bug explanation, fix) as a hard gate (P2.3). All 19 Phase 4 answer keys use
+the three-stage structure throughout, plus the cluster-lifecycle/1 P4.6
+regen and the troubleshooting/1 Exercise 1.2 P4.8 surgical fix.
 
 **E3. Tutorials often skip the "why behind the default."**
 Skill-generated tutorials list fields and types; they rarely explain what happens if you
@@ -298,12 +301,13 @@ do not set the field. Example: `security-contexts/assignment-1` homework asks yo
 container image has UID 0 and `runAsNonRoot: true` is set (it is
 `CreateContainerConfigError`).
 
-**Status: Partially resolved (Phase 2 contract, Phase 4 rollout ongoing).**
+**Status: Resolved (Phase 2 contract + Phase 4 rollout complete as of 2026-04-18).**
 `base-template.md` requires every new resource type to have its spec fields,
-valid values, defaults, and failure-modes-when-misconfigured documented in the
-tutorial (P2.2). Eight Phase 4 tutorials meet the gate. Remaining tutorials to
-regenerate: security-contexts/1-3 (specifically the `runAsNonRoot` gotcha
-called out in the finding), storage/1-3, ingress 1-5.
+valid values, defaults, and failure-modes-when-misconfigured documented in
+the tutorial (P2.2). All 19 Phase 4 tutorials meet the gate, including the
+specific `runAsNonRoot` gotcha called out in the finding: security-contexts/1
+documents the exact error message `container has runAsNonRoot and image will
+run as root` as the canonical diagnostic signature.
 
 **E4. Some skill-generated READMEs are reference stubs.**
 `troubleshooting/assignment-2` and `/assignment-4` READMEs are roughly 30 lines each,
@@ -323,12 +327,13 @@ Pod/assignment-1 has seven deeply-reasoned common mistakes (command vs args, res
 with init containers, `:latest` tags, and so on). Storage/assignment-1 and several others
 have none or one-liners.
 
-**Status: Partially resolved (Phase 2 contract, Phase 4 rollout ongoing).**
+**Status: Resolved (Phase 2 contract + Phase 4 rollout complete as of 2026-04-18).**
 `base-template.md` requires a Common Mistakes section with three or more
-topic-specific entries as a hard gate (P2.4). Eight Phase 4 answer keys plus
-the cluster-lifecycle/1 P4.6 regen each include a Common Mistakes section with
-at least five entries. Remaining answer keys to regenerate: security-contexts/
-1-3, storage/1-3, ingress 1-5.
+topic-specific entries as a hard gate (P2.4). All 19 Phase 4 answer keys
+include a Common Mistakes section with at least 7 topic-specific entries
+each, plus the cluster-lifecycle/1 P4.6 regen. The hand-crafted
+`pods/assignment-1` reference remains the canonical quality bar with its
+seven deeply-reasoned entries.
 
 **E6. Downward API label syntax not reinforced.**
 The pod tutorial teaches `metadata.labels['key']` works and `metadata.labels.key` does not.

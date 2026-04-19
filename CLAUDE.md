@@ -89,21 +89,21 @@ User: "Generate the assignment from that prompt"
 ## Directory Structure
 
 ```
-exercises/                          All homework assignments (content state as of 2026-04-18)
-  pods/assignment-1/ through 7/     Pod-focused series (content complete)
-  rbac/assignment-1/ and 2/         RBAC namespace- and cluster-scoped (content complete)
-  tls-and-certificates/1-3          K8s PKI, cert creation, Certificates API (content complete)
-  security-contexts/1-3             runAsUser, capabilities, seccomp (content complete)
-  cluster-lifecycle/1-3             kubeadm, upgrades, etcd (content complete, Phase 4 regen scheduled)
-  helm/1-3                          Chart install, upgrade, rollback, templates (content complete)
-  kustomize/1-3                     Overlays, patches, transformers (content complete)
-  crds-and-operators/1-3            CRDs, custom resources, operators (content complete)
-  services/1-3                      ClusterIP, NodePort, LoadBalancer, patterns (content complete)
-  ingress-and-gateway-api/1-5       Ingress v1 and Gateway API (1-3 content complete, 4-5 pending; all restructured per D8)
-  coredns/1-3                       DNS, CoreDNS config, debugging (content complete)
-  network-policies/1-3              Ingress/egress rules, debugging (content complete)
-  storage/1-3                       PV, PVC, StorageClass (content complete, Phase 4 regen scheduled)
-  troubleshooting/1-4               Cross-domain capstone series (content complete, Phase 4 regen scheduled for /2 and /4)
+exercises/                          All homework assignments (content state as of 2026-04-19; all 45 assignments content-complete)
+  pods/assignment-1/ through 7/     Pod-focused series
+  rbac/assignment-1/ and 2/         RBAC namespace- and cluster-scoped
+  tls-and-certificates/1-3          K8s PKI, cert creation, Certificates API
+  security-contexts/1-3             Identity, capabilities, seccomp + readOnlyRootFilesystem (Phase 4 regen 2026-04-18)
+  cluster-lifecycle/1-3             kubeadm, upgrades, etcd (/1 homework regenerated 2026-04-18)
+  helm/1-3                          Chart install, upgrade, rollback, templates
+  kustomize/1-3                     Overlays, patches, transformers
+  crds-and-operators/1-3            CRDs, custom resources, operators (/1 Level 1 regenerated 2026-04-18)
+  services/1-3                      ClusterIP, NodePort, LoadBalancer, patterns
+  ingress-and-gateway-api/1-5       Ingress v1 and Gateway API with controller diversity per D8 (Phase 4 regen 2026-04-18; Traefik, HAProxy Ingress, Envoy Gateway, NGINX Gateway Fabric, Ingress2Gateway CLI migration)
+  coredns/1-3                       DNS, CoreDNS config, debugging
+  network-policies/1-3              Ingress/egress rules, debugging
+  storage/1-3                       PV, PVC, StorageClass, dynamic provisioning (Phase 4 regen 2026-04-18)
+  troubleshooting/1-4               Cross-domain capstone series (/1 Exercise 1.2 fixed 2026-04-18; /2 and /4 regenerated 2026-04-18)
   jobs-and-cronjobs/1               Batch workloads (content complete, 2026-04-18)
   autoscaling/1                     HPA, VPA, in-place pod resize (content complete, 2026-04-18)
   statefulsets/1                    Stateful workloads (content complete, 2026-04-18)
@@ -117,9 +117,10 @@ docs/                               Audit, remediation plan, cluster setup recip
 Each topic directory contains a topic-level `README.md` that scopes the number of
 assignments and what each covers. Each assignment subdirectory contains five files:
 `prompt.md` (the generation input), `README.md` (assignment overview for the learner),
-`<topic>-tutorial.md`, `<topic>-homework.md`, `<topic>-homework-answers.md`. New
-topics scoped in Phase 3 currently have only `README.md` and `prompt.md`; the four
-content files are produced in Phase 4 of the remediation plan.
+`<topic>-tutorial.md`, `<topic>-homework.md`, `<topic>-homework-answers.md`. Every
+assignment in the corpus is content-complete as of 2026-04-19; Phase 5 (technique
+weaving) and Phase 6 (verification and housekeeping) remain as small follow-up
+work in `docs/remediation-plan.md`.
 
 ## Environment
 

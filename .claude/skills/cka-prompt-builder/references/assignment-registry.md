@@ -1,6 +1,6 @@
 # Assignment Registry
 
-**Last updated:** 2026-04-18
+**Last updated:** 2026-04-19
 
 ---
 
@@ -18,14 +18,13 @@ cross-references.
 
 ## Status Summary
 
-All 38 assignments listed below exist as content files as of 2026-04-18. Some
-are slated for regeneration against stronger quality gates (see
-`docs/remediation-plan.md` Phase 4) and the ingress-and-gateway-api topic is
-expanding from 3 to 5 assignments (see `docs/remediation-plan.md` decision D8
-and tasks P3.10-P3.15 / P4.9-P4.13). New topics planned under
-`docs/remediation-plan.md` Phase 3 (autoscaling, jobs-and-cronjobs,
-statefulsets, admission-controllers, pod-security) will appear in this
-registry once their prompts are generated.
+All 45 assignments in the corpus are content-complete as of 2026-04-18:
+
+- 38 pre-Phase-4 assignments (pods 1-7; rbac 1-2; tls-and-certificates 1-3; security-contexts 1-3; cluster-lifecycle 1-3; helm 1-3; kustomize 1-3; crds-and-operators 1-3; services 1-3; ingress-and-gateway-api 1-3 pre-restructure; coredns 1-3; network-policies 1-3; storage 1-3; troubleshooting 1-4)
+- 2 new ingress assignments (4 and 5) from the D8 restructure
+- 5 new topic assignments (autoscaling/1, jobs-and-cronjobs/1, statefulsets/1, admission-controllers/1, pod-security/1)
+
+Phase 4 completed all 19 full-assignment regens plus 3 surgical regens under the stricter quality gates. Phase 5 (technique weaving) and Phase 6 (verification and housekeeping) in `docs/remediation-plan.md` track small follow-up work.
 
 `Generation order` fields are preserved as historical record. For current
 status, see `docs/remediation-plan.md`.

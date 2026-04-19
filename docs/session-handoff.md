@@ -2,7 +2,7 @@
 
 This document explains how to continue the remediation work across Claude Code sessions. It is intended for the repo maintainer (Abe) or any future assistant resuming Phase 4 content generation.
 
-**Last updated:** 2026-04-18 (after Phase 4 assignments 1-8 of ~19 complete; surgical fixes P4.6, P4.7, P4.8 also complete)
+**Last updated:** 2026-04-18 (Phase 4 complete: all 19 full-assignment regens plus the three surgical regens P4.6, P4.7, P4.8. Phases 1-4 all closed. Remaining work: Phase 5 technique weaving and Phase 6 verification and housekeeping.)
 
 ---
 
@@ -15,7 +15,7 @@ As of 2026-04-18:
 | 1. Infrastructure fixes | Complete | typo, version pins, worktree dir, tmux commit |
 | 2. Skill asset strengthening | Complete | base-template.md, SKILL.md, cluster-setup.md, registry refresh |
 | 3. Topic scoping | Complete | 5 new topic READMEs + prompts; ingress restructured to 5 assignments with updated prompts |
-| 4. Content generation | In progress | 8 of ~19 assignments done: `jobs-and-cronjobs/assignment-1`, `pod-security/assignment-1`, `rbac/assignment-2`, `statefulsets/assignment-1`, `troubleshooting/assignment-2`, `autoscaling/assignment-1`, `admission-controllers/assignment-1`, `troubleshooting/assignment-4` |
+| 4. Content generation | Complete | All 19 full-assignment regens done plus 3 surgical regens. security-contexts/1-3, storage/1-3, ingress/1-5 closed under P4.2, P4.3, and P4.9-P4.13 on 2026-04-18 alongside the earlier completions |
 | 5. Technique weaving | Not started | kubectl debug, port-forward, scheduler profiles |
 | 6. Verification and housekeeping | Not started | cross-reference audit, final consistency sweep |
 
@@ -37,27 +37,37 @@ As of 2026-04-18:
 
 Look at `docs/remediation-plan.md` Phase 4. Tasks that are `Not started` are ready. The current completed and priority queue looks like:
 
-**Complete as of 2026-04-18:**
+**All Phase 4 tasks complete as of 2026-04-18:**
 - P3.6 fully: all five new-topic assignments content complete
 - P4.1: `rbac/assignment-2` content
+- P4.2: `security-contexts/assignment-1`, `-2`, `-3` content
+- P4.3: `storage/assignment-1`, `-2`, `-3` content (U7 duplicated-YAML finding resolved)
 - P4.4: `troubleshooting/assignment-2` content
 - P4.5: `troubleshooting/assignment-4` content
 - P4.6: `cluster-lifecycle/assignment-1` homework regen
 - P4.7: `crds-and-operators/assignment-1` Level 1 regen
 - P4.8: `troubleshooting/assignment-1` Exercise 1.2 single-failure fix
+- P4.9: `ingress-and-gateway-api/assignment-1` content with Traefik v3.6.13
+- P4.10: `ingress-and-gateway-api/assignment-2` content with HAProxy Ingress v3.2.6
+- P4.11: `ingress-and-gateway-api/assignment-3` content with Envoy Gateway v1.7.2
+- P4.12: `ingress-and-gateway-api/assignment-4` content with NGINX Gateway Fabric v2.5.1 (new)
+- P4.13: `ingress-and-gateway-api/assignment-5` content with Ingress2Gateway CLI v1.0.0 (new)
 
-**Recommended next-up priority order (any can be done independently):**
+**Next up (Phase 5 and Phase 6):**
 
-1. **Thin regenerations** (quality uplift; existing content works but does not meet new gates)
-   - `security-contexts/assignment-1`, `-2`, `-3` (P4.2)
-   - `storage/assignment-1`, `-2`, `-3` (P4.3; also addresses the duplicated-YAML U7 finding)
+1. **Phase 5 — technique weaving into existing tutorials** (small additions, Sonnet 4.6 at 200k is sufficient)
+   - P5.1: `kubectl debug` weave into `troubleshooting/assignment-1` and `/assignment-3` tutorials
+   - P5.2: `kubectl port-forward` weave into `services/assignment-1` tutorial
+   - P5.3: Scheduler profiles and multiple-schedulers content in `pods/assignment-4` (or acknowledge the thin area)
 
-2. **Ingress controller swap** (P4.9 through P4.13; largest per-assignment, new controllers per D8)
-   - `ingress-and-gateway-api/assignment-1` with Traefik v3.6.13 (P4.9)
-   - `ingress-and-gateway-api/assignment-2` with HAProxy Ingress v3.2.6 (P4.10)
-   - `ingress-and-gateway-api/assignment-3` with Envoy Gateway v1.7.2 (P4.11)
-   - `ingress-and-gateway-api/assignment-4` with NGINX Gateway Fabric v2.5.1 (P4.12)
-   - `ingress-and-gateway-api/assignment-5` with Ingress2Gateway CLI v1.0.0 (P4.13)
+2. **Phase 6 — verification and housekeeping** (mostly auditing, can be done in one focused session)
+   - P6.1: `6 of 6` typo sweep
+   - P6.2: Cross-reference audit (grep for `exercises/X/assignment-Y`)
+   - P6.3: Audit all README shapes against the 9-section canonical
+   - P6.4: Audit tutorials against the E3 standard (per-field documentation)
+   - P6.5: Audit answer keys against the three-stage debugging structure
+   - P6.6: Final `cka-homework-plan.md` coverage matrix update
+   - P6.7: Final `docs/audit-findings.md` status sweep (already in progress)
 
 ### Step 3: Follow the generation workflow
 
@@ -126,20 +136,23 @@ Do not push through context exhaustion; the quality of later work degrades and m
 
 ## Reference quality bar
 
-When generating new Phase 4 content, read one of the completed reference assignments first so the style is fresh in context. All of these demonstrate the full set of Phase 2 hard gates:
+When generating any new content (Phase 5 weaving or Phase 6 audits), read one of the reference assignments first so the style is fresh in context. All of these demonstrate the full set of Phase 2 hard gates:
 
-- `exercises/pods/assignment-1/` — the hand-crafted original; the narrative bar for tutorials
-- `exercises/rbac/assignment-1/` — hand-crafted; the narrative bar for RBAC and subject-oriented topics
-- `exercises/jobs-and-cronjobs/assignment-1/` — skill-generated under the new hard gates; workload-controller topic
-- `exercises/pod-security/assignment-1/` — skill-generated under the new hard gates; admission-style topic
-- `exercises/rbac/assignment-2/` — skill-generated under the new hard gates; cluster-scoped authorization topic; demonstrates the three-stage debugging structure on silent-failure RBAC bugs
-- `exercises/statefulsets/assignment-1/` — skill-generated under the new hard gates; workload-controller topic with rich tutorial narrative on scope-matrix failures and staged rollouts
-- `exercises/troubleshooting/assignment-2/` — skill-generated under the new hard gates; all-debug troubleshooting topic (control plane) with kind-specific inside-the-node workflows, the canonical reference for a "15 debug exercises" shape
-- `exercises/autoscaling/assignment-1/` — skill-generated under the new hard gates; mixes build, debug, and design exercises around a controller that depends on a live observable signal (metrics-server)
-- `exercises/admission-controllers/assignment-1/` — skill-generated under the new hard gates; request-flow-and-CEL topic with ValidatingAdmissionPolicy authoring plus multi-bug debug
-- `exercises/troubleshooting/assignment-4/` — skill-generated under the new hard gates; all-debug network troubleshooting organized around a six-layer diagnostic playbook
+**Hand-crafted originals (canonical references):**
+- `exercises/pods/assignment-1/` — narrative bar for tutorials; defaults and failure modes taught in prose
+- `exercises/rbac/assignment-1/` — subject-oriented topic; narrative bar for auth-vs-authz
 
-Pick whichever is most shape-adjacent to the assignment being generated. For ingress assignments, `troubleshooting/assignment-4` is the nearest networking shape. For security-contexts (P4.2), `pod-security/assignment-1` is the nearest admission/enforcement shape. For storage (P4.3), `statefulsets/assignment-1` is the nearest volume-centric shape. For RBAC-style authorization topics, `rbac/assignment-2` is the exemplar. For workload-controller topics, `jobs-and-cronjobs/assignment-1` and `statefulsets/assignment-1` are the shape. For autoscaling or other controller topics depending on metrics-server, `autoscaling/assignment-1` is the reference. For all-debug topics, `troubleshooting/assignment-2` (control plane) and `troubleshooting/assignment-4` (network) are the shape.
+**Phase 4 skill-generated (all 19 meet the same bar):**
+- Workload controllers: `jobs-and-cronjobs/1`, `statefulsets/1`
+- Autoscaling: `autoscaling/1` (metrics-server-dependent signal)
+- Admission: `admission-controllers/1` (CEL + ValidatingAdmissionPolicy), `pod-security/1` (PSA)
+- RBAC: `rbac/2` (cluster-scoped)
+- Security contexts: `security-contexts/1` (identity), `/2` (capabilities), `/3` (seccomp + read-only root)
+- Storage: `storage/1` (PVs), `/2` (PVCs + binding), `/3` (StorageClasses + dynamic provisioning)
+- Ingress and Gateway API: `ingress-and-gateway-api/1` (Traefik), `/2` (HAProxy + TLS), `/3` (Envoy Gateway), `/4` (NGINX Gateway Fabric), `/5` (migration)
+- Troubleshooting: `troubleshooting/2` (control plane), `/4` (network)
+
+Pick whichever is most shape-adjacent. For the Phase 5 `kubectl debug` weave, `troubleshooting/assignment-2` is the nearest shape for ephemeral-container workflows. For the Phase 5 `port-forward` weave, `services/assignment-1` is the target itself.
 
 ---
 
@@ -189,8 +202,10 @@ Tick every item before marking a task Complete.
 
 ## Summary
 
-Eight full assignments complete out of roughly 19 in Phase 4, plus three surgical regens (P4.6 cluster-lifecycle/1 homework, P4.7 crds-and-operators/1 Level 1, P4.8 troubleshooting/1 Exercise 1.2). All five new-topic curriculum gaps (G1, G2, G3, G5, G6) resolved; all stub READMEs (P4.1, P4.4, P4.5) regenerated. Remaining Phase 4 work: P4.2 (security-contexts/1-3), P4.3 (storage/1-3), and P4.9-P4.13 (ingress controller swap, five assignments). Each full assignment takes 20-30% of a 1M context window; plan on 2-3 assignments per session with Opus 4.7 1M. Smaller fixes (Phase 5 technique weaving, targeted homework-only regenerations) fit comfortably on Sonnet 4.6 at 200k.
+Phase 4 is complete. All 19 full-assignment regens plus the 3 surgical regens are done. All five new-topic curriculum gaps (G1, G2, G3, G5, G6) are closed. All stub READMEs (P4.1, P4.4, P4.5) are regenerated. All thin tutorials (P4.2 security-contexts, P4.3 storage) are rewritten under the Phase 2 quality gates, with the U7 duplicated-YAML finding resolved in storage/1-3. All five ingress assignments are regenerated under the D8 controller-diversity restructure (Traefik, HAProxy Ingress, Envoy Gateway, NGINX Gateway Fabric, Ingress2Gateway CLI).
 
-The reference quality bar is set by the eight skill-generated Phase 4 assignments above plus the two hand-crafted originals (`pods/assignment-1`, `rbac/assignment-1`). Future Phase 4 output must meet the same bar.
+Remaining work: Phase 5 technique weaving (3 small tasks: `kubectl debug`, `kubectl port-forward`, scheduler profiles) and Phase 6 verification and housekeeping (7 audit tasks). Neither phase requires new full-assignment generation; all fits comfortably on Sonnet 4.6 at 200k context.
+
+The reference quality bar is set by the 19 skill-generated Phase 4 assignments plus the two hand-crafted originals (`pods/assignment-1`, `rbac/assignment-1`). Any future content work must meet the same bar.
 
 Doc sync is not optional: update `remediation-plan.md` and `audit-findings.md` in the same commit as each content task to avoid the drift that required the 2026-04-18 doc-sync pass.

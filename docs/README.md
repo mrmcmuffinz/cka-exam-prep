@@ -28,7 +28,7 @@ in a later session without losing context.
 
 ## Phase completion status
 
-As of 2026-04-18:
+As of 2026-04-19:
 
 - **Phase 1 (Infrastructure fixes):** Complete.
 - **Phase 2 (Skill asset strengthening):** Complete. `base-template.md` and
@@ -40,9 +40,9 @@ As of 2026-04-18:
   `autoscaling/`, `statefulsets/`, `admission-controllers/`, and
   `pod-security/`. The `ingress-and-gateway-api/` topic is restructured from
   three to five assignments.
-- **Phase 4 (Content generation and regeneration):** In progress. Eight full assignments content-complete (`jobs-and-cronjobs/assignment-1`, `pod-security/assignment-1`, `rbac/assignment-2`, `statefulsets/assignment-1`, `troubleshooting/assignment-2`, `autoscaling/assignment-1`, `admission-controllers/assignment-1`, `troubleshooting/assignment-4`). Three surgical regens complete (P4.6 cluster-lifecycle/assignment-1 homework, P4.7 crds-and-operators/assignment-1 Level 1, P4.8 troubleshooting/assignment-1 Exercise 1.2). All five new-topic curriculum gaps (G1, G2, G3, G5, G6) resolved; all stub READMEs (P4.1, P4.4, P4.5) regenerated. Remaining Phase 4 work: thin regens for `security-contexts/` (P4.2; three assignments) and `storage/` (P4.3; three assignments), plus the ingress controller swap (P4.9 through P4.13; five assignments). See `session-handoff.md` for the priority queue and resume instructions.
-- **Phase 5 (Technique weaving):** Not started.
-- **Phase 6 (Verification and housekeeping):** Not started.
+- **Phase 4 (Content generation and regeneration):** Complete as of 2026-04-18. All 19 full-assignment regens are content-complete: `jobs-and-cronjobs/1`, `pod-security/1`, `rbac/2`, `statefulsets/1`, `troubleshooting/2`, `autoscaling/1`, `admission-controllers/1`, `troubleshooting/4`, `security-contexts/1-3`, `storage/1-3`, `ingress-and-gateway-api/1-5`. Three surgical regens complete (P4.6 cluster-lifecycle/1 homework, P4.7 crds-and-operators/1 Level 1, P4.8 troubleshooting/1 Exercise 1.2). All five new-topic curriculum gaps (G1, G2, G3, G5, G6) resolved. All stub READMEs regenerated. U7 duplicated-YAML finding resolved in storage/1-3. Ingress series fully converted to the D8 controller-diversity structure (Traefik, HAProxy Ingress, Envoy Gateway, NGINX Gateway Fabric, Ingress2Gateway CLI).
+- **Phase 5 (Technique weaving):** Not started. Three small tasks: `kubectl debug` into troubleshooting tutorials; `kubectl port-forward` into services tutorial; scheduler profiles into pods scheduling tutorial.
+- **Phase 6 (Verification and housekeeping):** Not started. Seven audit tasks for final consistency.
 
 See `remediation-plan.md` for task-level detail.
 

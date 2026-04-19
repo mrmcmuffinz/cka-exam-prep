@@ -58,13 +58,13 @@ cka-exam-prep/
     ├── pods/                          # Pod-focused series (Assignments 1-7, content complete)
     ├── rbac/                          # RBAC namespace-scoped and cluster-scoped (1-2, content complete)
     ├── tls-and-certificates/          # K8s PKI, cert creation, Certificates API (1-3, content complete)
-    ├── security-contexts/             # runAsUser, capabilities, seccomp, fsGroup (1-3, content complete)
+    ├── security-contexts/             # Identity, capabilities, seccomp + readOnlyRootFilesystem (1-3, content complete)
     ├── cluster-lifecycle/             # kubeadm, upgrades, etcd backup/restore (1-3, content complete)
     ├── helm/                          # Chart install, upgrade, rollback, values (1-3, content complete)
     ├── kustomize/                     # Overlays, patches, transformers, components (1-3, content complete)
     ├── crds-and-operators/            # CRDs, custom resources, operator pattern (1-3, content complete)
     ├── services/                      # ClusterIP, NodePort, LoadBalancer, endpoints (1-3, content complete)
-    ├── ingress-and-gateway-api/       # Ingress v1 and Gateway API with controller diversity (1-5; 1-3 content complete, 4-5 pending)
+    ├── ingress-and-gateway-api/       # Ingress v1 and Gateway API with controller diversity (1-5, content complete; Traefik, HAProxy Ingress, Envoy Gateway, NGINX Gateway Fabric, Ingress2Gateway CLI migration)
     ├── coredns/                       # DNS resolution, CoreDNS config, debugging (1-3, content complete)
     ├── network-policies/              # Ingress/egress rules, namespace isolation (1-3, content complete)
     ├── storage/                       # PV, PVC, StorageClass, dynamic provisioning (1-3, content complete)
@@ -76,7 +76,7 @@ cka-exam-prep/
     └── pod-security/                  # Pod Security Standards and Pod Security Admission (1, content complete)
 ```
 
-"Content complete" means the four content files (README, tutorial, homework, answers) exist. Some content-complete assignments are queued for regeneration against stricter quality gates per `docs/remediation-plan.md` Phase 4.
+"Content complete" means the four content files (README, tutorial, homework, answers) exist. As of 2026-04-19, every assignment in the corpus is content-complete. Phase 5 (technique weaving) and Phase 6 (verification and housekeeping) in `docs/remediation-plan.md` track small follow-up work.
 
 Each topic directory contains a topic-level `README.md` that explains why the topic has its number of assignments, what each one covers, scope boundaries, cluster requirements, and recommended order. This is the scoping document that determines how a topic is decomposed before any assignment content is generated.
 
