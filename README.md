@@ -55,26 +55,26 @@ cka-exam-prep/
 │           └── references/
 │               └── base-template.md   # Structural conventions with hard gates
 │
-└── exercises/
-    ├── pods/                          # Pod-focused series (Assignments 1-7, content complete)
-    ├── rbac/                          # RBAC namespace-scoped and cluster-scoped (1-2, content complete)
-    ├── tls-and-certificates/          # K8s PKI, cert creation, Certificates API (1-3, content complete)
-    ├── security-contexts/             # Identity, capabilities, seccomp + readOnlyRootFilesystem (1-3, content complete)
-    ├── cluster-lifecycle/             # kubeadm, upgrades, etcd backup/restore (1-3, content complete)
-    ├── helm/                          # Chart install, upgrade, rollback, values (1-3, content complete)
-    ├── kustomize/                     # Overlays, patches, transformers, components (1-3, content complete)
-    ├── crds-and-operators/            # CRDs, custom resources, operator pattern (1-3, content complete)
-    ├── services/                      # ClusterIP, NodePort, LoadBalancer, endpoints (1-3, content complete)
-    ├── ingress-and-gateway-api/       # Ingress v1 and Gateway API with controller diversity (1-5, content complete; Traefik, HAProxy Ingress, Envoy Gateway, NGINX Gateway Fabric, Ingress2Gateway CLI migration)
-    ├── coredns/                       # DNS resolution, CoreDNS config, debugging (1-3, content complete)
-    ├── network-policies/              # Ingress/egress rules, namespace isolation (1-3, content complete)
-    ├── storage/                       # PV, PVC, StorageClass, dynamic provisioning (1-3, content complete)
-    ├── troubleshooting/               # Cross-domain capstone series (1-4, content complete)
-    ├── jobs-and-cronjobs/             # Batch workloads (1, content complete)
-    ├── autoscaling/                   # HPA, VPA concepts, in-place pod resize (1, content complete)
-    ├── statefulsets/                  # Stateful workloads (1, content complete)
-    ├── admission-controllers/         # Built-ins and ValidatingAdmissionPolicy (1, content complete)
-    └── pod-security/                  # Pod Security Standards and Pod Security Admission (1, content complete)
+└── exercises/                         # Numbered by recommended study order (see LEARNING_PATH.md)
+    ├── 01-pods/                       # Pod-focused series (Assignments 1-7)
+    ├── 02-jobs-and-cronjobs/          # Batch workloads (1)
+    ├── 03-statefulsets/               # Stateful workloads (1)
+    ├── 04-autoscaling/                # HPA, VPA concepts, in-place pod resize (1)
+    ├── 05-helm/                       # Chart install, upgrade, rollback, values (1-3)
+    ├── 06-kustomize/                  # Overlays, patches, transformers, components (1-3)
+    ├── 07-storage/                    # PV, PVC, StorageClass, dynamic provisioning (1-3)
+    ├── 08-services/                   # ClusterIP, NodePort, LoadBalancer, endpoints (1-3)
+    ├── 09-coredns/                    # DNS resolution, CoreDNS config, debugging (1-3)
+    ├── 10-network-policies/           # Ingress/egress rules, namespace isolation (1-3)
+    ├── 11-ingress-and-gateway-api/    # Ingress v1 and Gateway API (1-5)
+    ├── 12-rbac/                       # RBAC namespace-scoped and cluster-scoped (1-2)
+    ├── 13-security-contexts/          # Identity, capabilities, seccomp (1-3)
+    ├── 14-pod-security/               # Pod Security Standards and PSA (1)
+    ├── 15-crds-and-operators/         # CRDs, custom resources, operator pattern (1-3)
+    ├── 16-admission-controllers/      # Built-ins and ValidatingAdmissionPolicy (1)
+    ├── 17-cluster-lifecycle/          # kubeadm, upgrades, etcd backup/restore (1-3)
+    ├── 18-tls-and-certificates/       # K8s PKI, cert creation, Certificates API (1-3)
+    └── 19-troubleshooting/            # Cross-domain capstone series (1-4)
 ```
 
 "Content complete" means the four content files (README, tutorial, homework, answers) exist. As of 2026-04-19, every assignment in the corpus is content-complete. All six remediation phases are complete and the plan is closed.
@@ -139,7 +139,7 @@ The cluster setup command for a single-node kind cluster is:
 KIND_EXPERIMENTAL_PROVIDER=nerdctl kind create cluster
 ```
 
-The multi-node setup required from Assignment 4 onward uses a kind config file and is documented in `exercises/pods/assignment-4/README.md`.
+The multi-node setup required from Assignment 4 onward uses a kind config file and is documented in `exercises/01-pods/assignment-4/README.md`.
 
 ## License
 

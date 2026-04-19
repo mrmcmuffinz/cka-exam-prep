@@ -65,10 +65,10 @@ Skills are invoked using the `/` prefix in Claude Code:
 Example workflow:
 ```
 User: "Scope out the Network Policies topic"
-→ /cka-prompt-builder reads references, produces exercises/network-policies/README.md
+→ /cka-prompt-builder reads references, produces exercises/10-network-policies/README.md
 
 User: "Generate prompt for Network Policies assignment 1"
-→ /cka-prompt-builder produces exercises/network-policies/assignment-1/prompt.md
+→ /cka-prompt-builder produces exercises/10-network-policies/assignment-1/prompt.md
 
 User: "Generate the assignment from that prompt"
 → /k8s-homework-generator produces the 4 content files
@@ -92,26 +92,26 @@ User: "Generate the assignment from that prompt"
 ## Directory Structure
 
 ```
-exercises/                          All homework assignments (content state as of 2026-04-19; all 45 assignments content-complete)
-  pods/assignment-1/ through 7/     Pod-focused series
-  rbac/assignment-1/ and 2/         RBAC namespace- and cluster-scoped
-  tls-and-certificates/1-3          K8s PKI, cert creation, Certificates API
-  security-contexts/1-3             Identity, capabilities, seccomp + readOnlyRootFilesystem (Phase 4 regen 2026-04-18)
-  cluster-lifecycle/1-3             kubeadm, upgrades, etcd (/1 homework regenerated 2026-04-18)
-  helm/1-3                          Chart install, upgrade, rollback, templates
-  kustomize/1-3                     Overlays, patches, transformers
-  crds-and-operators/1-3            CRDs, custom resources, operators (/1 Level 1 regenerated 2026-04-18)
-  services/1-3                      ClusterIP, NodePort, LoadBalancer, patterns
-  ingress-and-gateway-api/1-5       Ingress v1 and Gateway API with controller diversity per D8 (Phase 4 regen 2026-04-18; Traefik, HAProxy Ingress, Envoy Gateway, NGINX Gateway Fabric, Ingress2Gateway CLI migration)
-  coredns/1-3                       DNS, CoreDNS config, debugging
-  network-policies/1-3              Ingress/egress rules, debugging
-  storage/1-3                       PV, PVC, StorageClass, dynamic provisioning (Phase 4 regen 2026-04-18)
-  troubleshooting/1-4               Cross-domain capstone series (/1 Exercise 1.2 fixed 2026-04-18; /2 and /4 regenerated 2026-04-18)
-  jobs-and-cronjobs/1               Batch workloads (content complete, 2026-04-18)
-  autoscaling/1                     HPA, VPA, in-place pod resize (content complete, 2026-04-18)
-  statefulsets/1                    Stateful workloads (content complete, 2026-04-18)
-  admission-controllers/1           Built-ins and ValidatingAdmissionPolicy (content complete, 2026-04-18)
-  pod-security/1                    Pod Security Standards and PSA (content complete, 2026-04-18)
+exercises/                          Numbered by recommended study order (see LEARNING_PATH.md)
+  01-pods/1-7                       Pod-focused series
+  02-jobs-and-cronjobs/1            Batch workloads
+  03-statefulsets/1                 Stateful workloads
+  04-autoscaling/1                  HPA, VPA, in-place pod resize
+  05-helm/1-3                       Chart install, upgrade, rollback, templates
+  06-kustomize/1-3                  Overlays, patches, transformers
+  07-storage/1-3                    PV, PVC, StorageClass, dynamic provisioning
+  08-services/1-3                   ClusterIP, NodePort, LoadBalancer, patterns
+  09-coredns/1-3                    DNS, CoreDNS config, debugging
+  10-network-policies/1-3           Ingress/egress rules, debugging
+  11-ingress-and-gateway-api/1-5    Ingress v1 and Gateway API with controller diversity
+  12-rbac/1-2                       RBAC namespace- and cluster-scoped
+  13-security-contexts/1-3          Identity, capabilities, seccomp + readOnlyRootFilesystem
+  14-pod-security/1                 Pod Security Standards and PSA
+  15-crds-and-operators/1-3         CRDs, custom resources, operators
+  16-admission-controllers/1        Built-ins and ValidatingAdmissionPolicy
+  17-cluster-lifecycle/1-3          kubeadm, upgrades, etcd
+  18-tls-and-certificates/1-3       K8s PKI, cert creation, Certificates API
+  19-troubleshooting/1-4            Cross-domain capstone series
 
 .claude/skills/                     Claude Code skills for assignment generation
 docs/                               Audit, remediation plan, cluster setup recipes
@@ -170,7 +170,7 @@ phases are complete and the plan is closed.
 
 The pod series (assignments 1-7) and RBAC assignment-1 were generated before the skills
 existed, using standalone prompts. They follow the conventions the skills now encode
-and are the reference quality bar: `pods/assignment-1` is named in `base-template.md`
+and are the reference quality bar: `01-pods/assignment-1` is named in `base-template.md`
 as the canonical reference for README shape, tutorial narrative style, and answer-key
 debugging structure. Do not regenerate these through the skills.
 
@@ -178,7 +178,7 @@ All 19 Phase 4 skill-generated assignments (security-contexts/1-3, storage/1-3,
 ingress-and-gateway-api/1-5, plus the earlier batch: rbac/2, jobs-and-cronjobs/1,
 autoscaling/1, statefulsets/1, admission-controllers/1, pod-security/1,
 troubleshooting/2, troubleshooting/4) now satisfy the same hard gates that
-`pods/assignment-1` set. They are additional reference examples of what the
+`01-pods/assignment-1` set. They are additional reference examples of what the
 quality bar looks like when applied by the skill. The remaining skill-generated
 assignments (helm/1-3, kustomize/1-3, crds-and-operators/1-3, tls-and-
 certificates/1-3, cluster-lifecycle/1-3, services/1-3, coredns/1-3,

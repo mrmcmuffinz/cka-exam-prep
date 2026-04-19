@@ -41,7 +41,7 @@ plus its `prompt.md` input.
   (1-3), storage (1-3), services (1-3), coredns (1-3), network-policies (1-3),
   ingress-and-gateway-api (1-3 as originally scoped), helm (1-3), kustomize
   (1-3), and troubleshooting (1-4).
-- **Ingress expansion (D8, +2):** `ingress-and-gateway-api/assignment-4`
+- **Ingress expansion (D8, +2):** `11-ingress-and-gateway-api/assignment-4`
   (NGINX Gateway Fabric) and `assignment-5` (Ingress2Gateway migration). The
   topic is now 5 assignments covering controller diversity: Traefik, HAProxy
   Ingress, Envoy Gateway, NGINX Gateway Fabric, plus the migration capstone.
@@ -82,44 +82,44 @@ column indicated when the relevant course material had been covered.
 
 | Order | Assignment | Unlocked After | Dependencies |
 |---|---|---|---|
-| 1 | cluster-lifecycle/assignment-1 | Day 6 (S6 complete) | None (kind cluster sufficient for exercises) |
-| 2 | cluster-lifecycle/assignment-2 | Day 6 (S6 complete) | cluster-lifecycle/assignment-1 |
-| 3 | cluster-lifecycle/assignment-3 | Day 6 (S6 complete) | cluster-lifecycle/assignment-2 (etcd builds on maintenance workflows) |
-| 4 | tls-and-certificates/assignment-1 | Day 6 (S7 partial, through KubeConfig) | cluster-lifecycle/assignment-1 (cert concepts build on cluster PKI) |
-| 5 | tls-and-certificates/assignment-2 | Day 6 (S7 partial) | tls-and-certificates/assignment-1 (Certificates API builds on manual cert creation) |
-| 6 | tls-and-certificates/assignment-3 | Day 6 (S7 partial) | tls-and-certificates/assignment-2 (troubleshooting builds on both manual and API workflows) |
-| 7 | rbac/assignment-2 | Day 7 (S7, RBAC section complete) | rbac/assignment-1 (namespace-scoped RBAC as prerequisite), tls-and-certificates/assignment-2 (cert-based auth) |
-| 8 | security-contexts/assignment-1 | Day 7 (S7, security contexts section) | pods/assignment-1, pods/assignment-2 (pod spec and volume fundamentals) |
-| 9 | security-contexts/assignment-2 | Day 7 (S7, security contexts section) | security-contexts/assignment-1 (capabilities build on user/group foundation) |
-| 10 | security-contexts/assignment-3 | Day 7 (S7, security contexts section) | security-contexts/assignment-2 (filesystem constraints complete the security picture) |
-| 11 | crds-and-operators/assignment-1 | Day 8 (S7 complete) | None (CRD authoring is foundational) |
-| 12 | crds-and-operators/assignment-2 | Day 8 (S7 complete) | crds-and-operators/assignment-1 (custom resources build on CRD foundation) |
-| 13 | crds-and-operators/assignment-3 | Day 8 (S7 complete) | crds-and-operators/assignment-2 (operators consume custom resources) |
-| 14 | storage/assignment-1 | Day 8 (S8 complete) | None (PV creation is foundational) |
-| 15 | storage/assignment-2 | Day 8 (S8 complete) | storage/assignment-1 (PVCs build on PV foundation) |
-| 16 | storage/assignment-3 | Day 8 (S8 complete) | storage/assignment-2 (StorageClass automates provisioning) |
-| 17 | services/assignment-1 | Day 9 (S9 partial) | pods/assignment-7 (needs Deployments for service targets) |
-| 18 | services/assignment-2 | Day 9 (S9 partial) | services/assignment-1 (external types build on ClusterIP foundation) |
-| 19 | services/assignment-3 | Day 9 (S9 partial) | services/assignment-2 (advanced patterns build on all service types) |
-| 20 | coredns/assignment-1 | Day 10 (S9 complete) | services/assignment-1 (DNS resolves service names) |
-| 21 | coredns/assignment-2 | Day 10 (S9 complete) | coredns/assignment-1 (configuration builds on DNS usage) |
-| 22 | coredns/assignment-3 | Day 10 (S9 complete) | coredns/assignment-2 (troubleshooting applies configuration knowledge) |
-| 23 | network-policies/assignment-1 | Day 10 (S9 complete) | services/assignment-1 (policies filter traffic to/from services) |
-| 24 | network-policies/assignment-2 | Day 10 (S9 complete) | network-policies/assignment-1 (advanced selectors build on fundamentals) |
-| 25 | network-policies/assignment-3 | Day 10 (S9 complete) | network-policies/assignment-2 (debugging applies advanced pattern knowledge) |
-| 26 | ingress-and-gateway-api/assignment-1 | Day 10 (S9 complete) | services/assignment-1 (Ingress routes to backend services) |
-| 27 | ingress-and-gateway-api/assignment-2 | Day 10 (S9 complete) | ingress-and-gateway-api/assignment-1 (TLS builds on basic Ingress) |
-| 28 | ingress-and-gateway-api/assignment-3 | Day 10 (S9 complete) | ingress-and-gateway-api/assignment-2 (Gateway API is next-generation approach) |
-| 29 | helm/assignment-1 | Day 11 (S12 complete) | None (chart consumption is foundational) |
-| 30 | helm/assignment-2 | Day 11 (S12 complete) | helm/assignment-1 (lifecycle builds on installation) |
-| 31 | helm/assignment-3 | Day 11 (S12 complete) | helm/assignment-2 (templates and debugging build on lifecycle mastery) |
-| 32 | kustomize/assignment-1 | Day 12 (S13 complete) | None (basic kustomization is foundational) |
-| 33 | kustomize/assignment-2 | Day 12 (S13 complete) | kustomize/assignment-1 (patches build on fundamentals) |
-| 34 | kustomize/assignment-3 | Day 12 (S13 complete) | kustomize/assignment-2 (overlays use patches) |
-| 35 | troubleshooting/assignment-1 | Day 13 (S14 complete) | All previous assignments (cross-domain application troubleshooting) |
-| 36 | troubleshooting/assignment-2 | Day 13 (S14 complete) | cluster-lifecycle, tls-and-certificates (control plane concepts) |
-| 37 | troubleshooting/assignment-3 | Day 13 (S14 complete) | cluster-lifecycle (node management concepts) |
-| 38 | troubleshooting/assignment-4 | Day 13 (S14 complete) | services, coredns, network-policies (network troubleshooting combines all networking topics) |
+| 1 | 17-cluster-lifecycle/assignment-1 | Day 6 (S6 complete) | None (kind cluster sufficient for exercises) |
+| 2 | 17-cluster-lifecycle/assignment-2 | Day 6 (S6 complete) | 17-cluster-lifecycle/assignment-1 |
+| 3 | 17-cluster-lifecycle/assignment-3 | Day 6 (S6 complete) | 17-cluster-lifecycle/assignment-2 (etcd builds on maintenance workflows) |
+| 4 | 18-tls-and-certificates/assignment-1 | Day 6 (S7 partial, through KubeConfig) | 17-cluster-lifecycle/assignment-1 (cert concepts build on cluster PKI) |
+| 5 | 18-tls-and-certificates/assignment-2 | Day 6 (S7 partial) | 18-tls-and-certificates/assignment-1 (Certificates API builds on manual cert creation) |
+| 6 | 18-tls-and-certificates/assignment-3 | Day 6 (S7 partial) | 18-tls-and-certificates/assignment-2 (troubleshooting builds on both manual and API workflows) |
+| 7 | 12-rbac/assignment-2 | Day 7 (S7, RBAC section complete) | 12-rbac/assignment-1 (namespace-scoped RBAC as prerequisite), 18-tls-and-certificates/assignment-2 (cert-based auth) |
+| 8 | 13-security-contexts/assignment-1 | Day 7 (S7, security contexts section) | 01-pods/assignment-1, 01-pods/assignment-2 (pod spec and volume fundamentals) |
+| 9 | 13-security-contexts/assignment-2 | Day 7 (S7, security contexts section) | 13-security-contexts/assignment-1 (capabilities build on user/group foundation) |
+| 10 | 13-security-contexts/assignment-3 | Day 7 (S7, security contexts section) | 13-security-contexts/assignment-2 (filesystem constraints complete the security picture) |
+| 11 | 15-crds-and-operators/assignment-1 | Day 8 (S7 complete) | None (CRD authoring is foundational) |
+| 12 | 15-crds-and-operators/assignment-2 | Day 8 (S7 complete) | 15-crds-and-operators/assignment-1 (custom resources build on CRD foundation) |
+| 13 | 15-crds-and-operators/assignment-3 | Day 8 (S7 complete) | 15-crds-and-operators/assignment-2 (operators consume custom resources) |
+| 14 | 07-storage/assignment-1 | Day 8 (S8 complete) | None (PV creation is foundational) |
+| 15 | 07-storage/assignment-2 | Day 8 (S8 complete) | 07-storage/assignment-1 (PVCs build on PV foundation) |
+| 16 | 07-storage/assignment-3 | Day 8 (S8 complete) | 07-storage/assignment-2 (StorageClass automates provisioning) |
+| 17 | 08-services/assignment-1 | Day 9 (S9 partial) | 01-pods/assignment-7 (needs Deployments for service targets) |
+| 18 | 08-services/assignment-2 | Day 9 (S9 partial) | 08-services/assignment-1 (external types build on ClusterIP foundation) |
+| 19 | 08-services/assignment-3 | Day 9 (S9 partial) | 08-services/assignment-2 (advanced patterns build on all service types) |
+| 20 | 09-coredns/assignment-1 | Day 10 (S9 complete) | 08-services/assignment-1 (DNS resolves service names) |
+| 21 | 09-coredns/assignment-2 | Day 10 (S9 complete) | 09-coredns/assignment-1 (configuration builds on DNS usage) |
+| 22 | 09-coredns/assignment-3 | Day 10 (S9 complete) | 09-coredns/assignment-2 (troubleshooting applies configuration knowledge) |
+| 23 | 10-network-policies/assignment-1 | Day 10 (S9 complete) | 08-services/assignment-1 (policies filter traffic to/from services) |
+| 24 | 10-network-policies/assignment-2 | Day 10 (S9 complete) | 10-network-policies/assignment-1 (advanced selectors build on fundamentals) |
+| 25 | 10-network-policies/assignment-3 | Day 10 (S9 complete) | 10-network-policies/assignment-2 (debugging applies advanced pattern knowledge) |
+| 26 | 11-ingress-and-gateway-api/assignment-1 | Day 10 (S9 complete) | 08-services/assignment-1 (Ingress routes to backend services) |
+| 27 | 11-ingress-and-gateway-api/assignment-2 | Day 10 (S9 complete) | 11-ingress-and-gateway-api/assignment-1 (TLS builds on basic Ingress) |
+| 28 | 11-ingress-and-gateway-api/assignment-3 | Day 10 (S9 complete) | 11-ingress-and-gateway-api/assignment-2 (Gateway API is next-generation approach) |
+| 29 | 05-helm/assignment-1 | Day 11 (S12 complete) | None (chart consumption is foundational) |
+| 30 | 05-helm/assignment-2 | Day 11 (S12 complete) | 05-helm/assignment-1 (lifecycle builds on installation) |
+| 31 | 05-helm/assignment-3 | Day 11 (S12 complete) | 05-helm/assignment-2 (templates and debugging build on lifecycle mastery) |
+| 32 | 06-kustomize/assignment-1 | Day 12 (S13 complete) | None (basic kustomization is foundational) |
+| 33 | 06-kustomize/assignment-2 | Day 12 (S13 complete) | 06-kustomize/assignment-1 (patches build on fundamentals) |
+| 34 | 06-kustomize/assignment-3 | Day 12 (S13 complete) | 06-kustomize/assignment-2 (overlays use patches) |
+| 35 | 19-troubleshooting/assignment-1 | Day 13 (S14 complete) | All previous assignments (cross-domain application troubleshooting) |
+| 36 | 19-troubleshooting/assignment-2 | Day 13 (S14 complete) | cluster-lifecycle, tls-and-certificates (control plane concepts) |
+| 37 | 19-troubleshooting/assignment-3 | Day 13 (S14 complete) | cluster-lifecycle (node management concepts) |
+| 38 | 19-troubleshooting/assignment-4 | Day 13 (S14 complete) | services, coredns, network-policies (network troubleshooting combines all networking topics) |
 
 ---
 

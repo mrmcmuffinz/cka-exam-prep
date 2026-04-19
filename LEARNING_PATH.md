@@ -26,22 +26,22 @@ This phase establishes the foundation for everything else. Pods are the atomic u
 
 | Order | Assignment | Focus |
 |---|---|---|
-| 1 | pods/assignment-1 | Pod spec fundamentals, containers, commands, env vars, restart policy |
-| 2 | pods/assignment-2 | ConfigMaps, Secrets, volume mounts, projected volumes, downward API |
-| 3 | pods/assignment-3 | Liveness, readiness, startup probes, lifecycle hooks, termination |
-| 4 | pods/assignment-4 | Scheduling: nodeSelector, affinity, taints, tolerations, topology spread |
-| 5 | pods/assignment-5 | Resources: requests, limits, QoS classes, LimitRange, ResourceQuota |
-| 6 | pods/assignment-6 | Multi-container patterns: sidecar, ambassador, adapter, native sidecars |
-| 7 | pods/assignment-7 | Controllers: ReplicaSets, Deployments, rollouts, rollbacks, DaemonSets |
+| 1 | 01-pods/assignment-1 | Pod spec fundamentals, containers, commands, env vars, restart policy |
+| 2 | 01-pods/assignment-2 | ConfigMaps, Secrets, volume mounts, projected volumes, downward API |
+| 3 | 01-pods/assignment-3 | Liveness, readiness, startup probes, lifecycle hooks, termination |
+| 4 | 01-pods/assignment-4 | Scheduling: nodeSelector, affinity, taints, tolerations, topology spread |
+| 5 | 01-pods/assignment-5 | Resources: requests, limits, QoS classes, LimitRange, ResourceQuota |
+| 6 | 01-pods/assignment-6 | Multi-container patterns: sidecar, ambassador, adapter, native sidecars |
+| 7 | 01-pods/assignment-7 | Controllers: ReplicaSets, Deployments, rollouts, rollbacks, DaemonSets |
 
 **Progress:**
-- [ ] pods/assignment-1
-- [ ] pods/assignment-2
-- [ ] pods/assignment-3
-- [ ] pods/assignment-4 (requires multi-node cluster from this point)
-- [ ] pods/assignment-5
-- [ ] pods/assignment-6
-- [ ] pods/assignment-7
+- [ ] 01-pods/assignment-1
+- [ ] 01-pods/assignment-2
+- [ ] 01-pods/assignment-3
+- [ ] 01-pods/assignment-4 (requires multi-node cluster from this point)
+- [ ] 01-pods/assignment-5
+- [ ] 01-pods/assignment-6
+- [ ] 01-pods/assignment-7
 
 ---
 
@@ -56,14 +56,14 @@ Beyond Deployments and DaemonSets (covered in Phase 1), Kubernetes has specializ
 
 | Order | Assignment | Focus |
 |---|---|---|
-| 8 | jobs-and-cronjobs/assignment-1 | Jobs, CronJobs, completions, parallelism, backoff limits |
-| 9 | statefulsets/assignment-1 | StatefulSets, stable identity, ordered deployment, headless services |
-| 10 | autoscaling/assignment-1 | HPA, VPA concepts, in-place pod resize |
+| 8 | 02-jobs-and-cronjobs/assignment-1 | Jobs, CronJobs, completions, parallelism, backoff limits |
+| 9 | 03-statefulsets/assignment-1 | StatefulSets, stable identity, ordered deployment, headless services |
+| 10 | 04-autoscaling/assignment-1 | HPA, VPA concepts, in-place pod resize |
 
 **Progress:**
-- [ ] jobs-and-cronjobs/assignment-1
-- [ ] statefulsets/assignment-1
-- [ ] autoscaling/assignment-1
+- [ ] 02-jobs-and-cronjobs/assignment-1
+- [ ] 03-statefulsets/assignment-1
+- [ ] 04-autoscaling/assignment-1
 
 ---
 
@@ -78,20 +78,20 @@ Helm and Kustomize are the two primary tools for managing Kubernetes manifests a
 
 | Order | Assignment | Focus |
 |---|---|---|
-| 11 | helm/assignment-1 | Chart repositories, helm install, values files |
-| 12 | helm/assignment-2 | Upgrades, rollbacks, release history, helm diff |
-| 13 | helm/assignment-3 | Chart templates, debugging, creating charts |
-| 14 | kustomize/assignment-1 | kustomization.yaml, bases, common transformers |
-| 15 | kustomize/assignment-2 | Patches (strategic merge, JSON), patch targets |
-| 16 | kustomize/assignment-3 | Overlays, components, multi-environment workflows |
+| 11 | 05-helm/assignment-1 | Chart repositories, helm install, values files |
+| 12 | 05-helm/assignment-2 | Upgrades, rollbacks, release history, helm diff |
+| 13 | 05-helm/assignment-3 | Chart templates, debugging, creating charts |
+| 14 | 06-kustomize/assignment-1 | kustomization.yaml, bases, common transformers |
+| 15 | 06-kustomize/assignment-2 | Patches (strategic merge, JSON), patch targets |
+| 16 | 06-kustomize/assignment-3 | Overlays, components, multi-environment workflows |
 
 **Progress:**
-- [ ] helm/assignment-1
-- [ ] helm/assignment-2
-- [ ] helm/assignment-3
-- [ ] kustomize/assignment-1
-- [ ] kustomize/assignment-2
-- [ ] kustomize/assignment-3
+- [ ] 05-helm/assignment-1
+- [ ] 05-helm/assignment-2
+- [ ] 05-helm/assignment-3
+- [ ] 06-kustomize/assignment-1
+- [ ] 06-kustomize/assignment-2
+- [ ] 06-kustomize/assignment-3
 
 ---
 
@@ -106,14 +106,14 @@ This phase covers persistent storage in Kubernetes: how volumes are provisioned 
 
 | Order | Assignment | Focus |
 |---|---|---|
-| 17 | storage/assignment-1 | PersistentVolumes, access modes, reclaim policies |
-| 18 | storage/assignment-2 | PersistentVolumeClaims, binding, using PVCs in pods |
-| 19 | storage/assignment-3 | StorageClasses, dynamic provisioning, volume expansion |
+| 17 | 07-storage/assignment-1 | PersistentVolumes, access modes, reclaim policies |
+| 18 | 07-storage/assignment-2 | PersistentVolumeClaims, binding, using PVCs in pods |
+| 19 | 07-storage/assignment-3 | StorageClasses, dynamic provisioning, volume expansion |
 
 **Progress:**
-- [ ] storage/assignment-1
-- [ ] storage/assignment-2
-- [ ] storage/assignment-3
+- [ ] 07-storage/assignment-1
+- [ ] 07-storage/assignment-2
+- [ ] 07-storage/assignment-3
 
 ---
 
@@ -128,36 +128,36 @@ This is the largest phase after pods. It covers the full networking stack: servi
 
 | Order | Assignment | Focus |
 |---|---|---|
-| 20 | services/assignment-1 | ClusterIP, service discovery, endpoints |
-| 21 | services/assignment-2 | NodePort, LoadBalancer, external traffic |
-| 22 | services/assignment-3 | Headless services, ExternalName, service patterns |
-| 23 | coredns/assignment-1 | DNS resolution, service and pod DNS records |
-| 24 | coredns/assignment-2 | CoreDNS configuration, Corefile, plugins |
-| 25 | coredns/assignment-3 | DNS debugging, resolution failures |
-| 26 | network-policies/assignment-1 | Ingress rules, podSelector, namespaceSelector |
-| 27 | network-policies/assignment-2 | Egress rules, ipBlock, default deny policies |
-| 28 | network-policies/assignment-3 | Policy debugging, traffic flow analysis |
-| 29 | ingress-and-gateway-api/assignment-1 | Ingress basics with Traefik controller |
-| 30 | ingress-and-gateway-api/assignment-2 | TLS termination with HAProxy Ingress |
-| 31 | ingress-and-gateway-api/assignment-3 | Gateway API with Envoy Gateway |
-| 32 | ingress-and-gateway-api/assignment-4 | Gateway API with NGINX Gateway Fabric |
-| 33 | ingress-and-gateway-api/assignment-5 | Ingress to Gateway API migration (Ingress2Gateway) |
+| 20 | 08-services/assignment-1 | ClusterIP, service discovery, endpoints |
+| 21 | 08-services/assignment-2 | NodePort, LoadBalancer, external traffic |
+| 22 | 08-services/assignment-3 | Headless services, ExternalName, service patterns |
+| 23 | 09-coredns/assignment-1 | DNS resolution, service and pod DNS records |
+| 24 | 09-coredns/assignment-2 | CoreDNS configuration, Corefile, plugins |
+| 25 | 09-coredns/assignment-3 | DNS debugging, resolution failures |
+| 26 | 10-network-policies/assignment-1 | Ingress rules, podSelector, namespaceSelector |
+| 27 | 10-network-policies/assignment-2 | Egress rules, ipBlock, default deny policies |
+| 28 | 10-network-policies/assignment-3 | Policy debugging, traffic flow analysis |
+| 29 | 11-ingress-and-gateway-api/assignment-1 | Ingress basics with Traefik controller |
+| 30 | 11-ingress-and-gateway-api/assignment-2 | TLS termination with HAProxy Ingress |
+| 31 | 11-ingress-and-gateway-api/assignment-3 | Gateway API with Envoy Gateway |
+| 32 | 11-ingress-and-gateway-api/assignment-4 | Gateway API with NGINX Gateway Fabric |
+| 33 | 11-ingress-and-gateway-api/assignment-5 | Ingress to Gateway API migration (Ingress2Gateway) |
 
 **Progress:**
-- [ ] services/assignment-1
-- [ ] services/assignment-2
-- [ ] services/assignment-3
-- [ ] coredns/assignment-1
-- [ ] coredns/assignment-2
-- [ ] coredns/assignment-3
-- [ ] network-policies/assignment-1
-- [ ] network-policies/assignment-2
-- [ ] network-policies/assignment-3
-- [ ] ingress-and-gateway-api/assignment-1
-- [ ] ingress-and-gateway-api/assignment-2
-- [ ] ingress-and-gateway-api/assignment-3
-- [ ] ingress-and-gateway-api/assignment-4
-- [ ] ingress-and-gateway-api/assignment-5
+- [ ] 08-services/assignment-1
+- [ ] 08-services/assignment-2
+- [ ] 08-services/assignment-3
+- [ ] 09-coredns/assignment-1
+- [ ] 09-coredns/assignment-2
+- [ ] 09-coredns/assignment-3
+- [ ] 10-network-policies/assignment-1
+- [ ] 10-network-policies/assignment-2
+- [ ] 10-network-policies/assignment-3
+- [ ] 11-ingress-and-gateway-api/assignment-1
+- [ ] 11-ingress-and-gateway-api/assignment-2
+- [ ] 11-ingress-and-gateway-api/assignment-3
+- [ ] 11-ingress-and-gateway-api/assignment-4
+- [ ] 11-ingress-and-gateway-api/assignment-5
 
 ---
 
@@ -172,12 +172,12 @@ RBAC controls who can do what in the cluster. Now that you can deploy, configure
 
 | Order | Assignment | Focus |
 |---|---|---|
-| 34 | rbac/assignment-1 | Roles, RoleBindings, service accounts, namespace-scoped access |
-| 35 | rbac/assignment-2 | ClusterRoles, ClusterRoleBindings, aggregation, cluster-scoped resources |
+| 34 | 12-rbac/assignment-1 | Roles, RoleBindings, service accounts, namespace-scoped access |
+| 35 | 12-rbac/assignment-2 | ClusterRoles, ClusterRoleBindings, aggregation, cluster-scoped resources |
 
 **Progress:**
-- [ ] rbac/assignment-1
-- [ ] rbac/assignment-2
+- [ ] 12-rbac/assignment-1
+- [ ] 12-rbac/assignment-2
 
 ---
 
@@ -192,16 +192,16 @@ This phase covers security settings applied to pods and containers: user/group i
 
 | Order | Assignment | Focus |
 |---|---|---|
-| 36 | security-contexts/assignment-1 | runAsUser, runAsGroup, fsGroup, runAsNonRoot |
-| 37 | security-contexts/assignment-2 | Capabilities (add/drop), allowPrivilegeEscalation |
-| 38 | security-contexts/assignment-3 | readOnlyRootFilesystem, seccomp profiles |
-| 39 | pod-security/assignment-1 | Pod Security Standards, Pod Security Admission, namespace labels |
+| 36 | 13-security-contexts/assignment-1 | runAsUser, runAsGroup, fsGroup, runAsNonRoot |
+| 37 | 13-security-contexts/assignment-2 | Capabilities (add/drop), allowPrivilegeEscalation |
+| 38 | 13-security-contexts/assignment-3 | readOnlyRootFilesystem, seccomp profiles |
+| 39 | 14-pod-security/assignment-1 | Pod Security Standards, Pod Security Admission, namespace labels |
 
 **Progress:**
-- [ ] security-contexts/assignment-1
-- [ ] security-contexts/assignment-2
-- [ ] security-contexts/assignment-3
-- [ ] pod-security/assignment-1
+- [ ] 13-security-contexts/assignment-1
+- [ ] 13-security-contexts/assignment-2
+- [ ] 13-security-contexts/assignment-3
+- [ ] 14-pod-security/assignment-1
 
 ---
 
@@ -216,16 +216,16 @@ Kubernetes is extensible through Custom Resource Definitions (CRDs), operators, 
 
 | Order | Assignment | Focus |
 |---|---|---|
-| 40 | crds-and-operators/assignment-1 | CRD authoring, custom resource creation |
-| 41 | crds-and-operators/assignment-2 | Working with custom resources, validation, status |
-| 42 | crds-and-operators/assignment-3 | Operator pattern, installing and using operators |
-| 43 | admission-controllers/assignment-1 | Built-in admission controllers, ValidatingAdmissionPolicy |
+| 40 | 15-crds-and-operators/assignment-1 | CRD authoring, custom resource creation |
+| 41 | 15-crds-and-operators/assignment-2 | Working with custom resources, validation, status |
+| 42 | 15-crds-and-operators/assignment-3 | Operator pattern, installing and using operators |
+| 43 | 16-admission-controllers/assignment-1 | Built-in admission controllers, ValidatingAdmissionPolicy |
 
 **Progress:**
-- [ ] crds-and-operators/assignment-1
-- [ ] crds-and-operators/assignment-2
-- [ ] crds-and-operators/assignment-3
-- [ ] admission-controllers/assignment-1
+- [ ] 15-crds-and-operators/assignment-1
+- [ ] 15-crds-and-operators/assignment-2
+- [ ] 15-crds-and-operators/assignment-3
+- [ ] 16-admission-controllers/assignment-1
 
 ---
 
@@ -240,20 +240,20 @@ This phase covers operational topics: how Kubernetes clusters are bootstrapped, 
 
 | Order | Assignment | Focus |
 |---|---|---|
-| 44 | cluster-lifecycle/assignment-1 | kubeadm init/join, cluster bootstrapping, node management |
-| 45 | cluster-lifecycle/assignment-2 | Version upgrades with kubeadm, drain/cordon workflows |
-| 46 | cluster-lifecycle/assignment-3 | etcd backup and restore, disaster recovery |
-| 47 | tls-and-certificates/assignment-1 | Kubernetes PKI, certificate creation with openssl |
-| 48 | tls-and-certificates/assignment-2 | Certificates API, CertificateSigningRequests |
-| 49 | tls-and-certificates/assignment-3 | kubeconfig management, certificate troubleshooting |
+| 44 | 17-cluster-lifecycle/assignment-1 | kubeadm init/join, cluster bootstrapping, node management |
+| 45 | 17-cluster-lifecycle/assignment-2 | Version upgrades with kubeadm, drain/cordon workflows |
+| 46 | 17-cluster-lifecycle/assignment-3 | etcd backup and restore, disaster recovery |
+| 47 | 18-tls-and-certificates/assignment-1 | Kubernetes PKI, certificate creation with openssl |
+| 48 | 18-tls-and-certificates/assignment-2 | Certificates API, CertificateSigningRequests |
+| 49 | 18-tls-and-certificates/assignment-3 | kubeconfig management, certificate troubleshooting |
 
 **Progress:**
-- [ ] cluster-lifecycle/assignment-1
-- [ ] cluster-lifecycle/assignment-2
-- [ ] cluster-lifecycle/assignment-3
-- [ ] tls-and-certificates/assignment-1
-- [ ] tls-and-certificates/assignment-2
-- [ ] tls-and-certificates/assignment-3
+- [ ] 17-cluster-lifecycle/assignment-1
+- [ ] 17-cluster-lifecycle/assignment-2
+- [ ] 17-cluster-lifecycle/assignment-3
+- [ ] 18-tls-and-certificates/assignment-1
+- [ ] 18-tls-and-certificates/assignment-2
+- [ ] 18-tls-and-certificates/assignment-3
 
 ---
 
@@ -268,16 +268,16 @@ Troubleshooting is the largest CKA exam domain (30%). This phase is designed as 
 
 | Order | Assignment | Focus |
 |---|---|---|
-| 50 | troubleshooting/assignment-1 | Application failures: pods, deployments, configs |
-| 51 | troubleshooting/assignment-2 | Control plane failures: API server, scheduler, controller manager, etcd |
-| 52 | troubleshooting/assignment-3 | Node failures: kubelet, container runtime, node conditions |
-| 53 | troubleshooting/assignment-4 | Network failures: services, DNS, policies, ingress |
+| 50 | 19-troubleshooting/assignment-1 | Application failures: pods, deployments, configs |
+| 51 | 19-troubleshooting/assignment-2 | Control plane failures: API server, scheduler, controller manager, etcd |
+| 52 | 19-troubleshooting/assignment-3 | Node failures: kubelet, container runtime, node conditions |
+| 53 | 19-troubleshooting/assignment-4 | Network failures: services, DNS, policies, ingress |
 
 **Progress:**
-- [ ] troubleshooting/assignment-1
-- [ ] troubleshooting/assignment-2
-- [ ] troubleshooting/assignment-3
-- [ ] troubleshooting/assignment-4
+- [ ] 19-troubleshooting/assignment-1
+- [ ] 19-troubleshooting/assignment-2
+- [ ] 19-troubleshooting/assignment-3
+- [ ] 19-troubleshooting/assignment-4
 
 ---
 
@@ -315,8 +315,8 @@ The only hard constraint is that Phase 10 (Troubleshooting) should be completed 
 
 Most assignments work on a single-node kind cluster. The following require a multi-node cluster (1 control-plane + 3 workers):
 
-- pods/assignment-4 through assignment-7 (scheduling and controllers)
-- troubleshooting/assignment-3 (node failures)
-- troubleshooting/assignment-4 (network failures)
+- 01-pods/assignment-4 through assignment-7 (scheduling and controllers)
+- 19-troubleshooting/assignment-3 (node failures)
+- 19-troubleshooting/assignment-4 (network failures)
 
 Cluster setup commands are documented in `docs/cluster-setup.md`. Each assignment README specifies its cluster requirements.
