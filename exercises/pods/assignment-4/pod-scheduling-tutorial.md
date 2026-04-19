@@ -972,9 +972,45 @@ In a kind cluster with minimal resource pressure, preemption is unlikely to trig
 
 Preemption respects PodDisruptionBudgets (if they exist) and prefers to evict pods on nodes that already have other lower-priority pods. In practice on the CKA exam, you are more likely to be asked to create PriorityClasses and assign them than to debug preemption behavior.
 
-### Custom Schedulers
+### Custom Schedulers and Scheduler Profiles
 
-The Mumshad course covers custom schedulers and scheduler profile configuration. These are out of scope for this assignment. Know that they exist: you can run multiple schedulers in a cluster and assign pods to a specific scheduler via the `schedulerName` field in the pod spec. For the CKA exam, the default scheduler is sufficient.
+Kubernetes supports running multiple schedulers simultaneously in the same cluster, and the default scheduler can be customized through scheduler profiles. These topics are covered in the Mumshad course (lectures 77-81) but are practiced lightly in this assignment because the default scheduler handles the vast majority of CKA exam scenarios. This section provides awareness and pointers for further study.
+
+#### Multiple Schedulers
+
+You can deploy a second scheduler alongside the default kube-scheduler by running another scheduler binary with a different `--scheduler-name` flag. Pods specify which scheduler should place them using the `schedulerName` field in the pod spec.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: example-with-custom-scheduler
+spec:
+  schedulerName: my-custom-scheduler
+  containers:
+  - name: app
+    image: nginx:1.27
+```
+
+If the specified scheduler does not exist or is not running, the pod remains Pending indefinitely with no FailedScheduling event, because the default scheduler ignores pods not assigned to it. This is a debugging trap: always verify that the scheduler name matches an actual running scheduler.
+
+Use cases for multiple schedulers include specialized workloads with custom placement algorithms, batch scheduling systems with different priorities or fairness policies, and testing new scheduling logic without disrupting production workloads. For the CKA exam, you are unlikely to need to deploy a custom scheduler, but you should recognize the `schedulerName` field and understand that a typo or missing scheduler will cause silent Pending.
+
+#### Scheduler Profiles
+
+Scheduler profiles let you customize the behavior of the default scheduler without deploying a separate scheduler binary. A profile defines which scheduling plugins to enable or disable and configures their parameters. Profiles are specified in the scheduler's configuration file and are referenced by name using the same `schedulerName` field in the pod spec.
+
+The default scheduler profile includes plugins for filtering (nodeSelector, node affinity, taints, resource requests) and scoring (balanced resource usage, pod affinity, zone spreading). You can create a custom profile that adjusts plugin weights, disables certain plugins, or adds custom in-tree or out-of-tree plugins.
+
+Example use case: a profile that heavily weights node affinity during scoring to prefer co-location, or a profile that disables the InterPodAffinity plugin to improve scheduling throughput for workloads that do not use pod affinity. In practice, most clusters use the default profile without modification.
+
+#### Why This Assignment Does Not Practice These
+
+The scheduling mechanisms covered in this tutorial (nodeSelector, affinity, taints, topology spread, priority) give you enough control to handle the CKA exam's pod placement scenarios. Custom schedulers and profiles are advanced topics that require managing additional control plane components and configuration files. The default scheduler is fast, well-tested, and sufficient for the exam. If you encounter a question that requires a custom scheduler, the question will provide the scheduler name or configuration, and you will only need to reference it in the pod spec.
+
+#### Further Study
+
+If you need to deploy a custom scheduler or configure scheduler profiles for a real-world scenario, consult the Kubernetes documentation at `kubernetes.io/docs/tasks/extend-kubernetes/configure-multiple-schedulers/` and `kubernetes.io/docs/reference/scheduling/config/`. The Mumshad course lectures 77-81 walk through the deployment process. For the CKA exam, focus on mastering the scheduling mechanisms in sections 3-8 of this tutorial.
 
 ---
 

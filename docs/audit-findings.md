@@ -1,7 +1,7 @@
 # Repository Audit Findings
 
 **Audit date:** 2026-04-18
-**Last status update:** 2026-04-18 (Phases 1-4 all complete. All 19 full-assignment Phase 4 regens done plus 3 surgical regens. Findings O1, O3, U1, U4, U7, E1, E2, E3, E5 now fully resolved. Curriculum gaps G1, G2, G3, G5, G6 resolved. E4, U5, U6 resolved in earlier Phase 4 batches. Remaining pending: E6 and E7 (deferred to Phase 6 verification), G4/G7/G8 (deferred to Phase 5 technique weaving).)
+**Last status update:** 2026-04-19 (Phases 1-5 all complete. All 19 full-assignment Phase 4 regens done plus 3 surgical regens. Phase 5 technique weaving complete. Findings O1, O3, U1, U4, U7, E1, E2, E3, E5 fully resolved. Curriculum gaps G1, G2, G3, G4, G5, G6, G7, G8 all resolved. E4, U5, U6 resolved in earlier Phase 4 batches. Remaining pending: E6 and E7 (deferred to Phase 6 verification).)
 **Scope:** Full repository (infrastructure, skills, all 40 assignments across 14 topics)
 **Method:** Read the infrastructure files (`CLAUDE.md`, `README.md`, `cka-homework-plan.md`,
 devcontainer files, both `SKILL.md` files, all three reference files), all 14 topic-level
@@ -405,7 +405,7 @@ Phase 4. G7 and G8 are technique-weaving items deferred to Phase 5.
 - `kubectl debug` is the modern technique for attaching a debug container to a running
   pod or a node; CKA expects familiarity.
 
-**Status:** Pending. Scheduled for Phase 5 (P5.1) as a weave into existing troubleshooting tutorials rather than a new assignment.
+**Status:** Resolved 2026-04-19 under Phase 5 (P5.1). `troubleshooting/assignment-1` tutorial now has Part 8 covering ephemeral container injection with `kubectl debug pod/X --image=... --target=...`, network-only debugging without `--target`, copy mode with `--copy-to`, and limitations (cannot be removed, no resource limits counted, no ports/probes). `troubleshooting/assignment-3` tutorial now has Part 6 covering node debugging with `kubectl debug node/<node> -it --image=ubuntu:22.04`, chroot pattern for node-level access, kubelet/containerd inspection, log access via dmesg and journalctl, and use cases for managed clusters without SSH. Diagnostic Commands cheat sheets updated in both tutorials.
 
 ### Medium priority
 
@@ -433,14 +433,14 @@ Phase 4. G7 and G8 are technique-weaving items deferred to Phase 5.
 - Only one file mentions `port-forward` (a passing reference in a TLS answer key).
 - Exam-pressure techniques for testing connectivity without NodePort/LoadBalancer friction.
 
-**Status:** Pending. Scheduled for Phase 5 (P5.2) as a weave into `services/assignment-1/services-tutorial.md`.
+**Status:** Resolved 2026-04-19 under Phase 5 (P5.2). `services/assignment-1` tutorial now has a dedicated section after "Debugging Service Issues" covering `kubectl port-forward service/<name>` and `pod/<name>`, local port selection (explicit, same-as-remote, random with `:0`), namespace scoping, limitations (client-side, TCP-only, not for production), and background execution patterns. Service Verification reference table updated to include port-forward commands. `kubectl proxy` was not added (less common in exam scenarios; port-forward is the primary technique).
 
 **G8. Custom scheduler profiles and multiple schedulers.**
 - `course-section-map.md` lists S3 lectures 77-81 as covering these.
 - `pods/assignment-4` covers scheduling mechanisms but does not practice writing a
   scheduler profile or running a second scheduler instance.
 
-**Status:** Pending. Scheduled for Phase 5 (P5.3). Alternative: acknowledge as a known thin area in `pods/assignment-4/README.md` if out of practical scope.
+**Status:** Resolved 2026-04-19 under Phase 5 (P5.3) via the alternative approach. `pods/assignment-4` tutorial section 9 expanded from 3 sentences to a 4-part subsection: multiple schedulers (deployment, `schedulerName` field, silent-Pending trap when scheduler name is wrong), scheduler profiles (plugin configuration, weight adjustment, use cases), rationale for thin coverage (default scheduler sufficient for CKA; mechanisms in sections 3-8 provide enough control), and pointers to Kubernetes docs and Mumshad lectures 77-81 for further study. Acknowledges the thin area explicitly rather than pretending to cover it deeply.
 
 ### Not gaps (verified covered)
 

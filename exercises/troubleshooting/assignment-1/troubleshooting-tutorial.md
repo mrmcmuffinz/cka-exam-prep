@@ -452,6 +452,193 @@ kubectl delete svc web-svc -n tutorial-troubleshooting
 kubectl delete pod web -n tutorial-troubleshooting
 ```
 
+## Part 8: Debugging with Ephemeral Containers
+
+Sometimes logs and describe are not enough. You need to run commands inside a running pod, but the container lacks debugging tools like curl, netcat, or a shell. Ephemeral containers solve this by injecting a temporary debugging container into an already-running pod without restarting it.
+
+### When to Use kubectl debug
+
+Use `kubectl debug` when the pod is running but misbehaving and you need to inspect its environment, network connectivity, or filesystem without disturbing the running workload. Common scenarios include containers built from distroless or minimal images that lack shells, networking issues where you need to test connectivity from inside the pod's network namespace, or filesystem inspection when you need to examine mounted volumes or application state.
+
+### Basic Pod Debugging
+
+Create a pod with a minimal image that lacks debugging tools.
+
+```bash
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: minimal-app
+  namespace: tutorial-troubleshooting
+spec:
+  containers:
+  - name: app
+    image: gcr.io/distroless/static-debian12:nonroot
+    command: ["sleep", "infinity"]
+EOF
+```
+
+Wait for the pod to be running.
+
+```bash
+kubectl wait --for=condition=Ready pod/minimal-app -n tutorial-troubleshooting --timeout=60s
+```
+
+Try to exec into it.
+
+```bash
+kubectl exec -it minimal-app -n tutorial-troubleshooting -- sh
+```
+
+This fails because the distroless image contains no shell. Now use kubectl debug to add an ephemeral debugging container.
+
+```bash
+kubectl debug minimal-app -n tutorial-troubleshooting -it --image=busybox:1.36 --target=app
+```
+
+This launches an interactive busybox container that shares the process namespace with the target container. The `--target=app` flag means the ephemeral container shares the PID namespace of the "app" container, allowing you to see its processes via `ps` and inspect its filesystem at `/proc/<pid>/root`.
+
+Inside the debug session, list processes.
+
+```bash
+ps aux
+```
+
+You see both the sleep process from the original container and the sh process from the debugging container. Exit the debug session.
+
+```bash
+exit
+```
+
+The ephemeral container remains attached to the pod. Check it.
+
+```bash
+kubectl describe pod minimal-app -n tutorial-troubleshooting
+```
+
+You see an Ephemeral Containers section listing the debugging container. Ephemeral containers persist for the pod's lifetime. They cannot be removed or restarted individually. To clean up, delete the pod.
+
+```bash
+kubectl delete pod minimal-app -n tutorial-troubleshooting
+```
+
+### Debugging Without Targeting a Container
+
+If you omit the `--target` flag, the ephemeral container runs in the pod but does not share the PID namespace with any specific container. This is useful for network debugging where you need the pod's network namespace but not its process space.
+
+```bash
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: network-test
+  namespace: tutorial-troubleshooting
+  labels:
+    app: network-test
+spec:
+  containers:
+  - name: app
+    image: nginx:1.27
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: network-test-svc
+  namespace: tutorial-troubleshooting
+spec:
+  selector:
+    app: network-test
+  ports:
+  - port: 80
+EOF
+```
+
+Wait for the pod.
+
+```bash
+kubectl wait --for=condition=Ready pod/network-test -n tutorial-troubleshooting --timeout=60s
+```
+
+Debug it without targeting.
+
+```bash
+kubectl debug network-test -n tutorial-troubleshooting -it --image=curlimages/curl:8.5.0 -- sh
+```
+
+Inside the debug container, test the service.
+
+```bash
+curl http://network-test-svc
+# You should see the nginx welcome page HTML
+
+exit
+```
+
+The debug container sees the same network namespace as the pod, so it can reach localhost and the pod's IP, but it does not share the PID namespace.
+
+```bash
+kubectl delete pod network-test -n tutorial-troubleshooting
+kubectl delete svc network-test-svc -n tutorial-troubleshooting
+```
+
+### Ephemeral Container Limitations
+
+Ephemeral containers cannot be removed or restarted once added. They do not count toward the pod's resource requests or limits. They cannot have ports, probes, or lifecycle hooks. If you need to run a new debug session with different settings, you must delete and recreate the pod. Ephemeral containers are designed for temporary interactive debugging, not long-running sidecars.
+
+### Copy Mode: Debugging by Pod Duplication
+
+If ephemeral containers are too limiting, use `kubectl debug --copy-to` to create a modified copy of the pod. This mode duplicates the pod with changes such as a different image or command, allowing you to troubleshoot without affecting the original.
+
+```bash
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crasher-original
+  namespace: tutorial-troubleshooting
+spec:
+  containers:
+  - name: app
+    image: busybox:1.36
+    command: ["sh", "-c", "exit 1"]
+  restartPolicy: Never
+EOF
+```
+
+Wait for it to crash.
+
+```bash
+sleep 10
+kubectl get pod crasher-original -n tutorial-troubleshooting
+```
+
+Now create a copy with a different command to prevent the crash.
+
+```bash
+kubectl debug crasher-original -n tutorial-troubleshooting --copy-to=crasher-debug --container=app -- sh -c "sleep 3600"
+```
+
+This creates a new pod named crasher-debug with the same spec but replaces the app container's command. Check both pods.
+
+```bash
+kubectl get pods -n tutorial-troubleshooting
+```
+
+The original is in Error or CrashLoopBackOff. The copy is Running. You can now exec into the copy to investigate.
+
+```bash
+kubectl exec -it crasher-debug -n tutorial-troubleshooting -- sh -c "echo 'Debug session active'; exit"
+```
+
+Clean up both.
+
+```bash
+kubectl delete pod crasher-original crasher-debug -n tutorial-troubleshooting
+```
+
+Copy mode is useful when you need to change the pod spec or when the original pod is in a state that prevents exec or ephemeral container injection.
+
 ## Cleanup
 
 Remove all tutorial resources.
@@ -485,3 +672,6 @@ kubectl delete namespace tutorial-troubleshooting
 | Pod labels | `kubectl get pod -n <ns> --show-labels` |
 | Service selector | `kubectl get svc <name> -n <ns> -o jsonpath='{.spec.selector}'` |
 | Endpoints | `kubectl get endpoints <name> -n <ns>` |
+| Debug with ephemeral container | `kubectl debug <pod> -n <ns> -it --image=<img> --target=<container>` |
+| Debug without targeting | `kubectl debug <pod> -n <ns> -it --image=<img>` |
+| Debug by copying pod | `kubectl debug <pod> -n <ns> --copy-to=<new-name> --container=<c> -- <cmd>` |

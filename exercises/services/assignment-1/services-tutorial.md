@@ -664,6 +664,112 @@ Solution: Use DNS-based discovery or restart the pods.
 | `kubectl get pods -l <selector>` | Find pods matching a selector |
 | `kubectl run curl-test --image=curlimages/curl:8.5.0 --rm -it -- curl <target>` | Test connectivity |
 
+## Testing Services with kubectl port-forward
+
+While ClusterIP services are only accessible from within the cluster, you can temporarily expose them to your local machine using `kubectl port-forward`. This is a powerful debugging and development technique that lets you test services and pods without creating NodePort or LoadBalancer services. Port forwarding creates a tunnel from your local machine to the Kubernetes cluster, forwarding traffic from a local port to a port on a service or pod.
+
+### When to Use Port Forwarding
+
+Port forwarding is useful when you need to test a ClusterIP service from your local machine without exposing it externally, when you want to access an internal service for debugging or inspection without modifying its configuration, when you are developing locally and need quick access to cluster services, or when troubleshooting connectivity issues and you want to isolate whether the problem is with the service or with external access layers like Ingress or LoadBalancer. Port forwarding is not suitable for production traffic or long-running connections, as it terminates if the kubectl process exits or the network connection is interrupted.
+
+### Port Forwarding to a Service
+
+Create a deployment and service for demonstration.
+
+```bash
+kubectl create deployment port-forward-demo --image=nginx:1.27 --replicas=2 -n tutorial-services
+kubectl expose deployment port-forward-demo --port=80 --target-port=80 -n tutorial-services
+```
+
+Wait for the pods to be ready.
+
+```bash
+kubectl wait --for=condition=available deployment/port-forward-demo -n tutorial-services --timeout=60s
+```
+
+Now forward a local port to the service.
+
+```bash
+kubectl port-forward service/port-forward-demo 8080:80 -n tutorial-services
+```
+
+This forwards your local port 8080 to port 80 on the service. The format is `local-port:service-port`. The command runs in the foreground and shows connection logs. Leave it running and open a new terminal to test connectivity.
+
+In a new terminal, test the forwarded port.
+
+```bash
+curl http://localhost:8080
+```
+
+You should see the nginx welcome page HTML. This traffic is being forwarded through the kubectl process to the service in the cluster, and then to one of the backend pods. The service's load balancing still applies. Each request may hit a different pod.
+
+Stop the port-forward by pressing Ctrl+C in the terminal where it is running.
+
+### Port Forwarding to a Pod
+
+You can also forward directly to a pod, bypassing the service. This is useful when you need to test a specific pod or when a service does not exist yet.
+
+```bash
+POD=$(kubectl get pods -n tutorial-services -l app=port-forward-demo -o jsonpath='{.items[0].metadata.name}')
+kubectl port-forward pod/$POD 8081:80 -n tutorial-services
+```
+
+This forwards your local port 8081 to port 80 on the specific pod. In another terminal, test it.
+
+```bash
+curl http://localhost:8081
+```
+
+The response comes from the specific pod you targeted, not from the service's load-balanced pool. Stop the port-forward with Ctrl+C.
+
+### Choosing the Local Port
+
+If you omit the local port, kubectl chooses the same port as the remote port.
+
+```bash
+kubectl port-forward service/port-forward-demo :80 -n tutorial-services
+```
+
+The output shows which local port was chosen, typically 80. If port 80 is already in use on your local machine, the command fails. You can also let kubectl choose a random available local port by using `:0` as the local port.
+
+```bash
+kubectl port-forward service/port-forward-demo 0:80 -n tutorial-services
+```
+
+The output shows `Forwarding from 127.0.0.1:<random-port> -> 80`. Check the output to see which port was assigned, then use that port in your curl command.
+
+### Port Forwarding and Namespaces
+
+Port forwarding respects namespace boundaries. If you forward to a service or pod in one namespace, you can only reach resources in that namespace. If you need to access services in multiple namespaces, you must run separate port-forward commands, each forwarding a different local port to a different namespace.
+
+### Port Forward Limitations
+
+Port forwarding is a client-side operation. If the kubectl process is killed, the connection drops. It is not suitable for long-running access or for sharing access with other users. For those use cases, create a NodePort or LoadBalancer service, or use an Ingress. Port forwarding also does not support UDP traffic, only TCP. If you need to test a UDP service, you must create a NodePort or use a different access method.
+
+### Running Port Forward in the Background
+
+You can run port-forward in the background using `&` in bash, but if you close the terminal, the process terminates. For persistent forwarding during a debugging session, run it in a dedicated terminal or use a terminal multiplexer like tmux or screen.
+
+```bash
+kubectl port-forward service/port-forward-demo 8080:80 -n tutorial-services > /dev/null 2>&1 &
+```
+
+This runs the port-forward in the background and suppresses output. To stop it, find the process ID and kill it.
+
+```bash
+ps aux | grep "port-forward"
+kill <pid>
+```
+
+For most debugging tasks, running port-forward in a dedicated terminal with visible output is simpler and safer.
+
+### Cleanup
+
+```bash
+kubectl delete service port-forward-demo -n tutorial-services
+kubectl delete deployment port-forward-demo -n tutorial-services
+```
+
 ## Tutorial Cleanup
 
 Delete the tutorial namespace and all resources:
@@ -693,6 +799,8 @@ kubectl delete namespace tutorial-services
 | Show endpoints | `kubectl get endpoints <name> -n <namespace>` |
 | Test connectivity | `kubectl run curl-test --image=curlimages/curl:8.5.0 --rm -it -- curl http://<service>` |
 | DNS lookup | `kubectl run dns-test --image=busybox:1.36 --rm -it -- nslookup <service>` |
+| Port-forward to service | `kubectl port-forward service/<name> <local-port>:<service-port> -n <namespace>` |
+| Port-forward to pod | `kubectl port-forward pod/<name> <local-port>:<pod-port> -n <namespace>` |
 
 ### Debugging
 
