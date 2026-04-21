@@ -9,8 +9,23 @@
     "ghcr.io/devcontainers/features/common-utils": {
       "configureZshAsDefaultShell": true
     },
-    "ghcr.io/devcontainers/features/git": {},
-    "ghcr.io/devcontainers/features/github-cli": {}
+    "ghcr.io/devcontainers/features/git": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        // Multi-layered Copilot blocking:
+        // 1. Disable via feature flags (belt)
+        // 2. Block via extensions.allowed in .vscode/settings.json (suspenders, when VS Code fixes bugs)
+        // 3. Manual deletion in post-create.sh (duct tape, current workaround)
+        "github.copilot.enable": {
+          "*": false
+        },
+        "extensions.ignoreRecommendations": true
+      },
+      "extensions": []
+    }
   },
 
   "mounts": [
@@ -21,7 +36,7 @@
   "runArgs": [
     "--runtime=io.containerd.runc.v2"
   ],
-  
+
   "overrideCommand": false,
 
   "postCreateCommand": "bash .devcontainer/post-create.sh"

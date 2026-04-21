@@ -1,1 +1,47 @@
-{}
+{
+  "github.copilot.enable": {
+    "*": false
+  },
+  "github.copilot.editor.enableAutoCompletions": false,
+  "github.copilot-chat.enable": false,
+  "github.copilot.chat.backgroundAgent.enabled": false,
+  "github.copilot.chat.claudeAgent.enabled": false,
+  "github.copilot.chat.cloudAgent.enabled": false,
+  "github.copilot.chat.codeGeneration.useInstructionFiles": false,
+  "github.copilot.chat.customInstructionsInSystemMessage": false,
+  "github.copilot.chat.organizationCustomAgents.enabled": false,
+  "github.copilot.chat.organizationInstructions.enabled": false,
+  "github.copilot.chat.reviewAgent.enabled": false,
+  "github.copilot.chat.reviewSelection.enabled": false,
+  "github.copilot.chat.useProjectTemplates": false,
+  "github.copilot.editor.enableCodeActions": false,
+  "github.copilot.nextEditSuggestions.allowWhitespaceOnlyChanges": false,
+  "github.copilot.nextEditSuggestions.enabled": false,
+  "github.copilot.nextEditSuggestions.extendedRange": false,
+  "github.copilot.nextEditSuggestions.fixes": false,
+  "github.copilot.renameSuggestions.triggerAutomatically": false,
+  "github.copilot.chat.anthropic.toolSearchTool.enabled": false,
+  "github.copilot.chat.copilotDebugCommand.enabled": false,
+  "github.copilot.chat.tools.memory.enabled": false,
+  "github.copilot.chat.tools.viewImage.enabled": false,
+  "github.copilot.chat.exploreAgent.enabled": false,
+  "github.copilot.chat.getSearchViewResultsSkill.enabled": false,
+  "github.copilot.chat.imageUpload.enabled": false,
+  "github.copilot.chat.languageContext.typescript.enabled": false,
+  "github.copilot.chat.newWorkspaceCreation.enabled": false,
+  "github.copilot.chat.setupTests.enabled": false,
+  "github.copilot.chat.summarizeAgentConversationHistory.enabled": false,
+  "github.copilot.chat.updated53CodexPrompt.enabled": false,
+  "github.copilot.chat.agent.currentEditorContext.enabled": false,
+  "github.copilot.chat.anthropic.useMessagesApi": false,
+  "terminal.integrated.initialHint.copilotCli": false,
+  "chat.disableAIFeatures": true,
+  "chat.extensionUnification.enabled": false,
+  // Official extension blocklist (VS Code 1.96+)
+  // Currently broken (issue #240834) but keeping for when VS Code fixes it
+  "extensions.allowed": {
+    "github.copilot": false,
+    "github.copilot-chat": false,
+    "*": true
+  }
+}

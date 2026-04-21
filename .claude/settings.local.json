@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git merge *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git checkout *)",
+      "Bash(git worktree *)",
+      "Bash(git branch *)",
+      "Bash(git -C /workspaces/cka-exam-prep diff .devcontainer/Dockerfile)",
+      "Bash(git -C /workspaces/cka-exam-prep ls-files .claude/worktrees/)",
+      "Bash(git *)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:docs.tigera.io)",
+      "WebSearch",
+      "WebFetch(domain:gateway-api.sigs.k8s.io)",
+      "WebFetch(domain:training.linuxfoundation.org)",
+      "WebFetch(domain:docs.linuxfoundation.org)",
+      "WebFetch(domain:dev.to)",
+      "WebFetch(domain:metallb.universe.tf)",
+      "WebFetch(domain:metallb.io)",
+      "Bash(curl -sL \"https://raw.githubusercontent.com/kubernetes/website/main/content/en/docs/reference/access-authn-authz/rbac.md\")",
+      "Bash(curl -sL \"https://raw.githubusercontent.com/kubernetes/website/main/content/en/docs/concepts/workloads/controllers/statefulset.md\")",
+      "Bash(curl -sL \"https://raw.githubusercontent.com/kubernetes/website/main/content/en/docs/reference/command-line-tools-reference/feature-gates.md\")",
+      "Bash(read ref *)",
+      "Bash([ ! -d \"/workspaces/cka-exam-prep/$ref\" ])",
+      "Bash(grep -v \":0$\")",
+      "Bash(xargs realpath *)",
+      "mcp__plugin_semgrep_semgrep__semgrep_scan",
+      "Bash(awk '{print $9}')",
+      "Bash(grep -v \"^\\\\.$\")",
+      "Bash(grep -v \"^\\\\.\\\\.$\")",
+      "Bash(grep -E '\\\\.\\(sh|py|js\\)$')",
+      "WebFetch(domain:code.visualstudio.com)"
+    ]
+  },
+  "effortLevel": "xhigh"
+}
