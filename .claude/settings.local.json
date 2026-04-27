@@ -31,7 +31,8 @@
       "Bash(grep -v \"^\\\\.$\")",
       "Bash(grep -v \"^\\\\.\\\\.$\")",
       "Bash(grep -E '\\\\.\\(sh|py|js\\)$')",
-      "WebFetch(domain:code.visualstudio.com)"
+      "WebFetch(domain:code.visualstudio.com)",
+      "Bash(grep -E \"\\\\.\\(img|iso|qcow2\\)$|meta-data|user-data\")"
     ]
   },
   "effortLevel": "xhigh"

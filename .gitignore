@@ -1,0 +1,7 @@
+.aider*
+*.log
+*.img
+*.iso
+*.qcow2
+*meta-data
+*user-data

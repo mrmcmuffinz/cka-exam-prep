@@ -141,6 +141,12 @@ KIND_EXPERIMENTAL_PROVIDER=nerdctl kind create cluster
 
 The multi-node setup required from Assignment 4 onward uses a kind config file and is documented in `exercises/01-pods/assignment-4/README.md`.
 
+## Beyond the Exam: Understanding Kubernetes Internals
+
+The exercises in this repository are built around kind clusters because they start fast, clean up easily, and closely match the exam environment. For learners who want to understand how Kubernetes works under the hood (what kubeadm actually does, how certificates flow through the system, how CNI plugins program routes, how etcd clustering works), the `cluster-setup/` directory contains four guides for building Kubernetes clusters from scratch on QEMU/KVM virtual machines.
+
+These guides are optional and not required for exam preparation. They exist for the subset of learners who find that understanding the internals makes the exam topics click. See `cluster-setup/README.md` for an introduction to the four guides and help choosing which one to start with.
+
 ## License
 
 This repository is licensed under the Apache License, Version 2.0. See the `LICENSE` file for the full text. The prompts, tutorials, homework exercises, and answer keys are all covered by this license, which means they can be reused, modified, and redistributed (including for commercial purposes) with attribution. If you use this material to build your own study resources or teach others, a link back is appreciated but not required.
