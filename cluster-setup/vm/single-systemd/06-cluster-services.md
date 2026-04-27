@@ -215,7 +215,7 @@ local-path (default)   rancher.io/local-path   Delete          WaitForFirstConsu
 
 ### Testing Storage Provisioning
 
-Create a quick test to confirm PVCs get fulfilled:
+Create a PVC and a pod that writes a file to the mounted volume:
 
 ```bash
 cat <<EOF | kubectl apply -f -
@@ -238,7 +238,7 @@ spec:
   containers:
     - name: busybox
       image: busybox
-      command: ["sleep", "3600"]
+      command: ["sh", "-c", "echo 'storage test' > /data/test.txt && sleep 3600"]
       volumeMounts:
         - mountPath: /data
           name: storage
@@ -256,11 +256,67 @@ kubectl get pvc test-pvc
 kubectl get pv
 ```
 
-Clean up:
+Confirm the file was written from inside the pod:
+
+```bash
+kubectl exec test-pvc-pod -- cat /data/test.txt
+```
+
+Expected output:
+
+```
+storage test
+```
+
+The local-path-provisioner stores data under `/opt/local-path-provisioner/` on the node, with one directory per PVC named `<pv-name>_<namespace>_<pvc-name>`. Find the directory and verify the file is visible directly on the node filesystem:
+
+```bash
+# Get the PV name
+PV_NAME=$(kubectl get pvc test-pvc -o jsonpath='{.spec.volumeName}')
+
+# Find the directory on the node
+ls /opt/local-path-provisioner/${PV_NAME}_default_test-pvc/
+
+# Read the file directly from the node
+cat /opt/local-path-provisioner/${PV_NAME}_default_test-pvc/test.txt
+```
+
+Both should show `storage test`, confirming that data written inside the pod is stored on the node filesystem and accessible outside the pod.
+
+### Verifying Cleanup
+
+Before deleting, capture the PV directory path so you can confirm it is removed afterward:
+
+```bash
+PV_NAME=$(kubectl get pvc test-pvc -o jsonpath='{.spec.volumeName}')
+PV_DIR="/opt/local-path-provisioner/${PV_NAME}_default_test-pvc"
+echo "Watching: $PV_DIR"
+ls $PV_DIR
+```
+
+Delete the pod and PVC:
 
 ```bash
 kubectl delete pod test-pvc-pod
 kubectl delete pvc test-pvc
+```
+
+The PVC deletion triggers the provisioner to run its teardown script, which removes the directory. Confirm it is gone:
+
+```bash
+ls $PV_DIR 2>&1
+```
+
+Expected output:
+
+```
+ls: cannot access '/opt/local-path-provisioner/pvc-...': No such file or directory
+```
+
+If the directory still exists a few seconds after PVC deletion, check that the provisioner pod is running:
+
+```bash
+kubectl -n local-path-storage get pods
 ```
 
 ---
