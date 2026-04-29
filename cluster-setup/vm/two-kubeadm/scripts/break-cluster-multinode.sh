@@ -39,8 +39,14 @@ run_on() {
   local node="$1"
   shift
   case "$node" in
-    node1) $NODE1_SSH "sudo bash -c '$*'" ;;
-    node2) $NODE2_SSH "sudo bash -c '$*'" ;;
+    node1) $NODE1_SSH sudo bash <<EOF
+$*
+EOF
+    ;;
+    node2) $NODE2_SSH sudo bash <<EOF
+$*
+EOF
+    ;;
     *) echo "Unknown node: $node" >&2; return 1 ;;
   esac
 }
@@ -49,6 +55,170 @@ backup_if_needed() {
   local node="$1"
   local file="$2"
   run_on "$node" "if [ -f '$file' ] && [ ! -f '${file}.break-backup' ]; then cp '$file' '${file}.break-backup'; fi"
+}
+
+# -------------------------------------------------------------------
+# Help and Argument Parsing
+# -------------------------------------------------------------------
+show_help() {
+  cat <<'EOF'
+NAME
+    break-cluster-multinode.sh - Introduce faults into two-node kubeadm Kubernetes cluster
+
+SYNOPSIS
+    ./break-cluster-multinode.sh [OPTION | SCENARIO]
+
+DESCRIPTION
+    Introduces a single controlled fault into your two-node, kubeadm-installed
+    Kubernetes cluster for troubleshooting practice. Run this from the QEMU host.
+    The script SSHes into either node1 or node2 to apply the break.
+
+    This variant covers kubeadm cluster operations across two nodes: join token
+    issues, kubelet config drift, CNI failures, kube-proxy issues, certificate
+    problems, and bridge networking faults.
+
+OPTIONS
+    -h, --help
+        Display this help message and exit.
+
+    --list
+        Show how many scenarios are available without spoilers.
+
+    --reset
+        Restore all cluster components to working state. This reverses any
+        changes made by previous scenario runs.
+
+    SCENARIO
+        A number between 1 and 15. If omitted, picks a random scenario.
+
+CONFIGURATION
+    NODE1_SSH
+        SSH command for node1. Default: ssh node1
+
+    NODE2_SSH
+        SSH command for node2. Default: ssh node2
+
+    Examples:
+        export NODE1_SSH="ssh -p 2222 kube@192.168.122.10"
+        export NODE2_SSH="ssh -p 2223 kube@192.168.122.11"
+
+EXAMPLES
+    Run a random scenario:
+        ./break-cluster-multinode.sh
+
+    Run scenario 8 specifically:
+        ./break-cluster-multinode.sh 8
+
+    List available scenarios:
+        ./break-cluster-multinode.sh --list
+
+    Reset cluster to working state:
+        ./break-cluster-multinode.sh --reset
+
+    SSH into either node:
+        ssh node1    # control plane
+        ssh node2    # worker
+
+DIAGNOSTIC COMMANDS
+    After a scenario runs, SSH into either node and diagnose the problem:
+
+        kubectl get nodes -o wide
+        kubectl get pods -A -o wide
+        kubectl describe node <name>
+        ssh node1 'sudo systemctl status kubelet containerd'
+        ssh node2 'sudo systemctl status kubelet containerd'
+        ssh node1 'sudo journalctl -u kubelet -n 50'
+        ssh node2 'sudo journalctl -u kubelet -n 50'
+
+SCENARIO CATEGORIES
+    1-3:   Single-node configuration failures (kubelet, containerd)
+    4-7:   Cluster-level resource failures (DaemonSet, Deployment)
+    8-15:  Multi-node operational issues (cordon, policy, routing)
+
+FILES
+    node1:
+        /etc/kubernetes/manifests/kube-apiserver.yaml
+        /etc/kubernetes/manifests/etcd.yaml
+
+    node2:
+        /etc/kubernetes/kubelet.conf
+        /var/lib/kubelet/config.yaml
+        /etc/hosts
+
+EXIT STATUS
+    0   Success
+    1   Invalid scenario number or other error
+
+SEE ALSO
+    kubectl(1), systemctl(1), journalctl(1), crictl(1), kubeadm(1)
+EOF
+  exit 0
+}
+
+parse_args() {
+  if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    show_help
+  fi
+
+  if [[ "${1:-}" == "--list" ]]; then
+    ACTION="list"
+    return
+  fi
+
+  if [[ "${1:-}" == "--reset" ]]; then
+    ACTION="reset"
+    return
+  fi
+
+  if [[ -n "${1:-}" ]]; then
+    SCENARIO_NUM="$1"
+  else
+    SCENARIO_NUM=$(( (RANDOM % TOTAL_SCENARIOS) + 1 ))
+  fi
+
+  ACTION="scenario"
+}
+
+validate_scenario() {
+  local scenario="$1"
+
+  if [[ "$scenario" -lt 1 || "$scenario" -gt "$TOTAL_SCENARIOS" ]]; then
+    echo "ERROR: Scenario must be between 1 and $TOTAL_SCENARIOS." >&2
+    exit 1
+  fi
+}
+
+print_banner() {
+  local scenario="$1"
+
+  echo "============================================="
+  echo "  Multi-Node Cluster Break Scenario #${scenario}"
+  echo "============================================="
+  echo ""
+  echo "Something has been broken in your cluster."
+  echo "SSH into either node and use kubectl, systemctl,"
+  echo "journalctl, and your knowledge of the cluster"
+  echo "to find and fix the problem."
+  echo ""
+  echo "  ssh node1    # control plane"
+  echo "  ssh node2    # worker"
+  echo ""
+  echo "Diagnostic starting points:"
+  echo "  kubectl get nodes -o wide"
+  echo "  kubectl get pods -A -o wide"
+  echo "  kubectl describe node <name>"
+  echo "  ssh node1 'sudo systemctl status kubelet containerd'"
+  echo "  ssh node2 'sudo systemctl status kubelet containerd'"
+  echo "  ssh node1 'sudo journalctl -u kubelet -n 50'"
+  echo ""
+  echo "To reset: $0 --reset"
+  echo "============================================="
+}
+
+list_scenarios() {
+  echo "$TOTAL_SCENARIOS scenarios available."
+  echo "Usage: $0 [1-$TOTAL_SCENARIOS] or $0 for random."
+  exit 0
 }
 
 # -------------------------------------------------------------------
@@ -212,52 +382,25 @@ REMOTE
 # Main
 # -------------------------------------------------------------------
 
-if [[ "${1:-}" == "--list" ]]; then
-  echo "$TOTAL_SCENARIOS scenarios available."
-  echo "Usage: $0 [1-$TOTAL_SCENARIOS] or $0 for random."
-  exit 0
-fi
+main() {
+  parse_args "$@"
 
-if [[ "${1:-}" == "--reset" ]]; then
-  reset_all
-  exit 0
-fi
+  case "$ACTION" in
+    list)
+      list_scenarios
+      ;;
+    reset)
+      reset_all
+      exit 0
+      ;;
+    scenario)
+      validate_scenario "$SCENARIO_NUM"
+      print_banner "$SCENARIO_NUM"
+      "scenario_${SCENARIO_NUM}"
+      echo ""
+      echo "Break applied. Good luck."
+      ;;
+  esac
+}
 
-if [[ -n "${1:-}" ]]; then
-  scenario_num="$1"
-else
-  scenario_num=$(( (RANDOM % TOTAL_SCENARIOS) + 1 ))
-fi
-
-if [[ "$scenario_num" -lt 1 || "$scenario_num" -gt "$TOTAL_SCENARIOS" ]]; then
-  echo "ERROR: Scenario must be between 1 and $TOTAL_SCENARIOS."
-  exit 1
-fi
-
-echo "============================================="
-echo "  Multi-Node Cluster Break Scenario #${scenario_num}"
-echo "============================================="
-echo ""
-echo "Something has been broken in your cluster."
-echo "SSH into either node and use kubectl, systemctl,"
-echo "journalctl, and your knowledge of the cluster"
-echo "to find and fix the problem."
-echo ""
-echo "  ssh node1    # control plane"
-echo "  ssh node2    # worker"
-echo ""
-echo "Diagnostic starting points:"
-echo "  kubectl get nodes -o wide"
-echo "  kubectl get pods -A -o wide"
-echo "  kubectl describe node <name>"
-echo "  ssh node1 'sudo systemctl status kubelet containerd'"
-echo "  ssh node2 'sudo systemctl status kubelet containerd'"
-echo "  ssh node1 'sudo journalctl -u kubelet -n 50'"
-echo ""
-echo "To reset: $0 --reset"
-echo "============================================="
-
-"scenario_${scenario_num}"
-
-echo ""
-echo "Break applied. Good luck."
+main "$@"

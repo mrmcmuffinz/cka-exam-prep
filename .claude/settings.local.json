@@ -32,7 +32,15 @@
       "Bash(grep -v \"^\\\\.\\\\.$\")",
       "Bash(grep -E '\\\\.\\(sh|py|js\\)$')",
       "WebFetch(domain:code.visualstudio.com)",
-      "Bash(grep -E \"\\\\.\\(img|iso|qcow2\\)$|meta-data|user-data\")"
+      "Bash(grep -E \"\\\\.\\(img|iso|qcow2\\)$|meta-data|user-data\")",
+      "Bash(cluster-setup/vm/single-systemd/scripts/break-cluster.sh -h)",
+      "Bash(cluster-setup/vm/single-kubeadm/scripts/break-cluster.sh --help)",
+      "Bash(cluster-setup/vm/two-systemd/scripts/break-cluster.sh --list)",
+      "Bash(cluster-setup/vm/two-kubeadm/scripts/break-cluster-multinode.sh --list)",
+      "Bash(cluster-setup/vm/single-systemd/scripts/break-cluster.sh 999)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(ssh -p 2222 kube@127.0.0.1 \"echo 'SSH works'\")",
+      "Bash(echo \"SSH failed with exit code: $?\")"
     ]
   },
   "effortLevel": "xhigh"

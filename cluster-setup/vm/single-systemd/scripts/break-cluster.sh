@@ -30,7 +30,9 @@ TOTAL_SCENARIOS=15
 SSH_CMD="${BREAK_SSH_CMD:-ssh -p 2222 kube@127.0.0.1}"
 
 run_on_vm() {
-  $SSH_CMD "sudo bash -c '$1'"
+  $SSH_CMD sudo bash <<EOF
+$1
+EOF
 }
 
 # -------------------------------------------------------------------
@@ -39,6 +41,157 @@ run_on_vm() {
 backup_if_needed() {
   local file="$1"
   run_on_vm "if [ -f '$file' ] && [ ! -f '${file}.break-backup' ]; then cp '$file' '${file}.break-backup'; fi"
+}
+
+# -------------------------------------------------------------------
+# Help and Argument Parsing
+# -------------------------------------------------------------------
+show_help() {
+  cat <<'EOF'
+NAME
+    break-cluster.sh - Introduce faults into single-node systemd Kubernetes cluster
+
+SYNOPSIS
+    ./break-cluster.sh [OPTION | SCENARIO]
+
+DESCRIPTION
+    Introduces a single controlled fault into your single-node, from-scratch,
+    systemd-managed Kubernetes cluster for troubleshooting practice. Run this
+    from the QEMU host. The script SSHes into the VM to apply the break.
+
+    This variant targets systemd service unit files for etcd, kube-apiserver,
+    kube-controller-manager, kube-scheduler, kubelet, and kube-proxy.
+
+OPTIONS
+    -h, --help
+        Display this help message and exit.
+
+    --list
+        Show how many scenarios are available without spoilers.
+
+    --reset
+        Restore all cluster components to working state. This reverses any
+        changes made by previous scenario runs.
+
+    SCENARIO
+        A number between 1 and 15. If omitted, picks a random scenario.
+
+CONFIGURATION
+    BREAK_SSH_CMD
+        Override the default SSH command. Default: ssh -p 2222 kube@127.0.0.1
+
+        Examples:
+            export BREAK_SSH_CMD="ssh node01"
+            export BREAK_SSH_CMD="ssh -p 2222 kube@127.0.0.1"
+
+EXAMPLES
+    Run a random scenario:
+        ./break-cluster.sh
+
+    Run scenario 7 specifically:
+        ./break-cluster.sh 7
+
+    List available scenarios:
+        ./break-cluster.sh --list
+
+    Reset cluster to working state:
+        ./break-cluster.sh --reset
+
+    SSH into the VM after running a scenario:
+        ssh -p 2222 kube@127.0.0.1
+
+DIAGNOSTIC COMMANDS
+    After a scenario runs, SSH into the VM and diagnose the problem:
+
+        systemctl status <service>
+        journalctl -u <service> -n 50
+        kubectl get nodes
+        kubectl get pods -A
+        curl -k https://127.0.0.1:6443/healthz
+
+    Key services: etcd, kube-apiserver, kube-controller-manager, kube-scheduler,
+                  containerd, kubelet, kube-proxy
+
+FILES
+    /etc/systemd/system/etcd.service
+    /etc/systemd/system/kube-apiserver.service
+    /etc/systemd/system/kube-controller-manager.service
+    /etc/systemd/system/kube-scheduler.service
+    /var/lib/kubelet/kubelet-config.yaml
+    /etc/cni/net.d/10-bridge.conf
+
+EXIT STATUS
+    0   Success
+    1   Invalid scenario number or other error
+
+SEE ALSO
+    kubectl(1), systemctl(1), journalctl(1)
+EOF
+  exit 0
+}
+
+parse_args() {
+  if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    show_help
+  fi
+
+  if [[ "${1:-}" == "--list" ]]; then
+    ACTION="list"
+    return
+  fi
+
+  if [[ "${1:-}" == "--reset" ]]; then
+    ACTION="reset"
+    return
+  fi
+
+  if [[ -n "${1:-}" ]]; then
+    SCENARIO_NUM="$1"
+  else
+    SCENARIO_NUM=$(( (RANDOM % TOTAL_SCENARIOS) + 1 ))
+  fi
+
+  ACTION="scenario"
+}
+
+validate_scenario() {
+  local scenario="$1"
+
+  if [[ "$scenario" -lt 1 || "$scenario" -gt "$TOTAL_SCENARIOS" ]]; then
+    echo "ERROR: Scenario must be between 1 and $TOTAL_SCENARIOS." >&2
+    exit 1
+  fi
+}
+
+print_banner() {
+  local scenario="$1"
+
+  echo "============================================="
+  echo "  Cluster Break Scenario #${scenario}"
+  echo "============================================="
+  echo ""
+  echo "Something has been broken in your cluster."
+  echo "SSH into the VM and use kubectl, systemctl,"
+  echo "journalctl, and your knowledge of the cluster"
+  echo "to find and fix the problem."
+  echo ""
+  echo "  ssh -p 2222 kube@127.0.0.1"
+  echo ""
+  echo "Diagnostic starting points:"
+  echo "  systemctl status <service>"
+  echo "  journalctl -u <service>"
+  echo "  kubectl get nodes"
+  echo "  kubectl get pods -A"
+  echo "  curl -k https://127.0.0.1:6443/healthz"
+  echo ""
+  echo "To reset: $0 --reset"
+  echo "============================================="
+}
+
+list_scenarios() {
+  echo "$TOTAL_SCENARIOS scenarios available."
+  echo "Usage: $0 [1-$TOTAL_SCENARIOS] or $0 for random."
+  exit 0
 }
 
 # -------------------------------------------------------------------
@@ -181,50 +334,25 @@ REMOTE
 # Main
 # -------------------------------------------------------------------
 
-if [[ "${1:-}" == "--list" ]]; then
-  echo "$TOTAL_SCENARIOS scenarios available."
-  echo "Usage: $0 [1-$TOTAL_SCENARIOS] or $0 for random."
-  exit 0
-fi
+main() {
+  parse_args "$@"
 
-if [[ "${1:-}" == "--reset" ]]; then
-  reset_all
-  exit 0
-fi
+  case "$ACTION" in
+    list)
+      list_scenarios
+      ;;
+    reset)
+      reset_all
+      exit 0
+      ;;
+    scenario)
+      validate_scenario "$SCENARIO_NUM"
+      print_banner "$SCENARIO_NUM"
+      "scenario_${SCENARIO_NUM}"
+      echo ""
+      echo "Break applied. Good luck."
+      ;;
+  esac
+}
 
-if [[ -n "${1:-}" ]]; then
-  scenario_num="$1"
-else
-  scenario_num=$(( (RANDOM % TOTAL_SCENARIOS) + 1 ))
-fi
-
-if [[ "$scenario_num" -lt 1 || "$scenario_num" -gt "$TOTAL_SCENARIOS" ]]; then
-  echo "ERROR: Scenario must be between 1 and $TOTAL_SCENARIOS."
-  exit 1
-fi
-
-echo "============================================="
-echo "  Cluster Break Scenario #${scenario_num}"
-echo "============================================="
-echo ""
-echo "Something has been broken in your cluster."
-echo "SSH into the VM and use kubectl, systemctl,"
-echo "journalctl, and your knowledge of the cluster"
-echo "to find and fix the problem."
-echo ""
-echo "  ssh -p 2222 kube@127.0.0.1"
-echo ""
-echo "Diagnostic starting points:"
-echo "  systemctl status <service>"
-echo "  journalctl -u <service>"
-echo "  kubectl get nodes"
-echo "  kubectl get pods -A"
-echo "  curl -k https://127.0.0.1:6443/healthz"
-echo ""
-echo "To reset: $0 --reset"
-echo "============================================="
-
-"scenario_${scenario_num}"
-
-echo ""
-echo "Break applied. Good luck."
+main "$@"

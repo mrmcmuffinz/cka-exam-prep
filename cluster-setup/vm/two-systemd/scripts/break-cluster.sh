@@ -35,11 +35,15 @@ NODE1_SSH="${BREAK_NODE1:-ssh node1}"
 NODE2_SSH="${BREAK_NODE2:-ssh node2}"
 
 run_on_node1() {
-  $NODE1_SSH "sudo bash -c '$1'"
+  $NODE1_SSH sudo bash <<EOF
+$1
+EOF
 }
 
 run_on_node2() {
-  $NODE2_SSH "sudo bash -c '$1'"
+  $NODE2_SSH sudo bash <<EOF
+$1
+EOF
 }
 
 # -------------------------------------------------------------------
@@ -53,6 +57,182 @@ backup_on_node1() {
 backup_on_node2() {
   local file="$1"
   run_on_node2 "if [ -f '$file' ] && [ ! -f '${file}.break-backup' ]; then cp '$file' '${file}.break-backup'; fi"
+}
+
+# -------------------------------------------------------------------
+# Help and Argument Parsing
+# -------------------------------------------------------------------
+show_help() {
+  cat <<'EOF'
+NAME
+    break-cluster.sh - Introduce faults into two-node systemd Kubernetes cluster
+
+SYNOPSIS
+    ./break-cluster.sh [OPTION | SCENARIO]
+
+DESCRIPTION
+    Introduces a single controlled fault into your two-node, from-scratch,
+    systemd-managed Kubernetes cluster for troubleshooting practice. Run this
+    from the QEMU host. The script SSHes into one or both VMs to apply the break.
+
+    This variant extends single-systemd with multi-node failure modes: cross-node
+    pod routing, per-node CIDR mismatches, kube-proxy drift, and apiserver
+    certificate SAN issues.
+
+OPTIONS
+    -h, --help
+        Display this help message and exit.
+
+    --list
+        Show how many scenarios are available without spoilers.
+
+    --reset
+        Restore all cluster components to working state. This reverses any
+        changes made by previous scenario runs.
+
+    SCENARIO
+        A number between 1 and 18. If omitted, picks a random scenario.
+
+CONFIGURATION
+    BREAK_NODE1
+        SSH command for node1. Default: ssh node1
+
+    BREAK_NODE2
+        SSH command for node2. Default: ssh node2
+
+    Examples:
+        export BREAK_NODE1="ssh -p 2222 kube@192.168.122.10"
+        export BREAK_NODE2="ssh -p 2223 kube@192.168.122.11"
+
+EXAMPLES
+    Run a random scenario:
+        ./break-cluster.sh
+
+    Run scenario 14 specifically:
+        ./break-cluster.sh 14
+
+    List available scenarios:
+        ./break-cluster.sh --list
+
+    Reset cluster to working state:
+        ./break-cluster.sh --reset
+
+    SSH into either node:
+        ssh node1
+        ssh node2
+
+DIAGNOSTIC COMMANDS
+    After a scenario runs, SSH into either node and diagnose the problem:
+
+        kubectl get nodes -o wide
+        kubectl get pods -A -o wide
+        systemctl status <service>
+        journalctl -u <service> -n 50
+        ip route | grep 10.244
+        curl --cacert /etc/etcd/ca.pem https://192.168.122.10:6443/healthz
+
+    Multi-node hint: If a problem affects pods on only one node, the fault is
+    likely on that specific node. Check which node the misbehaving pod runs on first.
+
+SCENARIO CATEGORIES
+    Scenarios 1-10: Control plane issues on node1
+    Scenarios 11-13: Worker issues on node2
+    Scenarios 14-18: Multi-node networking (routing, CIDR, sysctls)
+
+FILES
+    node1:
+        /etc/systemd/system/etcd.service
+        /etc/systemd/system/kube-apiserver.service
+        /etc/systemd/system/kube-controller-manager.service
+        /etc/systemd/system/kube-scheduler.service
+
+    node2:
+        /var/lib/kubelet/kubelet-config.yaml
+        /var/lib/kube-proxy/kube-proxy-config.yaml
+        /etc/cni/net.d/10-bridge.conf
+
+EXIT STATUS
+    0   Success
+    1   Invalid scenario number or other error
+
+SEE ALSO
+    kubectl(1), systemctl(1), journalctl(1), ip(8), iptables(8)
+EOF
+  exit 0
+}
+
+parse_args() {
+  if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    show_help
+  fi
+
+  if [[ "${1:-}" == "--list" ]]; then
+    ACTION="list"
+    return
+  fi
+
+  if [[ "${1:-}" == "--reset" ]]; then
+    ACTION="reset"
+    return
+  fi
+
+  if [[ -n "${1:-}" ]]; then
+    SCENARIO_NUM="$1"
+  else
+    SCENARIO_NUM=$(( (RANDOM % TOTAL_SCENARIOS) + 1 ))
+  fi
+
+  ACTION="scenario"
+}
+
+validate_scenario() {
+  local scenario="$1"
+
+  if [[ "$scenario" -lt 1 || "$scenario" -gt "$TOTAL_SCENARIOS" ]]; then
+    echo "ERROR: Scenario must be between 1 and $TOTAL_SCENARIOS." >&2
+    exit 1
+  fi
+}
+
+print_banner() {
+  local scenario="$1"
+
+  echo "============================================="
+  echo "  Cluster Break Scenario #${scenario}"
+  echo "  (two-systemd)"
+  echo "============================================="
+  echo ""
+  echo "Something has been broken in your cluster."
+  echo "SSH into either node and use kubectl, systemctl,"
+  echo "journalctl, ip, and iptables to find the problem."
+  echo ""
+  echo "  ssh node1"
+  echo "  ssh node2"
+  echo ""
+  echo "Diagnostic starting points:"
+  echo "  kubectl get nodes -o wide"
+  echo "  kubectl get pods -A -o wide"
+  echo "  systemctl status <service>"
+  echo "  journalctl -u <service> -n 50"
+  echo "  ip route | grep 10.244"
+  echo "  curl --cacert /etc/etcd/ca.pem https://192.168.122.10:6443/healthz"
+  echo ""
+  echo "Multi-node hint: if a problem only affects pods on one node, the"
+  echo "fault is probably on that node. Ask which node the misbehaving pod"
+  echo "lives on first."
+  echo ""
+  echo "To reset: $0 --reset"
+  echo "============================================="
+}
+
+list_scenarios() {
+  echo "$TOTAL_SCENARIOS scenarios available."
+  echo "Usage: $0 [1-$TOTAL_SCENARIOS] or $0 for random."
+  echo ""
+  echo "Scenarios 1-10: control plane on node1"
+  echo "Scenarios 11-13: worker problems on node2"
+  echo "Scenarios 14-18: multi-node-specific (routing, CIDR, sysctls)"
+  exit 0
 }
 
 # -------------------------------------------------------------------
@@ -278,60 +458,25 @@ NODE2
 # Main
 # -------------------------------------------------------------------
 
-if [[ "${1:-}" == "--list" ]]; then
-  echo "$TOTAL_SCENARIOS scenarios available."
-  echo "Usage: $0 [1-$TOTAL_SCENARIOS] or $0 for random."
-  echo ""
-  echo "Scenarios 1-10: control plane on node1"
-  echo "Scenarios 11-13: worker problems on node2"
-  echo "Scenarios 14-18: multi-node-specific (routing, CIDR, sysctls)"
-  exit 0
-fi
+main() {
+  parse_args "$@"
 
-if [[ "${1:-}" == "--reset" ]]; then
-  reset_all
-  exit 0
-fi
+  case "$ACTION" in
+    list)
+      list_scenarios
+      ;;
+    reset)
+      reset_all
+      exit 0
+      ;;
+    scenario)
+      validate_scenario "$SCENARIO_NUM"
+      print_banner "$SCENARIO_NUM"
+      "scenario_${SCENARIO_NUM}"
+      echo ""
+      echo "Break applied. Good luck."
+      ;;
+  esac
+}
 
-if [[ -n "${1:-}" ]]; then
-  scenario_num="$1"
-else
-  scenario_num=$(( (RANDOM % TOTAL_SCENARIOS) + 1 ))
-fi
-
-if [[ "$scenario_num" -lt 1 || "$scenario_num" -gt "$TOTAL_SCENARIOS" ]]; then
-  echo "ERROR: Scenario must be between 1 and $TOTAL_SCENARIOS."
-  exit 1
-fi
-
-echo "============================================="
-echo "  Cluster Break Scenario #${scenario_num}"
-echo "  (two-systemd)"
-echo "============================================="
-echo ""
-echo "Something has been broken in your cluster."
-echo "SSH into either node and use kubectl, systemctl,"
-echo "journalctl, ip, and iptables to find the problem."
-echo ""
-echo "  ssh node1"
-echo "  ssh node2"
-echo ""
-echo "Diagnostic starting points:"
-echo "  kubectl get nodes -o wide"
-echo "  kubectl get pods -A -o wide"
-echo "  systemctl status <service>"
-echo "  journalctl -u <service> -n 50"
-echo "  ip route | grep 10.244"
-echo "  curl --cacert /etc/etcd/ca.pem https://192.168.122.10:6443/healthz"
-echo ""
-echo "Multi-node hint: if a problem only affects pods on one node, the"
-echo "fault is probably on that node. Ask which node the misbehaving pod"
-echo "lives on first."
-echo ""
-echo "To reset: $0 --reset"
-echo "============================================="
-
-"scenario_${scenario_num}"
-
-echo ""
-echo "Break applied. Good luck."
+main "$@"
