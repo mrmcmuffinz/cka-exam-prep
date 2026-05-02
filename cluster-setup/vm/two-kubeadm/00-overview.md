@@ -26,7 +26,7 @@ Follow these in order. Each document builds on the previous one.
 | Kubernetes | v1.35.3 |
 | containerd | Ubuntu 24.04 apt |
 | runc | Ubuntu 24.04 apt |
-| cri-tools (crictl) | Ubuntu 24.04 apt |
+| cri-tools (crictl) | v1.35.0 |
 | CNI plugins | v1.7.1 |
 | Calico | v3.31.0 |
 

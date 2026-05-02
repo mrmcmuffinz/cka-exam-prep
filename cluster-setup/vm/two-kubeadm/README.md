@@ -124,7 +124,7 @@ Installs the same set of services as the single-node `06-cluster-services.md`, a
 | Kubernetes | v1.35.3 | CKA exam target version, installed via `kubeadm` |
 | containerd | Ubuntu 24.04 apt | |
 | runc | Ubuntu 24.04 apt | containerd dependency |
-| cri-tools (crictl) | Ubuntu 24.04 apt | |
+| cri-tools (crictl) | v1.35.0 | |
 | CNI plugins (binaries) | v1.7.1 | Required by Calico |
 | Calico | v3.31.0 | Tigera operator install |
 

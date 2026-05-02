@@ -21,6 +21,7 @@ done
 
 ```bash
 CNI_VERSION=1.7.1
+CRI_VERSION=1.35.0
 ARCH=amd64
 
 for node in controlplane-1 nodes-1 nodes-2; do
@@ -28,9 +29,13 @@ for node in controlplane-1 nodes-1 nodes-2; do
   ssh "$node" "sudo bash" <<EOF
 set -euo pipefail
 
-# containerd, runc (dependency), crictl
+# containerd and runc (dependency)
 apt-get update -qq
-apt-get install -y containerd cri-tools
+apt-get install -y containerd
+
+# crictl (cri-tools is not in Ubuntu default repos; binary from upstream)
+curl -fsSL https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRI_VERSION}/crictl-v${CRI_VERSION}-linux-${ARCH}.tar.gz \
+  | tar -C /usr/local/bin -xz
 
 # CNI plugins
 mkdir -p /opt/cni/bin

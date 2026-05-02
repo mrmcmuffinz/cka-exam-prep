@@ -23,7 +23,7 @@ Follow these in order. The VM creation is reused from `single-systemd/01-qemu-vm
 | Kubernetes | v1.35.3 |
 | containerd | Ubuntu 24.04 apt |
 | runc | Ubuntu 24.04 apt |
-| cri-tools (crictl) | Ubuntu 24.04 apt |
+| cri-tools (crictl) | v1.35.0 |
 | CNI plugins | v1.7.1 |
 | Calico | v3.31.0 |
 

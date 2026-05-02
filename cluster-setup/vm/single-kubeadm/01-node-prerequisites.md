@@ -37,29 +37,32 @@ If any of those are wrong, see the cloud-init troubleshooting in `single-systemd
 
 ## Part 1: Container Runtime
 
-### Step 1: Install containerd and crictl
+### Step 1: Install containerd
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y containerd cri-tools
+sudo apt-get install -y containerd
 ```
 
-`apt install containerd` installs containerd and pulls in `runc` as a dependency. The systemd service unit is registered and started automatically. `cri-tools` provides the `crictl` CLI.
+`apt install containerd` installs containerd and pulls in `runc` as a dependency. The systemd service unit is registered and started automatically.
 
-### Step 2: Install CNI Plugin Binaries
+### Step 2: Download crictl and CNI Plugin Binaries
 
-The apt `containerd` package does not include CNI plugin binaries. Calico uses several of them from `/opt/cni/bin/`.
+`cri-tools` (crictl) is not in Ubuntu's default repos -- it lives in the Kubernetes apt repo, which is not added until Part 2. Install the binary directly. CNI plugin binaries are also not included in the apt containerd package.
 
 ```bash
+cri_version=1.35.0
 cni_plugins_version=1.7.1
 arch=amd64
-cni_plugins_archive=cni-plugins-linux-${arch}-v${cni_plugins_version}.tgz
 
-wget -q --show-progress --https-only --timestamping \
-  "https://github.com/containernetworking/plugins/releases/download/v${cni_plugins_version}/${cni_plugins_archive}"
+# crictl
+curl -fsSL "https://github.com/kubernetes-sigs/cri-tools/releases/download/v${cri_version}/crictl-v${cri_version}-linux-${arch}.tar.gz" \
+  | sudo tar -C /usr/local/bin -xz
 
+# CNI plugins (Calico calls these from inside its pod)
 sudo mkdir -p /opt/cni/bin
-sudo tar -xvf ${cni_plugins_archive} -C /opt/cni/bin/
+curl -fsSL "https://github.com/containernetworking/plugins/releases/download/v${cni_plugins_version}/cni-plugins-linux-${arch}-v${cni_plugins_version}.tgz" \
+  | sudo tar -C /opt/cni/bin -xz
 ```
 
 ### Step 3: Configure containerd
@@ -208,7 +211,7 @@ The node is ready for `kubeadm init`:
 |-----------|----------|---------|
 | containerd | `/usr/bin/containerd` (via apt) | Container lifecycle daemon, CRI implementation |
 | runc | `/usr/sbin/runc` (via apt) | Low-level container executor (OCI runtime) |
-| crictl | `/usr/bin/crictl` (via apt) | CLI tool for container inspection |
+| crictl | `/usr/local/bin/crictl` | CLI tool for container inspection |
 | CNI plugin binaries | `/opt/cni/bin/*` | Bridge, host-local, loopback, plus others Calico depends on |
 | kubeadm | `/usr/bin/kubeadm` | Cluster bootstrap and lifecycle tool |
 | kubelet | `/usr/bin/kubelet` | Node agent (will be started by `kubeadm init`) |
