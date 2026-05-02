@@ -243,60 +243,60 @@ list_scenarios() {
 
 # --- Control plane scenarios (controlplane-1 only) ---
 
-# Bad etcd data-dir
+# Difficulty: Beginner | Concept: etcd data directory path | Symptom: etcd fails to start; API server loses connection to etcd
 scenario_1() {
   backup_on_controlplane1 /etc/systemd/system/etcd.service
   run_on_controlplane1 "sed -i 's|--data-dir=/var/lib/etcd|--data-dir=/var/lib/etcd-bad|' /etc/systemd/system/etcd.service && systemctl daemon-reload && systemctl restart etcd" 2>/dev/null || true
 }
 
-# Wrong etcd endpoint in apiserver
+# Difficulty: Beginner | Concept: etcd endpoint URL in kube-apiserver | Symptom: API server starts then crashes; cannot reach etcd on wrong port
 scenario_2() {
   backup_on_controlplane1 /etc/systemd/system/kube-apiserver.service
   run_on_controlplane1 "sed -i 's|--etcd-servers=https://127.0.0.1:2379|--etcd-servers=https://127.0.0.1:9999|' /etc/systemd/system/kube-apiserver.service && systemctl daemon-reload && systemctl restart kube-apiserver" 2>/dev/null || true
 }
 
-# Missing apiserver cert path
+# Difficulty: Beginner | Concept: TLS certificate file path | Symptom: API server crashes; logs show "no such file or directory"
 scenario_3() {
   backup_on_controlplane1 /etc/systemd/system/kube-apiserver.service
   run_on_controlplane1 "sed -i 's|--tls-cert-file=/var/lib/kubernetes/kubernetes.pem|--tls-cert-file=/var/lib/kubernetes/missing.pem|' /etc/systemd/system/kube-apiserver.service && systemctl daemon-reload && systemctl restart kube-apiserver" 2>/dev/null || true
 }
 
-# Wrong controller-manager kubeconfig
+# Difficulty: Intermediate | Concept: controller-manager kubeconfig path | Symptom: API server up; deployments stop reconciling; failed pods not replaced
 scenario_4() {
   backup_on_controlplane1 /etc/systemd/system/kube-controller-manager.service
   run_on_controlplane1 "sed -i 's|--kubeconfig=/var/lib/kubernetes/kube-controller-manager.kubeconfig|--kubeconfig=/var/lib/kubernetes/wrong.kubeconfig|' /etc/systemd/system/kube-controller-manager.service && systemctl daemon-reload && systemctl restart kube-controller-manager" 2>/dev/null || true
 }
 
-# apiserver stopped and disabled
+# Difficulty: Beginner | Concept: systemd service enabled/disabled state | Symptom: kubectl completely unresponsive
 scenario_5() {
   run_on_controlplane1 "systemctl stop kube-apiserver && systemctl disable kube-apiserver" 2>/dev/null || true
 }
 
-# Wrong service-cluster-ip-range in apiserver
+# Difficulty: Advanced | Concept: service CIDR consistency across components | Symptom: new services get wrong ClusterIPs; CoreDNS breaks
 scenario_6() {
   backup_on_controlplane1 /etc/systemd/system/kube-apiserver.service
   run_on_controlplane1 "sed -i 's|--service-cluster-ip-range=10.96.0.0/16|--service-cluster-ip-range=10.99.0.0/16|' /etc/systemd/system/kube-apiserver.service && systemctl daemon-reload && systemctl restart kube-apiserver" 2>/dev/null || true
 }
 
-# AlwaysDeny authorization mode
+# Difficulty: Intermediate | Concept: API server authorization mode | Symptom: API server starts; every request returns 403 Forbidden
 scenario_7() {
   backup_on_controlplane1 /etc/systemd/system/kube-apiserver.service
   run_on_controlplane1 "sed -i 's|--authorization-mode=Node,RBAC|--authorization-mode=AlwaysDeny|' /etc/systemd/system/kube-apiserver.service && systemctl daemon-reload && systemctl restart kube-apiserver" 2>/dev/null || true
 }
 
-# etcd listen-client-urls switched from https to http
+# Difficulty: Intermediate | Concept: etcd client URL scheme (http vs https) | Symptom: etcd starts; API server fails with TLS handshake error
 scenario_8() {
   backup_on_controlplane1 /etc/systemd/system/etcd.service
   run_on_controlplane1 "sed -i 's|--listen-client-urls=https://|--listen-client-urls=http://|g' /etc/systemd/system/etcd.service && systemctl daemon-reload && systemctl restart etcd" 2>/dev/null || true
 }
 
-# controller-manager wrong cluster-cidr (CIDR allocation breaks for new nodes)
+# Difficulty: Advanced | Concept: cluster CIDR in controller-manager | Symptom: existing pods keep IPs; no CIDR allocated to newly joined nodes
 scenario_9() {
   backup_on_controlplane1 /etc/systemd/system/kube-controller-manager.service
   run_on_controlplane1 "sed -i 's|--cluster-cidr=10.244.0.0/16|--cluster-cidr=10.250.0.0/16|' /etc/systemd/system/kube-controller-manager.service && systemctl daemon-reload && systemctl restart kube-controller-manager" 2>/dev/null || true
 }
 
-# scheduler config file missing
+# Difficulty: Intermediate | Concept: scheduler config file path | Symptom: existing pods keep running; new pods stay Pending indefinitely
 scenario_10() {
   backup_on_controlplane1 /etc/systemd/system/kube-scheduler.service
   run_on_controlplane1 "sed -i 's|--config=/etc/kubernetes/config/kube-scheduler.yaml|--config=/etc/kubernetes/config/missing.yaml|' /etc/systemd/system/kube-scheduler.service && systemctl daemon-reload && systemctl restart kube-scheduler" 2>/dev/null || true
@@ -304,18 +304,18 @@ scenario_10() {
 
 # --- Worker scenarios ---
 
-# kubelet stopped on nodes-1 (nodes-1 should go NotReady, controlplane-1 unaffected)
+# Difficulty: Beginner | Concept: node-specific kubelet state | Symptom: nodes-1 goes NotReady; controlplane-1 is unaffected
 scenario_11() {
   run_on_nodes1 "systemctl stop kubelet && systemctl disable kubelet" 2>/dev/null || true
 }
 
-# Wrong containerd socket in nodes-1 kubelet config
+# Difficulty: Intermediate | Concept: CRI socket path in kubelet config | Symptom: nodes-1 NotReady; kubelet logs "failed to connect to container runtime"
 scenario_12() {
   backup_on_nodes1 /var/lib/kubelet/kubelet-config.yaml
   run_on_nodes1 "sed -i 's|containerRuntimeEndpoint: \"unix:///var/run/containerd/containerd.sock\"|containerRuntimeEndpoint: \"unix:///var/run/containerd/wrong.sock\"|' /var/lib/kubelet/kubelet-config.yaml && systemctl restart kubelet" 2>/dev/null || true
 }
 
-# kube-proxy on nodes-1 has wrong clusterCIDR (Service IPs work from controlplane-1, not nodes-1)
+# Difficulty: Intermediate | Concept: kube-proxy clusterCIDR on worker | Symptom: Service IPs work from controlplane-1 but not from nodes-1 pods
 scenario_13() {
   backup_on_nodes1 /var/lib/kube-proxy/kube-proxy-config.yaml
   run_on_nodes1 "sed -i 's|clusterCIDR: \"10.244.0.0/16\"|clusterCIDR: \"10.250.0.0/16\"|' /var/lib/kube-proxy/kube-proxy-config.yaml && systemctl restart kube-proxy" 2>/dev/null || true
@@ -323,30 +323,30 @@ scenario_13() {
 
 # --- Multi-node-specific scenarios ---
 
-# Cross-node pod route deleted on controlplane-1 (controlplane-1 pods cannot reach nodes-1 pods)
+# Difficulty: Advanced | Concept: host routing table (pod CIDR routes) | Symptom: pods on controlplane-1 cannot reach pods on nodes-1; reverse works
 scenario_14() {
   run_on_controlplane1 "ip route del 10.244.1.0/24 via 192.168.122.11 2>/dev/null" 2>/dev/null || true
   echo "  (route deleted on controlplane-1; persistent config in systemd-networkd may add it back on next networkd reload)"
 }
 
-# Cross-node pod route deleted on nodes-1 (asymmetric routing failure)
+# Difficulty: Advanced | Concept: host routing table (asymmetric) | Symptom: pings from controlplane-1 reach nodes-1 pods but replies are dropped
 scenario_15() {
   run_on_nodes1 "ip route del 10.244.0.0/24 via 192.168.122.10 2>/dev/null" 2>/dev/null || true
   echo "  (route deleted on nodes-1; pings from controlplane-1 to nodes-1 pods get there but replies are dropped)"
 }
 
-# CNI bridge config on nodes-1 has overlapping subnet with controlplane-1 (10.244.0.0/24 instead of 10.244.1.0/24)
+# Difficulty: Advanced | Concept: per-node pod CIDR subnet in CNI config | Symptom: nodes-1 pods get IPs from 10.244.0.0/24 (collision with controlplane-1)
 scenario_16() {
   backup_on_nodes1 /etc/cni/net.d/10-bridge.conf
   run_on_nodes1 "sed -i 's|\"subnet\": \"10.244.1.0/24\"|\"subnet\": \"10.244.0.0/24\"|' /etc/cni/net.d/10-bridge.conf && rm -rf /var/lib/cni/networks/bridge/* 2>/dev/null && systemctl restart kubelet" 2>/dev/null || true
 }
 
-# CNI bridge config hidden on nodes-1 (nodes-1 goes NotReady, controlplane-1 unaffected)
+# Difficulty: Intermediate | Concept: CNI config file presence on worker | Symptom: nodes-1 goes NotReady; kubelet reports "network plugin not ready"
 scenario_17() {
   run_on_nodes1 "if [ -f /etc/cni/net.d/10-bridge.conf ]; then mv /etc/cni/net.d/10-bridge.conf /etc/cni/net.d/10-bridge.conf.hidden && systemctl restart kubelet; fi" 2>/dev/null || true
 }
 
-# IP forwarding disabled on nodes-1 (cross-node traffic dies even with routes in place)
+# Difficulty: Advanced | Concept: kernel sysctl ip_forward | Symptom: cross-node traffic silently fails even with routes in place
 scenario_18() {
   backup_on_nodes1 /etc/sysctl.d/99-kubernetes-cri.conf
   run_on_nodes1 "sysctl -w net.ipv4.ip_forward=0" 2>/dev/null || true
