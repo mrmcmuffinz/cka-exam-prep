@@ -10,7 +10,7 @@ A single QEMU/KVM virtual machine running Ubuntu 24.04 with all Kubernetes compo
 
 ```mermaid
 graph TB
-    subgraph VM["Ubuntu 24.04 VM (node1)"]
+    subgraph VM["Ubuntu 24.04 VM (controlplane-1)"]
         subgraph CP["Control Plane"]
             etcd
             apiserver["kube-apiserver"]
@@ -147,5 +147,5 @@ The security, control plane, and worker component documents are adapted from [Ku
 
 | Script | Purpose | When to Use |
 |--------|---------|-------------|
-| `scripts/create-node.sh` | Creates the node1 VM with cloud-init configuration | Initial setup (runs document 01 commands) |
+| `scripts/create-node.sh` | Creates the controlplane-1 VM with cloud-init configuration | Initial setup (runs document 01 commands) |
 | `scripts/break-cluster.sh` | Introduces deliberate failures for troubleshooting practice | After completing the guide, when you want to practice diagnosis and repair |

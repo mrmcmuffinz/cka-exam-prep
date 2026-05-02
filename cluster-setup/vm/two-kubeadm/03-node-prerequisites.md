@@ -10,7 +10,7 @@
 
 Before `kubeadm init` can run, both nodes need a working container runtime and the `kubeadm` toolchain at the matching version. The container runtime stack (containerd, runc, crictl) is identical to what the single-node guide installed. The new pieces are the CNI plugin binaries (Calico calls them in document 05), the `kubeadm`, `kubelet`, and `kubectl` packages from the upstream Kubernetes apt repo, and an `apt-mark hold` so they do not silently upgrade.
 
-This document is identical for `node1` and `node2`. Run every step on both nodes. The cleanest way is to open two terminals (one SSH'd into each node) and walk through in lockstep.
+This document is identical for `controlplane-1` and `nodes-1`. Run every step on both nodes. The cleanest way is to open two terminals (one SSH'd into each node) and walk through in lockstep.
 
 ## What Is Different from the Single-Node Guide
 
@@ -209,21 +209,21 @@ kubectl version --client -o yaml | grep gitVersion
 
 All three should report `v1.35.3`.
 
-### Step 5: Pre-Pull Control Plane Images (node1 only)
+### Step 5: Pre-Pull Control Plane Images (controlplane-1 only)
 
-On `node1` only, pre-pull the images `kubeadm init` will need. This is optional but lets you catch image-pull errors before `kubeadm init` runs.
+On `controlplane-1` only, pre-pull the images `kubeadm init` will need. This is optional but lets you catch image-pull errors before `kubeadm init` runs.
 
 ```bash
 sudo kubeadm config images pull --kubernetes-version v1.35.3
 ```
 
-This pulls `kube-apiserver`, `kube-controller-manager`, `kube-scheduler`, `kube-proxy`, `pause`, `etcd`, and `coredns`. On `node2` skip this step; the worker only needs `kube-proxy` and `pause`, which `kubeadm join` will pull when needed.
+This pulls `kube-apiserver`, `kube-controller-manager`, `kube-scheduler`, `kube-proxy`, `pause`, `etcd`, and `coredns`. On `nodes-1` skip this step; the worker only needs `kube-proxy` and `pause`, which `kubeadm join` will pull when needed.
 
 ---
 
 ## Part 3: Verify Both Nodes Are Ready
 
-Same checklist on each node. Repeat on `node1` and `node2`:
+Same checklist on each node. Repeat on `controlplane-1` and `nodes-1`:
 
 ```bash
 # Swap off
@@ -265,4 +265,4 @@ Both nodes are now ready for `kubeadm init` and `kubeadm join`:
 | kubelet | `/usr/bin/kubelet` | Node agent (does not yet run; will be started by `kubeadm init` or `kubeadm join`) |
 | kubectl | `/usr/bin/kubectl` | Kubernetes CLI |
 
-The next document runs `kubeadm init` on `node1`.
+The next document runs `kubeadm init` on `controlplane-1`.

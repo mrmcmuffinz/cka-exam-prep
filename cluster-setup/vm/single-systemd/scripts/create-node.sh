@@ -7,14 +7,14 @@
 # with port forwarding for host-to-VM access.
 #
 # Usage: ./create-node.sh [node-name]
-#   node-name defaults to "node1" if not provided.
+#   node-name defaults to "controlplane-1" if not provided.
 
 set -euo pipefail
 
 # -------------------------------------------------------------------
 # Configuration
 # -------------------------------------------------------------------
-NODE_NAME="${1:-node1}"
+NODE_NAME="${1:-controlplane-1}"
 BASE_DIR="$HOME/cka-lab"
 IMAGE_DIR="$BASE_DIR/images"
 NODE_DIR="$BASE_DIR/$NODE_NAME"

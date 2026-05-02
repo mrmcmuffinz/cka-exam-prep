@@ -35,7 +35,7 @@ The multi-node guide generates certificates for 3 control nodes, 3 workers, and 
 1. **Root CA** - signs everything
 2. **Kubernetes API certificate** - used by kube-apiserver as its server cert, also reused as the client cert for talking to etcd and kubelet
 3. **admin user certificate** - for your kubectl access from outside the VM
-4. **node1 certificate** - used by kubelet as both its server cert and its client cert to the API server
+4. **controlplane-1 certificate** - used by kubelet as both its server cert and its client cert to the API server
 5. **kube-scheduler certificate** - client cert for scheduler to API server
 6. **kube-controller-manager certificate** - client cert for controller-manager to API server
 7. **kube-proxy certificate** - client cert for kube-proxy to API server
@@ -137,7 +137,7 @@ This is the most important certificate. It must include every hostname and IP th
 
 - `kubernetes.default.*` names used by pods inside the cluster
 - `10.96.0.1` is the Kubernetes API ClusterIP (the first IP in the service CIDR, which defaults to `10.96.0.0/12` with kubeadm, but we will use `10.96.0.0/16` for simplicity)
-- `node1` and its FQDN
+- `controlplane-1` and its FQDN
 - The VM's internal IP (assigned by QEMU DHCP, typically `10.0.2.15` for user-mode networking)
 - `127.0.0.1` for localhost access within the VM
 
@@ -166,7 +166,7 @@ Create `kubernetes-csr.json`:
     "kubernetes.default.svc.cluster",
     "kubernetes.default.svc.cluster.local",
     "10.96.0.1",
-    "node1",
+    "controlplane-1",
     "10.0.2.15",
     "127.0.0.1"
   ]
@@ -222,15 +222,15 @@ cfssl gencert \
   admin-csr.json | cfssljson -bare admin
 ```
 
-### 5. Node Certificate (node1)
+### 5. Node Certificate (controlplane-1)
 
-The kubelet on `node1` authenticates to the API server as `system:node:node1` (CN) in the `system:nodes` group (O). These are magic names recognized by the Kubernetes Node authorization mode.
+The kubelet on `controlplane-1` authenticates to the API server as `system:node:controlplane-1` (CN) in the `system:nodes` group (O). These are magic names recognized by the Kubernetes Node authorization mode.
 
-Create `node1-csr.json`:
+Create `controlplane-1-csr.json`:
 
 ```json
 {
-  "CN": "system:node:node1",
+  "CN": "system:node:controlplane-1",
   "key": {
     "algo": "rsa",
     "size": 2048
@@ -245,7 +245,7 @@ Create `node1-csr.json`:
     }
   ],
   "hosts": [
-    "node1",
+    "controlplane-1",
     "10.0.2.15",
     "127.0.0.1"
   ]
@@ -260,7 +260,7 @@ cfssl gencert \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
   -profile=kubernetes \
-  node1-csr.json | cfssljson -bare node1
+  controlplane-1-csr.json | cfssljson -bare controlplane-1
 ```
 
 ### 6. kube-scheduler Certificate
@@ -437,7 +437,7 @@ genkubeconfig() {
 
 # Generate kubeconfigs
 genkubeconfig admin admin
-genkubeconfig node1 system:node:node1
+genkubeconfig controlplane-1 system:node:controlplane-1
 genkubeconfig kube-scheduler system:kube-scheduler
 genkubeconfig kube-controller-manager system:kube-controller-manager
 genkubeconfig kube-proxy system:kube-proxy
@@ -502,13 +502,13 @@ After completing this chapter, your `~/auth/` directory contains:
 | `ca.pem`, `ca-key.pem` | Root CA certificate and key |
 | `kubernetes.pem`, `kubernetes-key.pem` | API server cert (also used for etcd and kubelet communication) |
 | `admin.pem`, `admin-key.pem` | Admin user client cert |
-| `node1.pem`, `node1-key.pem` | Kubelet server/client cert |
+| `controlplane-1.pem`, `controlplane-1-key.pem` | Kubelet server/client cert |
 | `kube-scheduler.pem`, `kube-scheduler-key.pem` | Scheduler client cert |
 | `kube-controller-manager.pem`, `kube-controller-manager-key.pem` | Controller-manager client cert |
 | `kube-proxy.pem`, `kube-proxy-key.pem` | kube-proxy client cert |
 | `service-account.pem`, `service-account-key.pem` | ServiceAccount token signing key pair |
 | `admin.kubeconfig` | Kubeconfig for admin user |
-| `node1.kubeconfig` | Kubeconfig for kubelet |
+| `controlplane-1.kubeconfig` | Kubeconfig for kubelet |
 | `kube-scheduler.kubeconfig` | Kubeconfig for scheduler |
 | `kube-controller-manager.kubeconfig` | Kubeconfig for controller-manager |
 | `kube-proxy.kubeconfig` | Kubeconfig for kube-proxy |

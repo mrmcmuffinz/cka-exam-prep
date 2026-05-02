@@ -10,7 +10,7 @@ A single QEMU/KVM virtual machine running Ubuntu 24.04 with a `kubeadm`-installe
 
 ```mermaid
 graph TB
-    subgraph VM["Ubuntu 24.04 VM (node1)"]
+    subgraph VM["Ubuntu 24.04 VM (controlplane-1)"]
         subgraph CP["Control Plane (static pods)"]
             etcd
             apiserver["kube-apiserver"]
@@ -109,9 +109,9 @@ Installs Helm, `local-path-provisioner` for PVCs, and `metrics-server` (with the
 
 ## VM Creation
 
-This guide reuses the VM creation from `single-systemd`. Run that guide's document 01 (`01-qemu-vm-setup.md`) to create `node1`, then come back here.
+This guide reuses the VM creation from `single-systemd`. Run that guide's document 01 (`01-qemu-vm-setup.md`) to create `controlplane-1`, then come back here.
 
-If you already have a `node1` VM from `single-systemd`, you can reuse it. Stop any running components from the systemd build first:
+If you already have a `controlplane-1` VM from `single-systemd`, you can reuse it. Stop any running components from the systemd build first:
 
 ```bash
 ssh kube@127.0.0.1 -p 2222
@@ -127,7 +127,7 @@ sudo rm -rf /etc/cni/net.d /etc/kubernetes
 sudo rm -rf ~/auth
 ```
 
-Cleaner option: `~/cka-lab/node1/stop-node1.sh` then destroy and recreate the VM with the existing `create-node.sh`. A 40 GB qcow2 disk takes seconds to recreate from the cached cloud image.
+Cleaner option: `~/cka-lab/controlplane-1/stop-controlplane-1.sh` then destroy and recreate the VM with the existing `create-node.sh`. A 40 GB qcow2 disk takes seconds to recreate from the cached cloud image.
 
 ## What This Guide Does Not Cover
 

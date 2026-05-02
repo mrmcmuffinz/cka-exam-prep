@@ -46,7 +46,7 @@ localAPIEndpoint:
   advertiseAddress: 10.0.2.15
   bindPort: 6443
 nodeRegistration:
-  name: node1
+  name: controlplane-1
   criSocket: unix:///run/containerd/containerd.sock
 ---
 apiVersion: kubeadm.k8s.io/v1beta4
@@ -66,7 +66,7 @@ apiServer:
     - 10.0.2.15
     - 127.0.0.1
     - localhost
-    - node1
+    - controlplane-1
 controllerManager: {}
 scheduler: {}
 ---
@@ -113,7 +113,7 @@ kubectl cluster-info
 kubectl get nodes
 ```
 
-`kubectl get nodes` should show `node1` with status `NotReady` and role `control-plane`. `NotReady` is expected at this stage: there is no CNI yet, so kubelet refuses to mark the node Ready. Document 03 fixes that.
+`kubectl get nodes` should show `controlplane-1` with status `NotReady` and role `control-plane`. `NotReady` is expected at this stage: there is no CNI yet, so kubelet refuses to mark the node Ready. Document 03 fixes that.
 
 ## Part 4: Remove the Control Plane Taint
 
@@ -121,13 +121,13 @@ By default, `kubeadm init` taints the control plane node with `node-role.kuberne
 
 ```bash
 # Check current taints
-kubectl describe node node1 | grep -i taint
+kubectl describe node controlplane-1 | grep -i taint
 
 # Remove the control-plane NoSchedule taint
-kubectl taint nodes node1 node-role.kubernetes.io/control-plane:NoSchedule-
+kubectl taint nodes controlplane-1 node-role.kubernetes.io/control-plane:NoSchedule-
 
 # Verify
-kubectl describe node node1 | grep -i taint
+kubectl describe node controlplane-1 | grep -i taint
 # Expected: Taints: <none>
 ```
 
@@ -135,7 +135,7 @@ The CKA exam tests both directions of this taint syntax, so it is worth knowing 
 
 ```bash
 # To put the taint back later (for practice):
-kubectl taint nodes node1 node-role.kubernetes.io/control-plane=:NoSchedule
+kubectl taint nodes controlplane-1 node-role.kubernetes.io/control-plane=:NoSchedule
 ```
 
 ## Part 5: Copy admin.conf to the Host
@@ -244,4 +244,4 @@ The control plane is up and reachable, and the node is ready to schedule pods (a
 | kube-controller-manager | `/etc/kubernetes/manifests/kube-controller-manager.yaml` | `https://127.0.0.1:10257/healthz` |
 | kube-scheduler | `/etc/kubernetes/manifests/kube-scheduler.yaml` | `https://127.0.0.1:10259/healthz` |
 
-`kubectl get nodes` shows `node1` as `NotReady`. The next document installs Calico to make the node `Ready` and enable pod networking.
+`kubectl get nodes` shows `controlplane-1` as `NotReady`. The next document installs Calico to make the node `Ready` and enable pod networking.

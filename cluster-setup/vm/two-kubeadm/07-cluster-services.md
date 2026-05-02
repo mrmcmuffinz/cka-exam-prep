@@ -20,7 +20,7 @@ CoreDNS is already running in `kube-system` because `kubeadm init` deployed it. 
 
 ## Prerequisites
 
-Both nodes are `Ready`. `kubectl` is configured (either on `node1` or via the kubeconfig copied to the host).
+Both nodes are `Ready`. `kubectl` is configured (either on `controlplane-1` or via the kubeconfig copied to the host).
 
 ---
 
@@ -240,7 +240,7 @@ kubectl get --raw /healthz && echo
 
 | Namespace | Pods |
 |-----------|------|
-| `kube-system` | apiserver, controller-manager, scheduler, etcd (all static, on `node1`), kube-proxy (one per node), coredns (2 replicas) |
+| `kube-system` | apiserver, controller-manager, scheduler, etcd (all static, on `controlplane-1`), kube-proxy (one per node), coredns (2 replicas) |
 | `calico-system` | calico-typha, calico-node (one per node), calico-kube-controllers |
 | `calico-apiserver` | calico-apiserver |
 | `tigera-operator` | tigera-operator |
@@ -268,7 +268,7 @@ The two-node cluster is now complete:
 |-------|-----------|--------|
 | VM infrastructure | QEMU/KVM, Ubuntu 24.04, host bridge | Running |
 | Container runtime | containerd, runc | Running on both nodes |
-| Control plane | etcd, kube-apiserver, kube-controller-manager, kube-scheduler | Running on `node1` (static pods) |
+| Control plane | etcd, kube-apiserver, kube-controller-manager, kube-scheduler | Running on `controlplane-1` (static pods) |
 | Worker | kubelet, kube-proxy | Running on both nodes |
 | Cluster networking | Calico (VXLANCrossSubnet), CoreDNS | Running |
 | Storage | local-path-provisioner | Running, default StorageClass |

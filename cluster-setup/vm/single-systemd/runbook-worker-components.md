@@ -147,8 +147,8 @@ kubelet is the node agent. It registers the node with the API server, watches fo
 | `/etc/systemd/system/kubelet.service` | systemd unit file |
 | `/var/lib/kubelet/kubelet-config.yaml` | kubelet configuration |
 | `/var/lib/kubelet/kubeconfig` | Kubeconfig for API server auth |
-| `/var/lib/kubelet/node1.pem` | Node TLS certificate |
-| `/var/lib/kubelet/node1-key.pem` | Node TLS private key |
+| `/var/lib/kubelet/controlplane-1.pem` | Node TLS certificate |
+| `/var/lib/kubelet/controlplane-1-key.pem` | Node TLS private key |
 | `/var/lib/kubernetes/ca.pem` | CA certificate |
 
 ### Health Check
@@ -244,14 +244,14 @@ ls -la /var/run/containerd/containerd.sock
 
 ```bash
 # Verify the node cert exists
-ls -la /var/lib/kubelet/node1.pem /var/lib/kubelet/node1-key.pem
+ls -la /var/lib/kubelet/controlplane-1.pem /var/lib/kubelet/controlplane-1-key.pem
 
 # Verify it was signed by the cluster CA
-openssl verify -CAfile /var/lib/kubernetes/ca.pem /var/lib/kubelet/node1.pem
+openssl verify -CAfile /var/lib/kubernetes/ca.pem /var/lib/kubelet/controlplane-1.pem
 
 # Check the identity in the cert
-openssl x509 -noout -subject -in /var/lib/kubelet/node1.pem
-# Should show CN=system:node:node1, O=system:nodes
+openssl x509 -noout -subject -in /var/lib/kubelet/controlplane-1.pem
+# Should show CN=system:node:controlplane-1, O=system:nodes
 ```
 
 **Swap is enabled**

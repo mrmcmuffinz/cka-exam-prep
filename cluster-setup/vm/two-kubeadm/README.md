@@ -21,7 +21,7 @@ Two QEMU/KVM virtual machines on a host-side Linux bridge, running Ubuntu 24.04,
 graph TB
     subgraph Host["Ubuntu 24.04 QEMU/KVM Host"]
         br0["br0 bridge<br/>192.168.122.1/24"]
-        subgraph node1["node1 (control plane)<br/>192.168.122.10"]
+        subgraph controlplane-1["controlplane-1 (control plane)<br/>192.168.122.10"]
             cp_etcd["etcd"]
             cp_api["kube-apiserver"]
             cp_sch["kube-scheduler"]
@@ -30,7 +30,7 @@ graph TB
             cp_proxy["kube-proxy"]
             cp_calico["calico-node"]
         end
-        subgraph node2["node2 (worker)<br/>192.168.122.11"]
+        subgraph nodes-1["nodes-1 (worker)<br/>192.168.122.11"]
             wk_kubelet["kubelet"]
             wk_proxy["kube-proxy"]
             wk_calico["calico-node"]
@@ -42,8 +42,8 @@ graph TB
         end
     end
 
-    br0 --- node1
-    br0 --- node2
+    br0 --- controlplane-1
+    br0 --- nodes-1
 ```
 
 Both VMs sit on the same Linux bridge with real IPs, so they can reach each other directly and you can SSH into either one from the host without port forwarding.
@@ -82,9 +82,9 @@ Configures a Linux bridge `br0` on the host so that both VMs share an L2 segment
 
 ### [02 - VM Provisioning](02-vm-provisioning.md)
 
-Creates two headless Ubuntu 24.04 VMs (`node1` and `node2`) with cloud-init, attached to `br0` with static IPs. Generates per-VM start and stop scripts and cluster-level scripts that operate on both nodes at once. The cloud-init config disables swap, loads kernel modules, and sets sysctls for both nodes.
+Creates two headless Ubuntu 24.04 VMs (`controlplane-1` and `nodes-1`) with cloud-init, attached to `br0` with static IPs. Generates per-VM start and stop scripts and cluster-level scripts that operate on both nodes at once. The cloud-init config disables swap, loads kernel modules, and sets sysctls for both nodes.
 
-**Result:** Two VMs reachable at `ssh node1` and `ssh node2`, each with `kubeadm` prerequisites already met.
+**Result:** Two VMs reachable at `ssh controlplane-1` and `ssh nodes-1`, each with `kubeadm` prerequisites already met.
 
 ### [03 - Node Prerequisites](03-node-prerequisites.md)
 
@@ -94,19 +94,19 @@ Installs containerd, runc, the CNI plugin binaries, crictl, and the `kubeadm`, `
 
 ### [04 - Control Plane Init](04-control-plane-init.md)
 
-Runs `kubeadm init` on `node1` with a YAML config (not flags), sets up `kubectl` access, and copies the kubeconfig to the host. Includes a mapping table from each `kubeadm`-generated file back to its hand-rolled equivalent in the single-node guide.
+Runs `kubeadm init` on `controlplane-1` with a YAML config (not flags), sets up `kubectl` access, and copies the kubeconfig to the host. Includes a mapping table from each `kubeadm`-generated file back to its hand-rolled equivalent in the single-node guide.
 
-**Result:** A functioning Kubernetes API at `https://192.168.122.10:6443`. `node1` is `NotReady` because there is no CNI yet.
+**Result:** A functioning Kubernetes API at `https://192.168.122.10:6443`. `controlplane-1` is `NotReady` because there is no CNI yet.
 
 ### [05 - CNI Installation](05-cni-installation.md)
 
-Installs Calico via the Tigera operator with a custom `Installation` resource that aligns the IPPool CIDR with the `kubeadm` `podSubnet`. Removes the control plane `NoSchedule` taint so workloads can run on `node1`. Verifies `NetworkPolicy` enforcement, since Flannel silently ignoring `NetworkPolicy` is the most common CKA exam CNI gotcha.
+Installs Calico via the Tigera operator with a custom `Installation` resource that aligns the IPPool CIDR with the `kubeadm` `podSubnet`. Removes the control plane `NoSchedule` taint so workloads can run on `controlplane-1`. Verifies `NetworkPolicy` enforcement, since Flannel silently ignoring `NetworkPolicy` is the most common CKA exam CNI gotcha.
 
-**Result:** `node1` goes `Ready`, pods get IPs from `10.244.0.0/16`, and `NetworkPolicy` is enforced.
+**Result:** `controlplane-1` goes `Ready`, pods get IPs from `10.244.0.0/16`, and `NetworkPolicy` is enforced.
 
 ### [06 - Worker Join](06-worker-join.md)
 
-Joins `node2` to the cluster with a freshly generated `kubeadm token`, verifies cross-node pod-to-pod traffic across the Calico VXLAN tunnel, and snapshots both qcow2 disks so you can roll back to clean-install state after deliberately breaking things.
+Joins `nodes-1` to the cluster with a freshly generated `kubeadm token`, verifies cross-node pod-to-pod traffic across the Calico VXLAN tunnel, and snapshots both qcow2 disks so you can roll back to clean-install state after deliberately breaking things.
 
 **Result:** Both nodes `Ready`, pods scheduling on both, cross-node Service resolution working.
 

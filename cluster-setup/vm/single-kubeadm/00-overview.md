@@ -44,8 +44,8 @@ Kubernetes v1.35 is the version the CKA exam currently targets.
 | SSH into VM | `ssh kube@127.0.0.1 -p 2222` |
 | API server from host | `curl -k https://127.0.0.1:6443/healthz` |
 | `kubectl` from host | Copy `/etc/kubernetes/admin.conf` from VM, use as kubeconfig |
-| VM console log | `tail -f ~/cka-lab/node1/node1-console.log` |
-| Stop VM | `~/cka-lab/node1/stop-node1.sh` |
+| VM console log | `tail -f ~/cka-lab/controlplane-1/controlplane-1-console.log` |
+| Stop VM | `~/cka-lab/controlplane-1/stop-controlplane-1.sh` |
 
 Default VM credentials: user `kube`, password `kubeadmin`.
 

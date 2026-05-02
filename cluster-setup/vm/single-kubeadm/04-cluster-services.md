@@ -20,7 +20,7 @@ CoreDNS is already running in `kube-system` because `kubeadm init` deployed it. 
 
 ## Prerequisites
 
-`node1` is `Ready` with Calico installed. `kubectl` is configured.
+`controlplane-1` is `Ready` with Calico installed. `kubectl` is configured.
 
 ---
 

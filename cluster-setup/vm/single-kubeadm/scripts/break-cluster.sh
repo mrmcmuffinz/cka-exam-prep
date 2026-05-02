@@ -19,7 +19,7 @@
 #
 # Configuration:
 #   Set BREAK_SSH_CMD to override the default SSH command.
-#   Example: export BREAK_SSH_CMD="ssh node1"
+#   Example: export BREAK_SSH_CMD="ssh controlplane-1"
 #
 # After running, SSH into the VM and use kubectl, systemctl, journalctl, crictl,
 # and your knowledge of the cluster to diagnose and fix the problem.
@@ -31,7 +31,7 @@ TOTAL_SCENARIOS=15
 # -------------------------------------------------------------------
 # SSH configuration
 # Adjust if your SSH config differs.
-# If you have a Host entry in ~/.ssh/config, set BREAK_SSH_CMD="ssh node1".
+# If you have a Host entry in ~/.ssh/config, set BREAK_SSH_CMD="ssh controlplane-1".
 # -------------------------------------------------------------------
 SSH_CMD="${BREAK_SSH_CMD:-ssh -p 2222 kube@127.0.0.1}"
 
@@ -88,7 +88,7 @@ CONFIGURATION
         Override the default SSH command. Default: ssh -p 2222 kube@127.0.0.1
 
         Examples:
-            export BREAK_SSH_CMD="ssh node1"
+            export BREAK_SSH_CMD="ssh controlplane-1"
             export BREAK_SSH_CMD="ssh -p 2222 kube@127.0.0.1"
 
 EXAMPLES
