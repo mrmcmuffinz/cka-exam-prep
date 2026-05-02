@@ -52,13 +52,15 @@ cni_plugins_version=1.7.1
 arch=amd64
 
 # crictl
-curl -fsSL "https://github.com/kubernetes-sigs/cri-tools/releases/download/v${cri_version}/crictl-v${cri_version}-linux-${arch}.tar.gz" \
-  | sudo tar -C /usr/local/bin -xz
+curl -fsSLo /tmp/crictl.tar.gz "https://github.com/kubernetes-sigs/cri-tools/releases/download/v${cri_version}/crictl-v${cri_version}-linux-${arch}.tar.gz"
+sudo tar -C /usr/local/bin -xzf /tmp/crictl.tar.gz
+rm /tmp/crictl.tar.gz
 
 # CNI plugins (Calico calls these from inside its pod)
 sudo mkdir -p /opt/cni/bin
-curl -fsSL "https://github.com/containernetworking/plugins/releases/download/v${cni_plugins_version}/cni-plugins-linux-${arch}-v${cni_plugins_version}.tgz" \
-  | sudo tar -C /opt/cni/bin -xz
+curl -fsSLo /tmp/cni-plugins.tgz "https://github.com/containernetworking/plugins/releases/download/v${cni_plugins_version}/cni-plugins-linux-${arch}-v${cni_plugins_version}.tgz"
+sudo tar -C /opt/cni/bin -xzf /tmp/cni-plugins.tgz
+rm /tmp/cni-plugins.tgz
 ```
 
 ### Step 3: Configure containerd

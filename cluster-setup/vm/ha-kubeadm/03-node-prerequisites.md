@@ -35,13 +35,15 @@ apt-get update -qq
 apt-get install -y containerd
 
 # crictl (cri-tools is not in Ubuntu default repos; binary from upstream)
-curl -fsSL https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRI_VERSION}/crictl-v${CRI_VERSION}-linux-${ARCH}.tar.gz \
-  | tar -C /usr/local/bin -xz
+curl -fsSLo /tmp/crictl.tar.gz https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRI_VERSION}/crictl-v${CRI_VERSION}-linux-${ARCH}.tar.gz
+tar -C /usr/local/bin -xzf /tmp/crictl.tar.gz
+rm /tmp/crictl.tar.gz
 
 # CNI plugins
 mkdir -p /opt/cni/bin
-curl -fsSL https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-${ARCH}-v${CNI_VERSION}.tgz \
-  | tar -C /opt/cni/bin -xz
+curl -fsSLo /tmp/cni-plugins.tgz https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-${ARCH}-v${CNI_VERSION}.tgz
+tar -C /opt/cni/bin -xzf /tmp/cni-plugins.tgz
+rm /tmp/cni-plugins.tgz
 
 # containerd config with systemd cgroup driver
 mkdir -p /etc/containerd
