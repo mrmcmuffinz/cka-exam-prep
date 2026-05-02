@@ -125,7 +125,7 @@ helm uninstall hello
 ### Step 1: Install
 
 ```bash
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.7.2/components.yaml
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.8.1/components.yaml
 ```
 
 ### Step 2: Add the Insecure-TLS Flag for Lab Use

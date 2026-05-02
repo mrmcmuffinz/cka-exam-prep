@@ -145,7 +145,7 @@ The `WaitForFirstConsumer` binding mode means the PV is provisioned where the po
 ## Part 3: metrics-server
 
 ```bash
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.7.2/components.yaml
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.8.1/components.yaml
 
 # Add the lab-only insecure flag
 kubectl -n kube-system patch deployment metrics-server --type=json -p='[
