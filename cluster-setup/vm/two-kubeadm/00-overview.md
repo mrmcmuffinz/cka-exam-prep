@@ -39,7 +39,7 @@ Three IP ranges are used throughout the documents and must stay consistent:
 | CIDR | Purpose | Where It Appears |
 |------|---------|------------------|
 | `192.168.122.0/24` | Host bridge `br0` | VM IPs (`192.168.122.10`, `192.168.122.11`), host gateway (`192.168.122.1`), MetalLB pool (optional) |
-| `10.96.0.0/16` | Service ClusterIP range | `kubeadm` `serviceSubnet`, CoreDNS ClusterIP (`10.96.0.10`), `kubernetes` Service (`10.96.0.1`) |
+| `10.96.0.0/16` | Service ClusterIP range | `kubeadm` `serviceSubnet`, CoreDNS ClusterIP (`10.96.0.10`), kubelet `clusterDNS`, `kubernetes` Service (`10.96.0.1`) |
 | `10.244.0.0/16` | Pod IP range | `kubeadm` `podSubnet`, Calico IPPool `cidr` |
 
 The bridge subnet matches libvirt's default `virbr0`. The host bridge setup in document 01 detects this collision and offers a way to reuse `virbr0` instead.

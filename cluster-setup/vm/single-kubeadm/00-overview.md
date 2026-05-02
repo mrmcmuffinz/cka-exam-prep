@@ -33,7 +33,7 @@ Kubernetes v1.35 is the version the CKA exam currently targets.
 
 | CIDR | Purpose | Where It Appears |
 |------|---------|------------------|
-| `10.96.0.0/16` | Service ClusterIP range | kubeadm `serviceSubnet`, CoreDNS ClusterIP (`10.96.0.10`), `kubernetes` Service (`10.96.0.1`) |
+| `10.96.0.0/16` | Service ClusterIP range | kubeadm `serviceSubnet`, CoreDNS ClusterIP (`10.96.0.10`), kubelet `clusterDNS`, `kubernetes` Service (`10.96.0.1`) |
 | `10.244.0.0/16` | Pod IP range | kubeadm `podSubnet`, Calico IPPool `cidr` |
 | `10.0.2.0/24` | QEMU guest network | VM gets `10.0.2.15` via DHCP |
 

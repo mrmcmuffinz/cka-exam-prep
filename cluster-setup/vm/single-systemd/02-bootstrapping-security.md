@@ -515,3 +515,43 @@ After completing this chapter, your `~/auth/` directory contains:
 | `encryption-config.yaml` | Encryption key for Secrets at rest |
 
 No certificates were removed from the original guide. The simplification was entirely structural: collapsing 6 node certificates into 1, removing the load balancer and its virtual IP from the SAN list, and pointing all kubeconfigs at `127.0.0.1:6443` instead of a load-balanced hostname.
+
+## Verification
+
+Run these checks inside the VM before moving to document 03. Each command should succeed silently or print an explicit OK.
+
+```bash
+cd ~/auth
+
+# 1. All expected files are present
+for f in ca.pem ca-key.pem kubernetes.pem kubernetes-key.pem \
+          admin.pem admin-key.pem controlplane-1.pem controlplane-1-key.pem \
+          kube-scheduler.pem kube-scheduler-key.pem \
+          kube-controller-manager.pem kube-controller-manager-key.pem \
+          kube-proxy.pem kube-proxy-key.pem \
+          service-account.pem service-account-key.pem \
+          admin.kubeconfig controlplane-1.kubeconfig \
+          kube-scheduler.kubeconfig kube-controller-manager.kubeconfig \
+          kube-proxy.kubeconfig encryption-config.yaml; do
+  [ -f "$f" ] && echo "OK: $f" || echo "MISSING: $f"
+done
+
+# 2. Every cert was signed by the cluster CA
+for cert in kubernetes.pem admin.pem controlplane-1.pem kube-scheduler.pem \
+            kube-controller-manager.pem kube-proxy.pem service-account.pem; do
+  openssl verify -CAfile ca.pem "$cert" 2>&1
+done
+
+# 3. The API server cert covers the required SANs
+openssl x509 -noout -text -in kubernetes.pem | grep -A 5 "Subject Alternative Name"
+# Expected entries: IP Address:127.0.0.1, IP Address:10.96.0.1, IP Address:10.0.2.15, DNS:controlplane-1
+
+# 4. The VM's actual IP is covered by the cert
+VM_IP=$(ip -4 addr show enp0s2 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1)
+echo "VM IP: $VM_IP"
+openssl x509 -noout -text -in kubernetes.pem | grep -q "IP Address:$VM_IP" \
+  && echo "OK: VM IP $VM_IP is in the cert SAN" \
+  || echo "MISMATCH: VM IP $VM_IP is NOT in the cert SAN -- regenerate the kubernetes cert with the correct IP"
+```
+
+If the VM IP check fails, the QEMU DHCP server assigned a different IP than expected. Update the `hosts` field in `kubernetes-csr.json` to include the actual IP, then regenerate the `kubernetes` cert and kubeconfigs.

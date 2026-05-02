@@ -56,7 +56,10 @@ containerd is the container runtime daemon. It pulls images, creates containers,
 ### Health Check
 
 ```bash
-systemctl status containerd
+# Quick version check (works even without Kubernetes configured)
+sudo ctr version
+
+# Full CRI info (confirms the socket is usable by kubelet)
 sudo crictl --runtime-endpoint unix:///var/run/containerd/containerd.sock info
 ```
 
@@ -154,7 +157,10 @@ kubelet is the node agent. It registers the node with the API server, watches fo
 ### Health Check
 
 ```bash
-systemctl status kubelet
+# kubelet's own health endpoint (works even if the API server is down)
+curl -sk http://127.0.0.1:10248/healthz
+
+# Node registration status (requires API server)
 kubectl get nodes
 ```
 
