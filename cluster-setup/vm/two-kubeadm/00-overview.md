@@ -86,3 +86,7 @@ All Kubernetes components run inside the VMs. `kubeadm`, `kubelet`, `kubectl`, a
 ## Scope
 
 This guide covers a two-node cluster with one control plane and one worker. The control plane node is intentionally left untainted so that workloads can also schedule on it, which lets you exercise drain, cordon, taint, and affinity scenarios without a third node. HA control plane setups (stacked etcd, multiple control plane nodes, external load balancer) are out of scope and would be a separate document.
+
+---
+
+[Next: Host Bridge Setup for Multi-Node Networking →](01-host-bridge-setup.md)

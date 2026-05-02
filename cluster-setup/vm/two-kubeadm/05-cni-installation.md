@@ -218,3 +218,7 @@ The cluster now has working pod networking with `NetworkPolicy` enforcement:
 | `calico-apiserver` | `calico-apiserver` | Aggregated API server for Calico-specific resources |
 
 `controlplane-1` is `Ready`, the control-plane taint is removed, and `NetworkPolicy` enforcement is verified. The next document joins `nodes-1` to the cluster.
+
+---
+
+← [Previous: Initializing the Control Plane with kubeadm](04-control-plane-init.md) | [Next: Joining the Worker Node →](06-worker-join.md)

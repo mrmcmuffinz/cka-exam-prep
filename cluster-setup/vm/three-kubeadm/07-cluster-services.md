@@ -35,3 +35,7 @@ kubectl get daemonsets -A
 
 **Result:** Complete cluster with DNS, storage, and metrics ready for Day 1-14 Mumshad
 scenarios across three nodes.
+
+---
+
+← [Previous: Worker Join: nodes-1 and nodes-2](06-worker-join.md)

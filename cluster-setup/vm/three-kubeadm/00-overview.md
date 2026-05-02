@@ -97,3 +97,7 @@ three-node scheduling surface.
 Three-node cluster: one control plane, two workers. The control plane is intentionally
 left untainted. HA control plane setups (stacked etcd, multiple control planes, external
 load balancer) are documented in `ha-kubeadm`.
+
+---
+
+[Next: Host Bridge Setup for Three-Node Networking →](01-host-bridge-setup.md)

@@ -71,3 +71,7 @@ workloads to schedule there too (document 07).
 
 **Result:** `controlplane-1` is `Ready`, pods get IPs from `10.244.0.0/16`, and
 `NetworkPolicy` is enforced. `controlplane-2` and all workers are not yet joined.
+
+---
+
+← [Previous: First Control Plane Initialization](05-control-plane-init.md) | [Next: Second Control Plane Join →](07-second-control-plane-join.md)

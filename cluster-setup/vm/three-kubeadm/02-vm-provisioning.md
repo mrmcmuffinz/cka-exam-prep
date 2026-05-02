@@ -276,3 +276,7 @@ All nodes should show: no swap, both kernel modules loaded, both sysctls = 1.
 
 **Result:** Three VMs at `192.168.122.10`, `.11`, `.12` with static bridge IPs,
 kubeadm prerequisites met.
+
+---
+
+← [Previous: Host Bridge Setup for Three-Node Networking](01-host-bridge-setup.md) | [Next: Node Prerequisites: Three Nodes →](03-node-prerequisites.md)

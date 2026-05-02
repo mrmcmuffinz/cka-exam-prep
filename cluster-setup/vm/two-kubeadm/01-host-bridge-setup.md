@@ -445,3 +445,7 @@ is SSH-reachable directly by address:
 ```bash
 ssh kube@192.168.2.210   # no port number, no forwarding
 ```
+
+---
+
+← [Previous: Two-Node Kubernetes Cluster: Overview](00-overview.md) | [Next: VM Provisioning for Two-Node Cluster →](02-vm-provisioning.md)

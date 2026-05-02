@@ -135,3 +135,7 @@ A three-member etcd cluster (three control planes) tolerates one failure and is 
 minimum for production HA. The two-member setup here is suitable for practicing the
 join workflow and API server load balancing without the RAM cost of a third control
 plane.
+
+---
+
+[Next: Host Bridge Setup and HAProxy Load Balancer →](01-host-bridge-setup.md)

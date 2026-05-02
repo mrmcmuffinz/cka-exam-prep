@@ -573,3 +573,7 @@ All cluster-level lifecycle commands:
 | `~/cka-lab/two-kubeadm/create-cluster.sh` | Re-provision (after destroy, or on first run) |
 
 The next document installs the container runtime and `kubeadm` toolchain on both nodes.
+
+---
+
+← [Previous: Host Bridge Setup for Multi-Node Networking](01-host-bridge-setup.md) | [Next: Installing Container Runtime and kubeadm Toolchain →](03-node-prerequisites.md)

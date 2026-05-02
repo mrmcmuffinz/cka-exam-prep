@@ -152,3 +152,7 @@ curl --cacert ~/cka-lab/ha-kubeadm/ca.crt https://192.168.122.100:6443/healthz
 
 **Result:** Kubernetes API reachable at `https://192.168.122.100:6443` via HAProxy.
 `controlplane-1` is `NotReady` (no CNI). Certificate key is valid for 2 hours.
+
+---
+
+← [Previous: Load Balancer Verification](04-load-balancer-setup.md) | [Next: CNI Installation: Calico →](06-cni-installation.md)

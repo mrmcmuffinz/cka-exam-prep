@@ -153,3 +153,7 @@ done
 
 **Result:** All five nodes `Ready`, cross-node pod networking working through Calico
 VXLAN, DaemonSets deployed on all nodes.
+
+---
+
+← [Previous: Second Control Plane Join](07-second-control-plane-join.md) | [Next: Cluster Services →](09-cluster-services.md)

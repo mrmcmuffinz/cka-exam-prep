@@ -69,3 +69,7 @@ The two guides are complementary, not redundant. `single-systemd` shows what `ku
 ## Scope
 
 Single-node cluster only. The control plane is left untainted so workloads can also schedule on the same node. Multi-node `kubeadm` setup is covered in `cka/vm/two-kubeadm`.
+
+---
+
+[Next: Installing Container Runtime and kubeadm Toolchain (Single Node) →](01-node-prerequisites.md)

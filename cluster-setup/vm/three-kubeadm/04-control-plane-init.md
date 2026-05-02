@@ -104,3 +104,7 @@ kubectl get nodes
 
 **Result:** Kubernetes API reachable at `https://192.168.122.10:6443`. `controlplane-1`
 is `NotReady` (no CNI yet).
+
+---
+
+← [Previous: Node Prerequisites: Three Nodes](03-node-prerequisites.md) | [Next: CNI Installation: Calico →](05-cni-installation.md)

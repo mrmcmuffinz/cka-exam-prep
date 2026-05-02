@@ -204,3 +204,7 @@ The single-node `kubeadm` cluster is now complete:
 | Helm | Helm v3 | Installed |
 
 You can now deploy workloads, create Services, use PersistentVolumeClaims, and manage the cluster with `kubectl` from inside the VM or from the host through the port-forwarded 6443.
+
+---
+
+← [Previous: Installing Calico as the Cluster CNI (Single Node)](03-cni-installation.md)

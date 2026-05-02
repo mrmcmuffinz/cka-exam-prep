@@ -265,3 +265,7 @@ The control plane is up and reachable. Static pods are `Running`; CoreDNS and ku
 | CoreDNS | Deployment (installed by kubeadm) | Pending (no CNI) |
 
 `kubectl get nodes` shows `controlplane-1` as `NotReady`. The next document installs Calico to make the node `Ready` and move CoreDNS and kube-proxy to `Running`.
+
+---
+
+← [Previous: Installing Container Runtime and kubeadm Toolchain (Single Node)](01-node-prerequisites.md) | [Next: Installing Calico as the Cluster CNI (Single Node) →](03-cni-installation.md)

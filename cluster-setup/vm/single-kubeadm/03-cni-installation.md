@@ -191,3 +191,7 @@ The cluster has working pod networking with `NetworkPolicy` enforcement:
 | `calico-apiserver` | `calico-apiserver` | Aggregated API server for Calico-specific resources |
 
 `controlplane-1` is `Ready`, the control-plane taint is removed, and `NetworkPolicy` enforcement is verified. The next document installs the optional cluster services.
+
+---
+
+← [Previous: Initializing the Control Plane with kubeadm (Single Node)](02-control-plane-init.md) | [Next: Installing Cluster Services: Storage, Helm, and Metrics (Single Node) →](04-cluster-services.md)

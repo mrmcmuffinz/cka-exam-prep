@@ -197,3 +197,7 @@ the control plane clean and is closer to production behavior.
 
 **Result:** Both control planes `Ready`, etcd has two members, HAProxy routes to both
 API servers, and the VIP continues to serve traffic when either control plane is down.
+
+---
+
+← [Previous: CNI Installation: Calico](06-cni-installation.md) | [Next: Worker Join: nodes-1, nodes-2, nodes-3 →](08-worker-join.md)

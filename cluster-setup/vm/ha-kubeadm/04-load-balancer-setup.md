@@ -90,3 +90,7 @@ KUBECONFIG=~/cka-lab/ha-kubeadm/admin.conf kubectl get nodes
 
 **Result:** HAProxy is running with the VIP on `192.168.122.100:6443`. After kubeadm
 init (document 05), all kubeconfigs and worker join commands will use this address.
+
+---
+
+← [Previous: Node Prerequisites: Five Nodes](03-node-prerequisites.md) | [Next: First Control Plane Initialization →](05-control-plane-init.md)

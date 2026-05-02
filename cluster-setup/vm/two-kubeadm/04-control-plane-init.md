@@ -235,3 +235,7 @@ The control plane is up and reachable:
 | kube-scheduler | `/etc/kubernetes/manifests/kube-scheduler.yaml` | `https://127.0.0.1:10259/healthz` |
 
 `kubectl get nodes` shows `controlplane-1` as `NotReady`. The next document installs Calico to make the node `Ready` and enable pod networking.
+
+---
+
+← [Previous: Installing Container Runtime and kubeadm Toolchain](03-node-prerequisites.md) | [Next: Installing Calico as the Cluster CNI →](05-cni-installation.md)

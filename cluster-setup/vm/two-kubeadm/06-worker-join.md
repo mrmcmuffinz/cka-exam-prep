@@ -240,3 +240,7 @@ The two-node cluster is fully operational:
 | `nodes-1` | Worker | Ready | kube-proxy, calico-node, plus workloads |
 
 Both nodes can schedule pods, cross-node networking works, Service resolution works, and `NetworkPolicy` is enforced. The next document installs the optional cluster services (storage provisioner, Helm, metrics-server, MetalLB).
+
+---
+
+← [Previous: Installing Calico as the Cluster CNI](05-cni-installation.md) | [Next: Installing Cluster Services: Storage, Helm, Metrics, and Optional MetalLB →](07-cluster-services.md)

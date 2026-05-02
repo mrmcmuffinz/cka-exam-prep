@@ -220,3 +220,7 @@ The node is ready for `kubeadm init`:
 | kubectl | `/usr/bin/kubectl` | Kubernetes CLI |
 
 The next document runs `kubeadm init`.
+
+---
+
+← [Previous: Single-Node Kubernetes Cluster (kubeadm): Overview](00-overview.md) | [Next: Initializing the Control Plane with kubeadm (Single Node) →](02-control-plane-init.md)

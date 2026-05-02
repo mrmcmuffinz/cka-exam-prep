@@ -99,3 +99,7 @@ done
 ```
 
 **Result:** All five nodes have containerd running and the kubeadm toolchain at v1.35.3.
+
+---
+
+← [Previous: VM Provisioning: Five Nodes](02-vm-provisioning.md) | [Next: Load Balancer Verification →](04-load-balancer-setup.md)

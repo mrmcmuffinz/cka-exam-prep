@@ -64,3 +64,7 @@ or changes can be written). HAProxy's health check detects the API server down w
 
 **Result:** Complete five-node HA cluster with DNS, storage, and metrics, capable of
 surviving single control plane node failures.
+
+---
+
+← [Previous: Worker Join: nodes-1, nodes-2, nodes-3](08-worker-join.md)

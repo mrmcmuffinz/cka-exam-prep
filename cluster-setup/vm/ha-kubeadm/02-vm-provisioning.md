@@ -488,3 +488,7 @@ need a `--node-ip` addition:
   to the `JoinConfiguration` (see that document's Dual-NIC callout).
 - **Document 08** (Worker join): pass a kubeadm join config file per worker with
   `nodeRegistration.kubeletExtraArgs` (see that document's Dual-NIC callout).
+
+---
+
+← [Previous: Host Bridge Setup and HAProxy Load Balancer](01-host-bridge-setup.md) | [Next: Node Prerequisites: Five Nodes →](03-node-prerequisites.md)

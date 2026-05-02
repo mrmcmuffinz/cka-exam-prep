@@ -144,3 +144,7 @@ done
 
 **Result:** All three nodes `Ready`, pods scheduling across all nodes, cross-node Service
 resolution working, disks snapshotted.
+
+---
+
+← [Previous: CNI Installation: Calico](05-cni-installation.md) | [Next: Cluster Services →](07-cluster-services.md)

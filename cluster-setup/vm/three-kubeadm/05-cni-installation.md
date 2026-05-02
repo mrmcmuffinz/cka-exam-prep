@@ -86,3 +86,7 @@ kubectl delete namespace np-test
 
 **Result:** `controlplane-1` goes `Ready`, pods get IPs from `10.244.0.0/16`, and
 `NetworkPolicy` is enforced.
+
+---
+
+← [Previous: Control Plane Initialization](04-control-plane-init.md) | [Next: Worker Join: nodes-1 and nodes-2 →](06-worker-join.md)

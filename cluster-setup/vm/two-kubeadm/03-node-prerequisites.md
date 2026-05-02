@@ -213,3 +213,7 @@ Both nodes are now ready for `kubeadm init` and `kubeadm join`:
 | kubectl | `/usr/bin/kubectl` | Kubernetes CLI |
 
 The next document runs `kubeadm init` on `controlplane-1`.
+
+---
+
+← [Previous: VM Provisioning for Two-Node Cluster](02-vm-provisioning.md) | [Next: Initializing the Control Plane with kubeadm →](04-control-plane-init.md)

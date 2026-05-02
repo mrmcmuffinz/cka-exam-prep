@@ -126,3 +126,7 @@ sudo iptables -t nat -L POSTROUTING -n | grep MASQUERADE
 **Result:** `br0` is configured at `192.168.122.1/24` with the VIP alias at
 `192.168.122.100/32`. HAProxy is running and will route traffic to whichever control
 plane API servers are healthy.
+
+---
+
+← [Previous: HA Kubernetes Cluster (kubeadm): Overview](00-overview.md) | [Next: VM Provisioning: Five Nodes →](02-vm-provisioning.md)

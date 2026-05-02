@@ -277,3 +277,7 @@ The two-node cluster is now complete:
 | Load balancing | MetalLB (optional) | Running, address pool configured |
 
 The cluster is ready for every Day 1 through Day 14 scenario in the Mumshad CKA course.
+
+---
+
+← [Previous: Joining the Worker Node](06-worker-join.md)
