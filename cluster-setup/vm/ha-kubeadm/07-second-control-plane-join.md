@@ -79,6 +79,8 @@ ssh controlplane-1 '
 
 On `controlplane-2`:
 
+**Single-NIC setup (default):** use the inline command:
+
 ```bash
 ssh controlplane-2
 
@@ -88,6 +90,35 @@ sudo kubeadm join 192.168.122.100:6443 \
   --control-plane \
   --certificate-key <cert-key> \
   --apiserver-advertise-address 192.168.122.11
+```
+
+**Dual-NIC callout:** If you used Option C from document 02, pass a config file instead
+so kubeadm can pin `--node-ip` to the cluster NIC. On `controlplane-2`:
+
+```bash
+ssh controlplane-2
+
+cat > ~/kubeadm-join-cp2.yaml <<'EOF'
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: JoinConfiguration
+discovery:
+  bootstrapToken:
+    apiServerEndpoint: "192.168.122.100:6443"
+    token: <token>
+    caCertHashes:
+      - sha256:<hash>
+controlPlane:
+  localAPIEndpoint:
+    advertiseAddress: "192.168.122.11"
+    bindPort: 6443
+  certificateKey: <cert-key>
+nodeRegistration:
+  kubeletExtraArgs:
+    - name: "node-ip"
+      value: "192.168.122.11"
+EOF
+
+sudo kubeadm join --config ~/kubeadm-join-cp2.yaml
 ```
 
 This takes 1-2 minutes. kubeadm will:

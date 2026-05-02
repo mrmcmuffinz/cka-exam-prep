@@ -53,7 +53,26 @@ kind: KubeletConfiguration
 cgroupDriver: systemd
 ```
 
-The `controlPlaneEndpoint` is the VIP. The `certSANs` include both control plane node
+The `controlPlaneEndpoint` is the VIP.
+
+**Dual-NIC callout:** If you used Option C (dual-NIC) from document 02, add
+`nodeRegistration` to the `InitConfiguration` stanza to pin kubelet's node IP to the
+cluster NIC. Without it, kubelet picks the external NIC's `10.0.2.x` DHCP address as
+the node IP, which breaks inter-node pod traffic.
+
+```yaml
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: "192.168.122.10"
+  bindPort: 6443
+nodeRegistration:
+  kubeletExtraArgs:
+    - name: "node-ip"
+      value: "192.168.122.10"
+```
+
+Add the `nodeRegistration` block to your `kubeadm-init.yaml` before running `kubeadm init`. The `certSANs` include both control plane node
 IPs and the VIP so that certificates are valid regardless of which node serves the
 connection.
 

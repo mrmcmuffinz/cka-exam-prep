@@ -247,3 +247,244 @@ done
 
 **Result:** Five VMs at `.10`, `.11`, `.12`, `.13`, `.14` with static bridge IPs,
 kubeadm prerequisites met.
+
+---
+
+## Option C: Dual-NIC Setup (Separate Cluster and External Traffic)
+
+By default each VM has one NIC on `br0` that carries all traffic: inter-node Kubernetes
+communication, image pulls, package installs, and SSH. This is fine for exam prep, but
+a more realistic production-like setup separates:
+
+- **NIC 0 (`enp0s2`):** cluster network -- all Kubernetes traffic (apiserver, etcd,
+  kubelet, pod-to-pod via Calico VXLAN). Static IP on `192.168.122.x`, no default route.
+- **NIC 1 (`enp0s3`):** external network -- image pulls, package installs, internet.
+  QEMU user-mode NAT, DHCP, default route.
+
+SSH access stays on `enp0s2` (bridge), since the bridge gives direct host-to-VM
+connectivity. `enp0s3` only needs outbound internet access.
+
+### What Changes From the Single-NIC Setup
+
+Two things need updating: the QEMU start scripts (add a second `-netdev`/`-device`
+pair) and the cloud-init netplan (separate the two interfaces and remove the default
+route from the cluster NIC). Documents 05, 07, and 08 also need `--node-ip` added to
+kubeadm configurations so kubelet registers with the cluster NIC IP rather than the
+external NIC's `10.0.2.x` DHCP address.
+
+### Modified generate_node Function (Dual-NIC Cloud-Init)
+
+Replace the `generate_node` call in Part 2 with the version below, or run it in
+addition if you want to create a new set of VMs alongside existing ones.
+
+```bash
+BASE=~/cka-lab/ha-kubeadm
+IMAGE=~/cka-lab/images/ubuntu-24.04-server-cloudimg-amd64.img
+
+generate_node_dual_nic() {
+  local name="$1"
+  local ip="$2"
+  local node_dir="$BASE/$name"
+  mkdir -p "$node_dir/cloud-init"
+
+  cat > "$node_dir/cloud-init/meta-data" <<EOF
+instance-id: ${name}
+local-hostname: ${name}
+EOF
+
+  cat > "$node_dir/cloud-init/user-data" <<EOF
+#cloud-config
+
+hostname: ${name}
+manage_etc_hosts: true
+fqdn: ${name}.cka.local
+
+users:
+  - name: kube
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: sudo
+    shell: /bin/bash
+    lock_passwd: false
+    plain_text_passwd: "kubeadmin"
+    ssh_authorized_keys: []
+
+ssh_pwauth: true
+
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg
+  - lsb-release
+  - socat
+  - conntrack
+  - ipset
+  - net-tools
+  - jq
+  - bash-completion
+  - vim
+
+write_files:
+  - path: /etc/modules-load.d/k8s.conf
+    content: |
+      overlay
+      br_netfilter
+
+  - path: /etc/sysctl.d/k8s.conf
+    content: |
+      net.bridge.bridge-nf-call-iptables  = 1
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.ipv4.ip_forward                 = 1
+
+  - path: /etc/netplan/99-cka-bridge.yaml
+    content: |
+      network:
+        version: 2
+        ethernets:
+          enp0s2:
+            dhcp4: false
+            addresses: [${ip}/24]
+            # No default route -- cluster traffic only.
+            # SSH also uses this interface (direct bridge connectivity).
+          enp0s3:
+            dhcp4: true
+            # Gets 10.0.2.x from QEMU user-mode, becomes the default route.
+            nameservers:
+              addresses: [8.8.8.8, 8.8.4.4]
+
+runcmd:
+  - netplan apply
+  - modprobe overlay
+  - modprobe br_netfilter
+  - sysctl --system
+  - swapoff -a
+  - sed -i '/\sswap\s/s/^/#/' /etc/fstab
+
+power_state:
+  mode: reboot
+  message: "Cloud-init complete. Rebooting."
+  timeout: 30
+  condition: true
+EOF
+
+  genisoimage -output "$node_dir/seed.iso" \
+    -volid cidata -joliet -rock \
+    "$node_dir/cloud-init/user-data" \
+    "$node_dir/cloud-init/meta-data"
+
+  qemu-img create -f qcow2 \
+    -b "$(realpath "$IMAGE")" -F qcow2 \
+    "$node_dir/${name}.qcow2" 40G
+
+  echo "Node $name (dual-NIC) configured at $node_dir"
+}
+
+generate_node_dual_nic controlplane-1 192.168.122.10
+generate_node_dual_nic controlplane-2 192.168.122.11
+generate_node_dual_nic nodes-1        192.168.122.12
+generate_node_dual_nic nodes-2        192.168.122.13
+generate_node_dual_nic nodes-3        192.168.122.14
+```
+
+### Modified make_scripts Function (Second QEMU NIC)
+
+The only change is the addition of `-netdev user,id=net1` and its device. Replace the
+`make_scripts` loop in Part 3:
+
+```bash
+BASE=~/cka-lab/ha-kubeadm
+
+make_scripts_dual_nic() {
+  local name="$1"
+  local node_dir="$BASE/$name"
+
+  cat > "$node_dir/start-${name}.sh" <<SCRIPT
+#!/usr/bin/env bash
+set -euo pipefail
+SCRIPT_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
+qemu-system-x86_64 \\
+    -name ${name} \\
+    -machine type=q35,accel=kvm \\
+    -cpu host -smp 2 -m 4096 \\
+    -drive file="\$SCRIPT_DIR/${name}.qcow2",format=qcow2,if=virtio \\
+    -drive file="\$SCRIPT_DIR/seed.iso",format=raw,if=virtio \\
+    -netdev bridge,id=net0,br=br0 \\
+    -device virtio-net-pci,netdev=net0 \\
+    -netdev user,id=net1 \\
+    -device virtio-net-pci,netdev=net1 \\
+    -display none \\
+    -serial file:"\$SCRIPT_DIR/${name}-console.log" \\
+    -daemonize \\
+    -pidfile "\$SCRIPT_DIR/${name}.pid" "\$@"
+echo "${name} started (PID \$(cat "\$SCRIPT_DIR/${name}.pid"))"
+SCRIPT
+  chmod +x "$node_dir/start-${name}.sh"
+
+  cat > "$node_dir/stop-${name}.sh" <<SCRIPT
+#!/usr/bin/env bash
+set -euo pipefail
+SCRIPT_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
+PID_FILE="\$SCRIPT_DIR/${name}.pid"
+if [[ -f "\$PID_FILE" ]]; then
+  PID=\$(cat "\$PID_FILE")
+  if kill -0 "\$PID" 2>/dev/null; then
+    kill "\$PID"
+    tail --pid="\$PID" -f /dev/null 2>/dev/null || true
+    echo "${name} stopped."
+  else
+    echo "${name} not running (stale PID)."
+  fi
+  rm -f "\$PID_FILE"
+else
+  echo "No PID file for ${name}."
+fi
+SCRIPT
+  chmod +x "$node_dir/stop-${name}.sh"
+}
+
+for node in controlplane-1 controlplane-2 nodes-1 nodes-2 nodes-3; do
+  make_scripts_dual_nic "$node"
+done
+```
+
+### Verify Both NICs Inside a VM
+
+After starting the VMs and waiting for cloud-init, SSH in and check:
+
+```bash
+ssh controlplane-1 '
+  echo "=== Cluster NIC (enp0s2) ==="
+  ip addr show enp0s2 | grep inet
+
+  echo "=== External NIC (enp0s3) ==="
+  ip addr show enp0s3 | grep inet
+
+  echo "=== Default route ==="
+  ip route show default
+  # Expected: default via 10.0.2.2 dev enp0s3 (user-mode gateway)
+
+  echo "=== Cluster subnet route ==="
+  ip route show 192.168.122.0/24
+  # Expected: 192.168.122.0/24 dev enp0s2
+
+  echo "=== Internet access (via enp0s3) ==="
+  curl -s --max-time 5 https://dl.k8s.io/release/stable.txt && echo " OK"
+'
+```
+
+The interface names `enp0s2` and `enp0s3` assume QEMU q35 with virtio NICs in the order
+above. If they differ inside the VM, run `ip -brief link show` and substitute the
+actual names in the netplan file and in the `--node-ip` values below.
+
+### Required Changes in Downstream Documents
+
+With dual NICs, kubelet will pick the default-route interface (`enp0s3`, `10.0.2.15`)
+when registering the node IP unless you tell it otherwise. The next three documents each
+need a `--node-ip` addition:
+
+- **Document 05** (First control plane init): add `nodeRegistration.kubeletExtraArgs`
+  to the `InitConfiguration` (see that document's Dual-NIC callout).
+- **Document 07** (Second control plane join): add `nodeRegistration.kubeletExtraArgs`
+  to the `JoinConfiguration` (see that document's Dual-NIC callout).
+- **Document 08** (Worker join): pass a kubeadm join config file per worker with
+  `nodeRegistration.kubeletExtraArgs` (see that document's Dual-NIC callout).
