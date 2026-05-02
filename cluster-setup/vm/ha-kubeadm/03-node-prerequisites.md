@@ -21,10 +21,7 @@ done
 ## Part 1: Install containerd and runc (all five nodes)
 
 ```bash
-CONTAINERD_VERSION=2.1.3
-RUNC_VERSION=1.3.0
 CNI_VERSION=1.7.1
-CRI_VERSION=1.35.0
 ARCH=amd64
 
 for node in controlplane-1 controlplane-2 nodes-1 nodes-2 nodes-3; do
@@ -32,34 +29,28 @@ for node in controlplane-1 controlplane-2 nodes-1 nodes-2 nodes-3; do
   ssh "$node" "sudo bash" <<EOF
 set -euo pipefail
 
-curl -fsSL https://github.com/containerd/containerd/releases/download/v${CONTAINERD_VERSION}/containerd-${CONTAINERD_VERSION}-linux-${ARCH}.tar.gz \
-  | sudo tar -C /usr/local -xz
+# containerd, runc (dependency), crictl
+apt-get update -qq
+apt-get install -y containerd cri-tools
 
-curl -fsSLo /usr/local/sbin/runc https://github.com/opencontainers/runc/releases/download/v${RUNC_VERSION}/runc.${ARCH}
-chmod +x /usr/local/sbin/runc
-
+# CNI plugins
 mkdir -p /opt/cni/bin
 curl -fsSL https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-${ARCH}-v${CNI_VERSION}.tgz \
   | tar -C /opt/cni/bin -xz
 
-curl -fsSL https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRI_VERSION}/crictl-v${CRI_VERSION}-linux-${ARCH}.tar.gz \
-  | sudo tar -C /usr/local/bin -xz
-
+# containerd config with systemd cgroup driver
 mkdir -p /etc/containerd
 containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
 sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
 
-curl -fsSLo /etc/systemd/system/containerd.service \
-  https://raw.githubusercontent.com/containerd/containerd/v${CONTAINERD_VERSION}/containerd.service
-
+# crictl config
 cat > /etc/crictl.yaml <<CRICTL
 runtime-endpoint: unix:///run/containerd/containerd.sock
 image-endpoint: unix:///run/containerd/containerd.sock
 timeout: 10
 CRICTL
 
-systemctl daemon-reload
-systemctl enable --now containerd
+systemctl restart containerd
 EOF
 done
 ```

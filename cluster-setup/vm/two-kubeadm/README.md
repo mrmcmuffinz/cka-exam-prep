@@ -88,7 +88,7 @@ Creates two headless Ubuntu 24.04 VMs (`controlplane-1` and `nodes-1`) with clou
 
 ### [03 - Node Prerequisites](03-node-prerequisites.md)
 
-Installs containerd, runc, the CNI plugin binaries, crictl, and the `kubeadm`, `kubelet`, `kubectl` tools on both nodes. Configures containerd for systemd cgroup management. Pins package versions so a routine `apt upgrade` does not silently bump the cluster mid-lab. This document is identical for both nodes.
+Installs containerd and crictl via apt, the CNI plugin binaries from the upstream release, and the `kubeadm`, `kubelet`, `kubectl` tools on both nodes. Configures containerd for systemd cgroup management. Pins package versions so a routine `apt upgrade` does not silently bump the cluster mid-lab. This document is identical for both nodes.
 
 **Time:** 10-15 min. **Result:** Both nodes have a working container runtime and the `kubeadm` toolchain at v1.35.3.
 
@@ -122,9 +122,9 @@ Installs the same set of services as the single-node `06-cluster-services.md`, a
 |-----------|---------|-------|
 | Ubuntu (guest) | 24.04 LTS | Cloud image, headless |
 | Kubernetes | v1.35.3 | CKA exam target version, installed via `kubeadm` |
-| containerd | v2.1.3 | Same as single-node guide |
-| runc | v1.3.0 | Same as single-node guide |
-| cri-tools (crictl) | v1.35.0 | Matches Kubernetes minor version |
+| containerd | Ubuntu 24.04 apt | |
+| runc | Ubuntu 24.04 apt | containerd dependency |
+| cri-tools (crictl) | Ubuntu 24.04 apt | |
 | CNI plugins (binaries) | v1.7.1 | Required by Calico |
 | Calico | v3.31.0 | Tigera operator install |
 

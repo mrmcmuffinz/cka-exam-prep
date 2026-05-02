@@ -65,7 +65,7 @@ Quick reference card with the version table, IPs, and common commands. Open this
 
 ### [01 - Node Prerequisites](01-node-prerequisites.md)
 
-Installs containerd, runc, the CNI plugin binaries, crictl, and the `kubeadm`/`kubelet`/`kubectl` toolchain. Configures containerd for systemd cgroup management. Pins package versions so a routine `apt upgrade` does not silently bump the cluster mid-lab. Same containerd configuration as `single-systemd/04-container-runtime.md`.
+Installs containerd and crictl via apt, the CNI plugin binaries from the upstream release, and the `kubeadm`/`kubelet`/`kubectl` toolchain. Configures containerd for systemd cgroup management. Pins package versions so a routine `apt upgrade` does not silently bump the cluster mid-lab.
 
 **Time:** 15-20 min. **Result:** A node with a working container runtime and the `kubeadm` toolchain at v1.35.3.
 
@@ -93,9 +93,9 @@ Installs Helm, `local-path-provisioner` for PVCs, and `metrics-server` (with the
 |-----------|---------|-------|
 | Ubuntu (guest) | 24.04 LTS | Cloud image, headless |
 | Kubernetes | v1.35.3 | CKA exam target version, installed via `kubeadm` |
-| containerd | v2.1.3 | Same as `single-systemd` |
-| runc | v1.3.0 | Same as `single-systemd` |
-| cri-tools (crictl) | v1.35.0 | Matches Kubernetes minor version |
+| containerd | Ubuntu 24.04 apt | |
+| runc | Ubuntu 24.04 apt | containerd dependency |
+| cri-tools (crictl) | Ubuntu 24.04 apt | |
 | CNI plugins (binaries) | v1.7.1 | Required by Calico |
 | Calico | v3.31.0 | Tigera operator install |
 

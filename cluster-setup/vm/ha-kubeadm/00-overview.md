@@ -25,9 +25,9 @@ on QEMU/KVM virtual machines using `kubeadm`. Built for CKA exam preparation.
 |-----------|---------|
 | Ubuntu (guest) | 24.04 LTS |
 | Kubernetes | v1.35.3 |
-| containerd | v2.1.3 |
-| runc | v1.3.0 |
-| cri-tools (crictl) | v1.35.0 |
+| containerd | Ubuntu 24.04 apt |
+| runc | Ubuntu 24.04 apt |
+| cri-tools (crictl) | Ubuntu 24.04 apt |
 | CNI plugins | v1.7.1 |
 | Calico | v3.31.0 |
 | HAProxy | 2.x (Ubuntu 24.04 default) |

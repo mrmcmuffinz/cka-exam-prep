@@ -127,9 +127,9 @@ Installs local-path-provisioner, Helm, metrics-server, and optionally MetalLB.
 |-----------|---------|-------|
 | Ubuntu (guest) | 24.04 LTS | Cloud image, headless |
 | Kubernetes | v1.35.3 | CKA exam target version |
-| containerd | v2.1.3 | |
-| runc | v1.3.0 | |
-| cri-tools (crictl) | v1.35.0 | Matches Kubernetes minor version |
+| containerd | Ubuntu 24.04 apt | |
+| runc | Ubuntu 24.04 apt | containerd dependency |
+| cri-tools (crictl) | Ubuntu 24.04 apt | |
 | CNI plugins (binaries) | v1.7.1 | Required by Calico |
 | Calico | v3.31.0 | Tigera operator install |
 
