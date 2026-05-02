@@ -64,29 +64,43 @@ Quick reference card with hostnames, IPs, version table, CIDR ranges, common com
 
 Configures the Linux bridge `br0` on the host, IP forwarding, and NAT for outbound traffic so the VMs can reach the internet for package installs and image pulls. Replaces the QEMU user-mode networking from `single-systemd`.
 
+**Time:** 20-30 min.
+
 ### [02 - VM Provisioning](02-vm-provisioning.md)
 
 Creates two headless Ubuntu 24.04 VMs (`controlplane-1`, `nodes-1`) attached to the bridge with cloud-init and static IPs. Generates per-VM start/stop scripts and cluster-level scripts.
+
+**Time:** 20-25 min.
 
 ### [03 - Bootstrapping Security](03-bootstrapping-security.md)
 
 Generates the cluster CA on `controlplane-1`, copies it to `nodes-1`, then each node generates its own certificates and kubeconfigs. The certificate set differs from the single-node guide because each node now has a unique identity (`system:node:controlplane-1` vs `system:node:nodes-1`) and the API server certificate must include both VMs' IPs in its SAN list.
 
+**Time:** 35-45 min.
+
 ### [04 - Control Plane (controlplane-1)](04-control-plane.md)
 
 Installs etcd, kube-apiserver, kube-controller-manager, and kube-scheduler as systemd services on `controlplane-1`. Same components as `single-systemd/03-control-plane.md`, but the apiserver now binds on `0.0.0.0` and uses a certificate that includes both VMs' IPs.
+
+**Time:** 30-40 min.
 
 ### [05 - Container Runtime and Worker (Both Nodes)](05-container-runtime-and-worker.md)
 
 Installs containerd, runc, crictl, the CNI plugin binaries, kubelet, and kube-proxy on both nodes. The CNI configuration on each node uses a per-node pod CIDR slice (`10.244.0.0/24` on `controlplane-1`, `10.244.1.0/24` on `nodes-1`) and the kubeconfig points at the apiserver's bridge IP.
 
+**Time:** 30-40 min.
+
 ### [06 - Manual Pod Routing](06-manual-pod-routing.md)
 
-The piece that does not exist in `single-systemd` and does not exist in `kubeadm`-installed clusters either, because Calico/Cilium/Flannel handle this automatically. With the basic bridge CNI, each node only knows how to route to its own pods. Cross-node pod traffic requires `ip route` entries on the host (or on each node) that point to the other node's pod CIDR via its bridge IP. This document explains the routing model and adds the routes.
+The piece that does not exist in `single-systemd` and does not exist in `kubeadm`-installed clusters either, because Calico/Cilium/Flannel handle this automatically. With the basic bridge CNI, each node only knows how to route to its own pods. Cross-node pod traffic requires `ip route` entries on the host (or on each node) that point to the other node's pod CIDR via its bridge IP. This document explains the routing model and adds the routes. This is the pedagogical payoff of the two-systemd guide: you see exactly what a CNI plugin does so you are not routing blindly.
+
+**Time:** 20-30 min.
 
 ### [07 - Cluster Services](07-cluster-services.md)
 
 Installs Helm, CoreDNS (manually, since this is a from-scratch build), local-path-provisioner, and optionally MetalLB now that bridge networking makes it viable.
+
+**Time:** 20-30 min.
 
 ## Component Versions
 

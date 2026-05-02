@@ -8,12 +8,12 @@ A step-by-step guide for bootstrapping a single-node Kubernetes cluster on a QEM
 
 Follow these in order. The VM creation is reused from `single-systemd/01-qemu-vm-setup.md`.
 
-| # | Document | What It Does |
-|---|----------|-------------|
-| 01 | [Node Prerequisites](01-node-prerequisites.md) | Installs containerd, runc, CNI binaries, crictl, and the `kubeadm`/`kubelet`/`kubectl` toolchain |
-| 02 | [Control Plane Init](02-control-plane-init.md) | Runs `kubeadm init` with a YAML config, sets up `kubectl`, removes the control plane taint |
-| 03 | [CNI Installation](03-cni-installation.md) | Installs Calico via the Tigera operator, verifies pod networking and `NetworkPolicy` |
-| 04 | [Cluster Services](04-cluster-services.md) | Installs Helm, `local-path-provisioner`, `metrics-server` |
+| # | Document | What It Does | Time |
+|---|----------|-------------|------|
+| 01 | [Node Prerequisites](01-node-prerequisites.md) | Installs containerd, runc, CNI binaries, crictl, and the `kubeadm`/`kubelet`/`kubectl` toolchain | 15-20 min |
+| 02 | [Control Plane Init](02-control-plane-init.md) | Runs `kubeadm init` with a YAML config, sets up `kubectl`, removes the control plane taint | 10-15 min |
+| 03 | [CNI Installation](03-cni-installation.md) | Installs Calico via the Tigera operator, verifies pod networking and `NetworkPolicy` | 5-10 min |
+| 04 | [Cluster Services](04-cluster-services.md) | Installs Helm, `local-path-provisioner`, `metrics-server` | 5-10 min |
 
 ## Component Versions
 

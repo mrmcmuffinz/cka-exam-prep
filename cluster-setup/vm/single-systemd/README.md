@@ -70,37 +70,37 @@ Quick reference card with the version table, CIDR ranges, and VM access commands
 
 Verifies the QEMU/KVM stack on the host machine and creates a headless Ubuntu VM using a cloud image and cloud-init. The VM boots with swap disabled, kernel modules loaded, sysctl parameters set, and prerequisite packages installed. Port forwarding maps SSH (2222), the Kubernetes API (6443), and other component ports from the host to the VM.
 
-**Result:** A running VM you can SSH into at `ssh kube@127.0.0.1 -p 2222`.
+**Time:** 25-35 min. **Result:** A running VM you can SSH into at `ssh kube@127.0.0.1 -p 2222`.
 
 ### [02 - Bootstrapping Security](02-bootstrapping-security.md)
 
 Generates a root Certificate Authority, TLS certificates for every Kubernetes component, kubeconfig files that bundle client credentials, and an encryption key for Secrets at rest. Everything is generated inside the VM using cfssl and kubectl.
 
-**Result:** An `~/auth/` directory containing 14 PEM files, 5 kubeconfigs, and 1 encryption config.
+**Time:** 30-40 min. **Result:** An `~/auth/` directory containing 14 PEM files, 5 kubeconfigs, and 1 encryption config.
 
 ### [03 - Control Plane](03-control-plane.md)
 
 Installs etcd, kube-apiserver, kube-controller-manager, and kube-scheduler as systemd services. Configures them with the certificates from the previous step and starts them up.
 
-**Result:** A functioning Kubernetes API at `https://127.0.0.1:6443` that responds to `kubectl get namespaces`.
+**Time:** 35-45 min. **Result:** A functioning Kubernetes API at `https://127.0.0.1:6443` that responds to `kubectl get namespaces`.
 
 ### [04 - Container Runtime](04-container-runtime.md)
 
 Installs containerd (container lifecycle daemon), runc (low-level container executor), and crictl (debugging CLI). Configures containerd to use systemd cgroup management.
 
-**Result:** A container runtime ready for kubelet to use.
+**Time:** 10-15 min. **Result:** A container runtime ready for kubelet to use.
 
 ### [05 - Worker Components](05-worker-components.md)
 
 Installs CNI plugins (bridge networking and loopback), kubelet, and kube-proxy. Creates RBAC rules so the API server can call back to kubelet for operations like `kubectl exec` and `kubectl logs`. Schedules a test pod to verify everything works end to end.
 
-**Result:** The node shows as `Ready` in `kubectl get nodes` and pods can be scheduled.
+**Time:** 20-30 min. **Result:** The node shows as `Ready` in `kubectl get nodes` and pods can be scheduled.
 
 ### [06 - Cluster Services](06-cluster-services.md)
 
 Installs Helm, then uses it to deploy CoreDNS for cluster-internal DNS resolution. Optionally installs local-path-provisioner for PersistentVolumeClaim support. Runs final verification tests.
 
-**Result:** A complete single-node Kubernetes cluster with working DNS and optional storage provisioning.
+**Time:** 20-30 min. **Result:** A complete single-node Kubernetes cluster with working DNS and optional storage provisioning.
 
 ## Component Versions
 

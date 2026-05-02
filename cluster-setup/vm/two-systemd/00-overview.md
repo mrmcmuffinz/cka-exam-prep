@@ -8,15 +8,15 @@ A step-by-step guide for bootstrapping a two-node Kubernetes cluster on a pair o
 
 Follow these in order. Each document builds on the previous one.
 
-| # | Document | What It Does |
-|---|----------|-------------|
-| 01 | [Host Bridge Setup](01-host-bridge-setup.md) | Configures the Linux bridge `br0` on the host, IP forwarding, NAT for outbound traffic |
-| 02 | [VM Provisioning](02-vm-provisioning.md) | Creates two headless Ubuntu 24.04 VMs (`controlplane-1`, `nodes-1`) with cloud-init and static IPs |
-| 03 | [Bootstrapping Security](03-bootstrapping-security.md) | Generates the CA on `controlplane-1`, copies it to `nodes-1`, each node generates its own component certs |
-| 04 | [Control Plane on controlplane-1](04-control-plane.md) | Installs etcd, apiserver, controller-manager, scheduler as systemd services |
-| 05 | [Container Runtime and Worker (Both Nodes)](05-container-runtime-and-worker.md) | Installs containerd, runc, crictl, CNI binaries, kubelet, kube-proxy on both nodes |
-| 06 | [Manual Pod Routing](06-manual-pod-routing.md) | Adds host routes between nodes so cross-node pod traffic actually works |
-| 07 | [Cluster Services](07-cluster-services.md) | Installs Helm, CoreDNS, local-path-provisioner, optionally MetalLB |
+| # | Document | What It Does | Time |
+|---|----------|-------------|------|
+| 01 | [Host Bridge Setup](01-host-bridge-setup.md) | Configures the Linux bridge `br0` on the host, IP forwarding, NAT for outbound traffic | 20-30 min |
+| 02 | [VM Provisioning](02-vm-provisioning.md) | Creates two headless Ubuntu 24.04 VMs (`controlplane-1`, `nodes-1`) with cloud-init and static IPs | 20-25 min |
+| 03 | [Bootstrapping Security](03-bootstrapping-security.md) | Generates the CA on `controlplane-1`, copies it to `nodes-1`, each node generates its own component certs | 35-45 min |
+| 04 | [Control Plane on controlplane-1](04-control-plane.md) | Installs etcd, apiserver, controller-manager, scheduler as systemd services | 30-40 min |
+| 05 | [Container Runtime and Worker (Both Nodes)](05-container-runtime-and-worker.md) | Installs containerd, runc, crictl, CNI binaries, kubelet, kube-proxy on both nodes | 30-40 min |
+| 06 | [Manual Pod Routing](06-manual-pod-routing.md) | Adds host routes between nodes so cross-node pod traffic actually works -- the step that reveals what CNI plugins do automatically | 20-30 min |
+| 07 | [Cluster Services](07-cluster-services.md) | Installs Helm, CoreDNS, local-path-provisioner, optionally MetalLB | 20-30 min |
 
 ## Component Versions
 

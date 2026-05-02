@@ -78,43 +78,43 @@ Quick reference card: hostnames, IPs, version table, CIDR ranges, common command
 
 Configures a Linux bridge `br0` on the host so that both VMs share an L2 segment, get real IPs in `192.168.122.0/24`, and can be SSH'd into directly with no port forwarding. Adds NAT rules so the VMs reach the internet through the host's uplink. Replaces the QEMU user-mode networking from the single-node guide.
 
-**Result:** A `br0` interface on the host with `192.168.122.1/24`, NAT in place for outbound traffic, and `qemu-bridge-helper` configured to attach VMs.
+**Time:** 20-30 min. **Result:** A `br0` interface on the host with `192.168.122.1/24`, NAT in place for outbound traffic, and `qemu-bridge-helper` configured to attach VMs.
 
 ### [02 - VM Provisioning](02-vm-provisioning.md)
 
 Creates two headless Ubuntu 24.04 VMs (`controlplane-1` and `nodes-1`) with cloud-init, attached to `br0` with static IPs. Generates per-VM start and stop scripts and cluster-level scripts that operate on both nodes at once. The cloud-init config disables swap, loads kernel modules, and sets sysctls for both nodes.
 
-**Result:** Two VMs reachable at `ssh controlplane-1` and `ssh nodes-1`, each with `kubeadm` prerequisites already met.
+**Time:** 15-20 min. **Result:** Two VMs reachable at `ssh controlplane-1` and `ssh nodes-1`, each with `kubeadm` prerequisites already met.
 
 ### [03 - Node Prerequisites](03-node-prerequisites.md)
 
 Installs containerd, runc, the CNI plugin binaries, crictl, and the `kubeadm`, `kubelet`, `kubectl` tools on both nodes. Configures containerd for systemd cgroup management. Pins package versions so a routine `apt upgrade` does not silently bump the cluster mid-lab. This document is identical for both nodes.
 
-**Result:** Both nodes have a working container runtime and the `kubeadm` toolchain at v1.35.3.
+**Time:** 10-15 min. **Result:** Both nodes have a working container runtime and the `kubeadm` toolchain at v1.35.3.
 
 ### [04 - Control Plane Init](04-control-plane-init.md)
 
 Runs `kubeadm init` on `controlplane-1` with a YAML config (not flags), sets up `kubectl` access, and copies the kubeconfig to the host. Includes a mapping table from each `kubeadm`-generated file back to its hand-rolled equivalent in the single-node guide.
 
-**Result:** A functioning Kubernetes API at `https://192.168.122.10:6443`. `controlplane-1` is `NotReady` because there is no CNI yet.
+**Time:** 10-15 min. **Result:** A functioning Kubernetes API at `https://192.168.122.10:6443`. `controlplane-1` is `NotReady` because there is no CNI yet.
 
 ### [05 - CNI Installation](05-cni-installation.md)
 
 Installs Calico via the Tigera operator with a custom `Installation` resource that aligns the IPPool CIDR with the `kubeadm` `podSubnet`. Removes the control plane `NoSchedule` taint so workloads can run on `controlplane-1`. Verifies `NetworkPolicy` enforcement, since Flannel silently ignoring `NetworkPolicy` is the most common CKA exam CNI gotcha.
 
-**Result:** `controlplane-1` goes `Ready`, pods get IPs from `10.244.0.0/16`, and `NetworkPolicy` is enforced.
+**Time:** 5-10 min. **Result:** `controlplane-1` goes `Ready`, pods get IPs from `10.244.0.0/16`, and `NetworkPolicy` is enforced.
 
 ### [06 - Worker Join](06-worker-join.md)
 
 Joins `nodes-1` to the cluster with a freshly generated `kubeadm token`, verifies cross-node pod-to-pod traffic across the Calico VXLAN tunnel, and snapshots both qcow2 disks so you can roll back to clean-install state after deliberately breaking things.
 
-**Result:** Both nodes `Ready`, pods scheduling on both, cross-node Service resolution working.
+**Time:** 10-15 min. **Result:** Both nodes `Ready`, pods scheduling on both, cross-node Service resolution working.
 
 ### [07 - Cluster Services](07-cluster-services.md)
 
 Installs the same set of services as the single-node `06-cluster-services.md`, adapted for two nodes: `local-path-provisioner` for PVCs, Helm, `metrics-server` (with the lab-only `--kubelet-insecure-tls` flag) for HPA scenarios. Optionally MetalLB so `LoadBalancer` services get IPs from a slice of the bridge subnet.
 
-**Result:** A complete cluster ready for every Day 1 through Day 14 scenario in the Mumshad course.
+**Time:** 5-10 min. **Result:** A complete cluster ready for every Day 1 through Day 14 scenario in the Mumshad course.
 
 ## Component Versions
 

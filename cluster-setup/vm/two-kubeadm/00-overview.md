@@ -8,15 +8,15 @@ A step-by-step guide for bootstrapping a two-node Kubernetes cluster on a pair o
 
 Follow these in order. Each document builds on the previous one.
 
-| # | Document | What It Does |
-|---|----------|-------------|
-| 01 | [Host Bridge Setup](01-host-bridge-setup.md) | Configures the Linux bridge `br0` on the host, IP forwarding, NAT for outbound traffic, and `qemu-bridge-helper` so VMs can attach to the bridge |
-| 02 | [VM Provisioning](02-vm-provisioning.md) | Creates two headless Ubuntu 24.04 VMs (`controlplane-1`, `nodes-1`) with cloud-init, static IPs, SSH access, and per-node start/stop scripts |
-| 03 | [Node Prerequisites](03-node-prerequisites.md) | Installs containerd, runc, CNI binaries, crictl, and the `kubeadm`/`kubelet`/`kubectl` toolchain on both nodes |
-| 04 | [Control Plane Init](04-control-plane-init.md) | Runs `kubeadm init` on `controlplane-1` with a YAML config, sets up `kubectl`, copies the kubeconfig to the host |
-| 05 | [CNI Installation](05-cni-installation.md) | Installs Calico via the Tigera operator, removes the control-plane taint, verifies pod networking and `NetworkPolicy` enforcement |
-| 06 | [Worker Join](06-worker-join.md) | Joins `nodes-1` with a fresh `kubeadm token`, verifies cross-node networking, snapshots both qcow2 disks |
-| 07 | [Cluster Services](07-cluster-services.md) | Installs Helm, `local-path-provisioner`, `metrics-server`, and optionally MetalLB |
+| # | Document | What It Does | Time |
+|---|----------|-------------|------|
+| 01 | [Host Bridge Setup](01-host-bridge-setup.md) | Configures the Linux bridge `br0` on the host, IP forwarding, NAT for outbound traffic, and `qemu-bridge-helper` so VMs can attach to the bridge | 20-30 min |
+| 02 | [VM Provisioning](02-vm-provisioning.md) | Creates two headless Ubuntu 24.04 VMs (`controlplane-1`, `nodes-1`) with cloud-init, static IPs, SSH access, and per-node start/stop scripts | 15-20 min |
+| 03 | [Node Prerequisites](03-node-prerequisites.md) | Installs containerd, runc, CNI binaries, crictl, and the `kubeadm`/`kubelet`/`kubectl` toolchain on both nodes | 10-15 min |
+| 04 | [Control Plane Init](04-control-plane-init.md) | Runs `kubeadm init` on `controlplane-1` with a YAML config, sets up `kubectl`, copies the kubeconfig to the host | 10-15 min |
+| 05 | [CNI Installation](05-cni-installation.md) | Installs Calico via the Tigera operator, removes the control-plane taint, verifies pod networking and `NetworkPolicy` enforcement | 5-10 min |
+| 06 | [Worker Join](06-worker-join.md) | Joins `nodes-1` with a fresh `kubeadm token`, verifies cross-node networking, snapshots both qcow2 disks | 10-15 min |
+| 07 | [Cluster Services](07-cluster-services.md) | Installs Helm, `local-path-provisioner`, `metrics-server`, and optionally MetalLB | 5-10 min |
 
 ## Component Versions
 

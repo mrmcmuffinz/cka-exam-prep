@@ -67,25 +67,25 @@ Quick reference card with the version table, IPs, and common commands. Open this
 
 Installs containerd, runc, the CNI plugin binaries, crictl, and the `kubeadm`/`kubelet`/`kubectl` toolchain. Configures containerd for systemd cgroup management. Pins package versions so a routine `apt upgrade` does not silently bump the cluster mid-lab. Same containerd configuration as `single-systemd/04-container-runtime.md`.
 
-**Result:** A node with a working container runtime and the `kubeadm` toolchain at v1.35.3.
+**Time:** 15-20 min. **Result:** A node with a working container runtime and the `kubeadm` toolchain at v1.35.3.
 
 ### [02 - Control Plane Init](02-control-plane-init.md)
 
 Runs `kubeadm init` with a YAML config (not flags), removes the control plane taint so workloads can run on the single node, sets up `kubectl`, and copies the kubeconfig to the host. Includes a mapping table from each `kubeadm`-generated file back to its hand-rolled equivalent in `single-systemd`.
 
-**Result:** A functioning Kubernetes API at `https://127.0.0.1:6443` (port-forwarded from the VM). Node is `NotReady` because there is no CNI yet.
+**Time:** 10-15 min. **Result:** A functioning Kubernetes API at `https://127.0.0.1:6443` (port-forwarded from the VM). Node is `NotReady` because there is no CNI yet.
 
 ### [03 - CNI Installation](03-cni-installation.md)
 
 Installs Calico via the Tigera operator with a custom `Installation` resource that aligns the IPPool CIDR with the `kubeadm` `podSubnet`. Verifies pod networking and `NetworkPolicy` enforcement.
 
-**Result:** Node `Ready`, pods getting IPs from `10.244.0.0/16`, `NetworkPolicy` enforced.
+**Time:** 5-10 min. **Result:** Node `Ready`, pods getting IPs from `10.244.0.0/16`, `NetworkPolicy` enforced.
 
 ### [04 - Cluster Services](04-cluster-services.md)
 
 Installs Helm, `local-path-provisioner` for PVCs, and `metrics-server` (with the lab-only `--kubelet-insecure-tls` flag) for HPA scenarios. CoreDNS is already installed by `kubeadm init`, so the manual CoreDNS install from `single-systemd/06-cluster-services.md` is dropped.
 
-**Result:** A complete cluster ready for every Day 1 through Day 14 scenario in the Mumshad CKA course.
+**Time:** 5-10 min. **Result:** A complete cluster ready for every Day 1 through Day 14 scenario in the Mumshad CKA course.
 
 ## Component Versions
 
