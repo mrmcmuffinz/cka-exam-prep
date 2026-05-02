@@ -18,6 +18,16 @@ Follow [`two-kubeadm/01-host-bridge-setup.md`](../two-kubeadm/01-host-bridge-set
 exactly. The bridge, NAT rules, and `qemu-bridge-helper` configuration are identical
 regardless of how many VMs attach to it.
 
+**Multi-NIC hosts:** See the multi-NIC NAT fix in Part 3 Step 1 of the two-kubeadm
+document if your host has multiple physical interfaces with DHCP leases on the same
+subnet.
+
+**Option B (physical NIC uplink):** The two-kubeadm document includes an Option B
+section describing how to attach a spare physical NIC to `br0` so VMs get real LAN IPs
+without NAT. If you use Option B for this three-node guide, update the VM IPs in
+`02-vm-provisioning.md` and `00-overview.md` to use your chosen physical network
+addresses instead of `192.168.122.x`.
+
 ## Verification
 
 After completing the bridge setup:

@@ -20,6 +20,14 @@ If `br0` is already configured from a previous guide, skip to Part 2.
 Follow [`two-kubeadm/01-host-bridge-setup.md`](../two-kubeadm/01-host-bridge-setup.md)
 exactly. The bridge, NAT, and `qemu-bridge-helper` setup is identical.
 
+**Multi-NIC hosts and Option B:** The two-kubeadm document includes a multi-NIC NAT
+fix (Part 3 Step 1) and an Option B section describing how to attach a spare physical
+NIC to `br0` so VMs get real LAN IPs without NAT. If you use Option B here, note that
+the HAProxy VIP (`192.168.122.100`) must also move to your physical network range. Pick
+an unused address from the same static block as your VMs (e.g., `192.168.2.215` if VMs
+are at `.210`--`.214`) and update the VIP address in Parts 2 and 4 of this document
+accordingly.
+
 ## Part 2: Add the VIP Address to the Host Bridge
 
 The HAProxy VIP is a static IP alias on the host's `br0` interface. VMs can reach it
