@@ -97,6 +97,10 @@ sudo chmod 600 /etc/netplan/10-br0.yaml
 ### Step 2: Apply
 
 ```bash
+# systemd-networkd must be running for the networkd renderer
+# Ubuntu Desktop does not enable it by default
+sudo systemctl enable --now systemd-networkd
+
 sudo netplan apply
 
 # Verify
@@ -104,6 +108,8 @@ ip addr show br0
 ```
 
 The output should show `br0` with `192.168.122.1/24`. If it does not, run `sudo netplan try` to see parse errors, or check `journalctl -u systemd-networkd -n 30`.
+
+If NetworkManager is running on your host (standard on Ubuntu Desktop), complete **Part 5** before testing with VMs. Without it, NetworkManager will claim `br0` and any QEMU TAP interfaces and break the bridge.
 
 ---
 
@@ -233,15 +239,14 @@ The `s` in `-rwsr-xr-x` is the setuid bit. Without it, the helper cannot create 
 
 ---
 
-## Part 5: NetworkManager Conflict (Desktop Installs Only)
+## Part 5: NetworkManager Conflict
 
-On Ubuntu Server, this section does not apply. On Ubuntu Desktop, NetworkManager sometimes claims the bridge and the TAP interfaces, which causes the bridge to flap and breaks `qemu-bridge-helper`.
+NetworkManager is active by default on Ubuntu Desktop and is common on Ubuntu Server installs too. When it is running, it will attempt to manage `br0` and any QEMU TAP interfaces, causing the bridge to flap and breaking `qemu-bridge-helper`. The `if` block below is a safe no-op on systems without NetworkManager.
 
-Tell NetworkManager to leave them alone:
+Tell NetworkManager to leave the bridge and TAP interfaces alone:
 
 ```bash
-# Only run this if NetworkManager is installed
-if systemctl is-active NetworkManager > /dev/null 2>&1; then
+if systemctl is-active --quiet NetworkManager; then
   sudo tee /etc/NetworkManager/conf.d/10-unmanaged-br0.conf > /dev/null <<'EOF'
 [keyfile]
 unmanaged-devices=interface-name:br0;interface-name:tap*
@@ -336,7 +341,23 @@ sudo ip addr flush dev enp6s0f3
 
 The Netplan config in Step 3 sets the NIC as a bridge slave with `dhcp4: false`, which prevents DHCP from reclaiming it after reboot.
 
-### Step 3: Update the Bridge Network Configuration
+### Step 3: Release the NIC from NetworkManager
+
+NetworkManager holds a DHCP lease on the spare NIC and will conflict with networkd when Netplan tries to enslave it. Create or update the NM exclusion file to release the NIC, `br0`, and any future TAP interfaces before applying the Netplan config. If you already ran Part 5 for the main bridge, this overwrites that file with the slave NIC added:
+
+```bash
+if systemctl is-active --quiet NetworkManager; then
+  sudo tee /etc/NetworkManager/conf.d/10-unmanaged-br0.conf > /dev/null <<'EOF'
+[keyfile]
+unmanaged-devices=interface-name:br0;interface-name:tap*;interface-name:enp6s0f3
+EOF
+  sudo systemctl restart NetworkManager
+fi
+```
+
+Replace `enp6s0f3` with the name of your slave NIC.
+
+### Step 4: Update the Bridge Network Configuration
 
 The bridge connects to your physical LAN via the slave NIC. Update `10-br0.yaml` to enslave the NIC and assign the bridge a static IP in your physical network range. Pick an address outside your DHCP pool (most home routers hand out from a mid-range like `.100`--`.199`; use `.220`+ to be safe):
 
@@ -373,20 +394,6 @@ sudo chmod 600 /etc/netplan/10-br0.yaml
 sudo netplan apply
 ip addr show br0
 ```
-
-### Step 4: Tell NetworkManager to Ignore the Bridge Slave (Desktop Only)
-
-```bash
-if systemctl is-active NetworkManager > /dev/null 2>&1; then
-  sudo tee /etc/NetworkManager/conf.d/10-unmanaged-br0.conf > /dev/null <<'EOF'
-[keyfile]
-unmanaged-devices=interface-name:br0;interface-name:tap*;interface-name:enp6s0f3
-EOF
-  sudo systemctl restart NetworkManager
-fi
-```
-
-Replace `enp6s0f3` with the name of your slave NIC.
 
 ### Step 5: Skip the NAT Steps
 
