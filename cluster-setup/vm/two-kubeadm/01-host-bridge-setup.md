@@ -143,18 +143,38 @@ UPLINK=$(ip route show default | awk 'NR==1 {print $5}')
 echo "Uplink: $UPLINK"
 ```
 
-If multiple interfaces share the same metric, the kernel may route traffic out of a different NIC than the one the masquerade rule targets, causing VMs to lose internet access. The durable fix is to set an explicit lower metric on your preferred NIC using its NetworkManager connection UUID. The UUID is the stable canonical identifier -- use it rather than the connection name, which can change:
+If multiple interfaces share the same metric, the kernel may route traffic out of a different NIC than the one the masquerade rule targets, causing VMs to lose internet access. The durable fix is a Netplan config file that sets explicit `route-metric` values. On Ubuntu 24.04 Desktop with NetworkManager, `nmcli connection modify` writes to `/run/NetworkManager/system-connections/`, which Netplan regenerates on every boot -- making those changes volatile. A separate Netplan file survives reboots.
+
+Create `/etc/netplan/20-wired-priority.yaml` listing every physical NIC with the metric you want. Leave out any NIC that is already declared in another Netplan file (e.g., a bridge slave in `10-br0.yaml`):
 
 ```bash
-# Find the UUID of your preferred NIC
-nmcli connection show | grep eno1
-
-# Give it an explicitly lower metric so it always wins
-nmcli connection modify <UUID> ipv4.route-metric 50
-nmcli connection up <UUID>
+sudo tee /etc/netplan/20-wired-priority.yaml > /dev/null <<'EOF'
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    eno1:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 50
+    enp6s0f0:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 200
+    enp6s0f1:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 201
+    enp6s0f2:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 202
+EOF
+sudo chmod 600 /etc/netplan/20-wired-priority.yaml
+sudo netplan apply
 ```
 
-Then re-read the uplink:
+Adjust the interface names and metric values to match your hardware. The NIC with the lowest metric wins. Then re-read the uplink:
 
 ```bash
 UPLINK=$(ip route show default | awk 'NR==1 {print $5}')
@@ -308,8 +328,8 @@ The host is now configured to support bridge networking for the two VMs:
 
 | Component | Path | Purpose |
 |-----------|------|---------|
-| Bridge device | `/etc/systemd/network/10-br0.netdev` | Defines the `br0` bridge |
-| Bridge address | `/etc/systemd/network/20-br0.network` | Assigns `192.168.122.1/24` to `br0` |
+| Bridge config | `/etc/netplan/10-br0.yaml` | Defines `br0` and assigns `192.168.122.1/24` |
+| NIC priority (multi-NIC) | `/etc/netplan/20-wired-priority.yaml` | Sets per-NIC route metrics durably |
 | IP forwarding | `/etc/sysctl.d/99-bridge-forward.conf` | Enables forwarding between bridge and uplink |
 | NAT rules | `/etc/iptables/rules.v4` | Masquerades VM traffic going out the uplink |
 | QEMU helper allow-list | `/etc/qemu/bridge.conf` | Permits unprivileged attach to `br0` |
@@ -360,16 +380,21 @@ The Netplan config in Step 3 sets the NIC as a bridge slave with `dhcp4: false`,
 
 ### Step 3: Update the Bridge Network Configuration
 
-Update `10-br0.yaml` to enslave the spare NIC and assign the bridge a static IP in your physical network range. Netplan generates an NM connection profile for both the bridge and the slave -- NM will deactivate the DHCP lease on the spare NIC and activate the bridge slave connection when `netplan apply` runs. No manual NM exclusion is needed for the slave NIC. Pick an address outside your DHCP pool (most home routers hand out from a mid-range like `.100`--`.199`; use `.220`+ to be safe):
+Update `10-br0.yaml` to enslave the spare NIC and assign the bridge a static IP in your physical network range. Netplan generates an NM connection profile for both the bridge and the slave -- NM will deactivate the DHCP lease on the spare NIC and activate the bridge slave connection when `netplan apply` runs. No manual NM exclusion is needed for the slave NIC.
+
+The `ethernets:` block is required even though `enp6s0f3` is joining the bridge: the NM renderer requires every interface referenced in `interfaces:` to be explicitly declared elsewhere in the Netplan config. `dhcp4: false` prevents NM from issuing a DHCP lease on it before handing it to the bridge. Replace `enp6s0f3` in **both** the `ethernets:` key and the `interfaces:` list. Pick an address outside your DHCP pool (most home routers hand out `.100`--`.199`; use `.200`+ to be safe):
 
 ```bash
 # Replace 192.168.2.1 with your router/gateway IP
 # Replace 192.168.2.200 with an unused static IP for the host bridge
-# Replace enp6s0f3 with your chosen spare NIC
+# Replace enp6s0f3 (in two places) with your chosen spare NIC
 sudo tee /etc/netplan/10-br0.yaml > /dev/null <<'EOF'
 network:
   version: 2
   renderer: NetworkManager
+  ethernets:
+    enp6s0f3:
+      dhcp4: false
   bridges:
     br0:
       dhcp4: false
@@ -392,12 +417,56 @@ sudo netplan apply
 ip addr show br0
 ```
 
-### Step 4: Skip the NAT Steps
+**Multi-NIC hosts:** If your host has additional NICs beyond the bridge slave, set their metrics now so the right NIC wins as the primary route. Create a separate priority file that lists every NIC **except** the one enslaved to `br0` (which is already declared in `10-br0.yaml`):
+
+```bash
+# Replace interface names and metrics to match your hardware
+# Omit any NIC already declared in 10-br0.yaml (the bridge slave)
+sudo tee /etc/netplan/20-wired-priority.yaml > /dev/null <<'EOF'
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    eno1:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 50
+    enp6s0f0:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 200
+    enp6s0f1:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 201
+    enp6s0f2:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 202
+EOF
+sudo chmod 600 /etc/netplan/20-wired-priority.yaml
+sudo netplan apply
+```
+
+On Netplan-managed systems, `nmcli connection modify` changes write to `/run/` and are regenerated on every boot. The Netplan YAML is the only durable way to set metrics.
+
+### Step 4: Skip Part 3 (NAT)
 
 Skip Part 3 (NAT for Outbound Traffic) entirely. VMs will route through your physical
 gateway and reach the internet without any host-level NAT.
 
-### Step 5: Choose VM IP Addresses
+### Step 5: Configure qemu-bridge-helper
+
+Follow **Part 4** exactly as written. The allow-list (`/etc/qemu/bridge.conf`) and
+setuid steps are identical for Option A and Option B -- QEMU still needs the helper to
+create TAP interfaces and attach them to `br0`.
+
+### Step 6: QEMU TAP Interface Exclusion
+
+Follow **Part 5** exactly as written. NetworkManager TAP exclusion applies regardless
+of the networking option.
+
+### Step 7: Choose VM IP Addresses
 
 Pick static IPs in your physical network range outside the DHCP pool. Example mapping
 for a network where the router is `192.168.2.1` and DHCP hands out `.100`--`.199`:
@@ -417,7 +486,7 @@ The cloud-init netplan configuration in document 02 is the most important place 
 each VM's static address, gateway (`192.168.2.1`), and remove the `network: config:
 disabled` override used in the QEMU user-mode path.
 
-### Step 6: Verify the Physical Bridge
+### Step 8: Verify the Physical Bridge
 
 ```bash
 # Slave NIC is a member of the bridge

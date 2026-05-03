@@ -18,12 +18,32 @@ The single-node guide used QEMU user-mode networking and a single `create-node.s
 - **`hostfwd` flags on the QEMU command line.** Replaced with `-netdev bridge,br=br0`.
 - **`network: config: disabled`** in cloud-init. The single-node guide disabled cloud-init networking because QEMU user-mode handled DHCP. With a bridge, there is no DHCP server, so cloud-init writes a netplan file with the static IP.
 
+## Option B Users: IP Substitution
+
+If you followed Option B in document 01 (physical NIC bridge), the defaults in this
+document use `192.168.122.x` and must be replaced. The configuration block at the top
+of the script in Part 2 is the single place to make all changes. Parts 4 and 5 also
+reference these IPs directly -- substitute accordingly.
+
+The reference mapping for a physical network at `192.168.2.0/24`:
+
+| Purpose | Option A (NAT bridge) | Option B (physical NIC bridge) |
+|---------|-----------------------|-------------------------------|
+| Gateway | `192.168.122.1` | `192.168.2.1` |
+| `controlplane-1` | `192.168.122.10` | `192.168.2.210` |
+| `nodes-1` | `192.168.122.11` | `192.168.2.211` |
+
 ## Prerequisites
 
 The host bridge from document 01 must be active. Quick check:
 
 ```bash
+# Option A
 ip addr show br0 | grep 'inet 192.168.122.1' && echo "bridge OK"
+
+# Option B (replace 192.168.2.200 with your bridge IP if different)
+ip addr show br0 | grep 'inet 192.168.2.200' && echo "bridge OK"
+
 ls -la /usr/lib/qemu/qemu-bridge-helper | grep '^-rws' && echo "helper OK"
 ```
 
@@ -121,9 +141,10 @@ VM_USER="kube"
 VM_PASSWORD="kubeadmin"
 
 BRIDGE="br0"
-GATEWAY="192.168.122.1"
+GATEWAY="192.168.122.1"      # Option B: "192.168.2.1"
 
 # Per-node configuration
+# Option B: replace with physical network IPs (e.g. 192.168.2.210, 192.168.2.211)
 declare -A NODES=(
   [controlplane-1]="192.168.122.10"
   [nodes-1]="192.168.122.11"
@@ -488,9 +509,10 @@ tail -f controlplane-1/controlplane-1-console.log
 
 ## Part 4: Configure SSH Access
 
-Add the following to `~/.ssh/config` on the host so `ssh controlplane-1` and `ssh nodes-1` work without flags:
+Add the following to `~/.ssh/config` on the host so `ssh controlplane-1` and `ssh nodes-1` work without flags. Replace the `HostName` values with your Option B IPs if applicable.
 
 ```ssh-config
+# Option A (NAT bridge)
 Host controlplane-1
     HostName 192.168.122.10
     User kube
@@ -504,6 +526,21 @@ Host nodes-1
     StrictHostKeyChecking accept-new
 ```
 
+```ssh-config
+# Option B (physical NIC bridge) -- replace 192.168.2.210/211 with your chosen IPs
+Host controlplane-1
+    HostName 192.168.2.210
+    User kube
+    IdentityFile ~/.ssh/id_ed25519
+    StrictHostKeyChecking accept-new
+
+Host nodes-1
+    HostName 192.168.2.211
+    User kube
+    IdentityFile ~/.ssh/id_ed25519
+    StrictHostKeyChecking accept-new
+```
+
 If your SSH key is at a different path, adjust the `IdentityFile` line accordingly.
 
 ---
@@ -512,10 +549,12 @@ If your SSH key is at a different path, adjust the `IdentityFile` line according
 
 After cloud-init completes (60 to 90 seconds for the first boot, plus the reboot), verify everything is in place. Run from the host:
 
+Replace `192.168.122.10` / `192.168.122.11` with your Option B IPs if applicable.
+
 ```bash
 # Both VMs respond to ping
-ping -c 2 192.168.122.10
-ping -c 2 192.168.122.11
+ping -c 2 192.168.122.10   # Option B: 192.168.2.210
+ping -c 2 192.168.122.11   # Option B: 192.168.2.211
 
 # SSH works to both
 ssh controlplane-1 'hostname && ip -4 addr show enp0s2 | grep inet'
@@ -525,7 +564,7 @@ ssh nodes-1 'hostname && ip -4 addr show enp0s2 | grep inet'
 ssh controlplane-1 'ping -c 2 nodes-1'
 ssh nodes-1 'ping -c 2 controlplane-1'
 
-# Both have internet via NAT
+# Both have internet (Option A: via NAT on host; Option B: direct via router)
 ssh controlplane-1 'curl -sI -o /dev/null -w "%{http_code}\n" https://kubernetes.io'
 ssh nodes-1 'curl -sI -o /dev/null -w "%{http_code}\n" https://kubernetes.io'
 
@@ -558,10 +597,10 @@ The cloud-init config does not install containerd, runc, kubeadm, kubelet, or ku
 
 The two VMs are now provisioned and accessible:
 
-| VM | Role (assigned later) | IP | SSH Alias |
-|----|------------------------|----|-----------|
-| `controlplane-1` | Control plane | `192.168.122.10` | `ssh controlplane-1` |
-| `nodes-1` | Worker | `192.168.122.11` | `ssh nodes-1` |
+| VM | Role (assigned later) | IP (Option A) | IP (Option B) | SSH Alias |
+|----|------------------------|----|-----------|---|
+| `controlplane-1` | Control plane | `192.168.122.10` | `192.168.2.210` | `ssh controlplane-1` |
+| `nodes-1` | Worker | `192.168.122.11` | `192.168.2.211` | `ssh nodes-1` |
 
 All cluster-level lifecycle commands:
 
