@@ -116,9 +116,12 @@ Save the following as `~/cka-lab/two-kubeadm/create-cluster.sh` and make it exec
 # 01-host-bridge-setup.md.
 #
 # Usage:
-#   ./create-cluster.sh           # Create both VMs
-#   ./create-cluster.sh controlplane-1     # Create only controlplane-1
-#   ./create-cluster.sh nodes-1     # Create only nodes-1
+#   ./create-cluster.sh                                              # both VMs, default IPs
+#   ./create-cluster.sh controlplane-1                               # one VM only
+#   ./create-cluster.sh nodes-1                                      # one VM only
+#   ./create-cluster.sh --gateway 192.168.2.1 \
+#                       --cp-ip 192.168.2.210 \
+#                       --worker-ip 192.168.2.211                    # Option B IPs
 
 set -euo pipefail
 
@@ -141,14 +144,28 @@ VM_USER="kube"
 VM_PASSWORD="kubeadmin"
 
 BRIDGE="br0"
-GATEWAY="192.168.122.1"      # Option B: "192.168.2.1"
+GATEWAY="192.168.122.1"
 
 # Per-node configuration
-# Option B: replace with physical network IPs (e.g. 192.168.2.210, 192.168.2.211)
 declare -A NODES=(
   [controlplane-1]="192.168.122.10"
   [nodes-1]="192.168.122.11"
 )
+
+# -------------------------------------------------------------------
+# Argument overrides (override defaults without editing this file)
+# -------------------------------------------------------------------
+# Usage: ./create-cluster.sh [--gateway IP] [--cp-ip IP] [--worker-ip IP] [node-name...]
+NODE_ARGS=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --gateway)   GATEWAY="${2:?--gateway requires a value}";              shift 2 ;;
+    --cp-ip)     NODES[controlplane-1]="${2:?--cp-ip requires a value}";  shift 2 ;;
+    --worker-ip) NODES[nodes-1]="${2:?--worker-ip requires a value}";     shift 2 ;;
+    --*)         echo "ERROR: Unknown option $1"; exit 1 ;;
+    *)           NODE_ARGS+=("$1"); shift ;;
+  esac
+done
 
 # -------------------------------------------------------------------
 # Preflight checks
@@ -286,8 +303,8 @@ write_files:
   - path: /etc/hosts
     content: |
       127.0.0.1 localhost
-      192.168.122.10 controlplane-1 controlplane-1.cka.local
-      192.168.122.11 nodes-1 nodes-1.cka.local
+      ${NODES[controlplane-1]} controlplane-1 controlplane-1.cka.local
+      ${NODES[nodes-1]} nodes-1 nodes-1.cka.local
   - path: /etc/netplan/01-static.yaml
     permissions: '0600'
     content: |
@@ -403,12 +420,12 @@ STOPSCRIPT
 # -------------------------------------------------------------------
 # Provision the requested nodes
 # -------------------------------------------------------------------
-if [[ $# -eq 0 ]]; then
+if [[ ${#NODE_ARGS[@]} -eq 0 ]]; then
   for n in controlplane-1 nodes-1; do
     provision_node "$n"
   done
 else
-  for n in "$@"; do
+  for n in "${NODE_ARGS[@]}"; do
     if [[ -z "${NODES[$n]:-}" ]]; then
       echo "ERROR: Unknown node $n (expected: controlplane-1 or nodes-1)"
       exit 1
@@ -473,8 +490,8 @@ echo ""
 echo "First boot runs cloud-init and reboots. Allow 90 seconds."
 echo ""
 echo "After boot, SSH in:"
-echo "  ssh ${VM_USER}@192.168.122.10   # controlplane-1"
-echo "  ssh ${VM_USER}@192.168.122.11   # nodes-1"
+echo "  ssh ${VM_USER}@${NODES[controlplane-1]}   # controlplane-1"
+echo "  ssh ${VM_USER}@${NODES[nodes-1]}   # nodes-1"
 echo ""
 echo "(Add a Host controlplane-1/nodes-1 entry to ~/.ssh/config for short names.)"
 echo ""
