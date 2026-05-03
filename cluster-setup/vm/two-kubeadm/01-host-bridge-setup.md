@@ -143,10 +143,27 @@ UPLINK=$(ip route show default | awk 'NR==1 {print $5}')
 echo "Uplink: $UPLINK"
 ```
 
-If the result is not the interface you intend to use for internet traffic, override it:
+If multiple interfaces share the same metric, the kernel may route traffic out of a different NIC than the one the masquerade rule targets, causing VMs to lose internet access. The durable fix is to set an explicit lower metric on your preferred NIC using its NetworkManager connection UUID. The UUID is the stable canonical identifier -- use it rather than the connection name, which can change:
 
 ```bash
-# Override -- set this to your preferred wired or WiFi interface
+# Find the UUID of your preferred NIC
+nmcli connection show | grep eno1
+
+# Give it an explicitly lower metric so it always wins
+nmcli connection modify <UUID> ipv4.route-metric 50
+nmcli connection up <UUID>
+```
+
+Then re-read the uplink:
+
+```bash
+UPLINK=$(ip route show default | awk 'NR==1 {print $5}')
+echo "Uplink: $UPLINK"
+```
+
+If the result is still not the interface you intend, override manually:
+
+```bash
 UPLINK=eno1
 ```
 
