@@ -33,19 +33,25 @@ accordingly.
 The HAProxy VIP is a static IP alias on the host's `br0` interface. VMs can reach it
 at `192.168.122.100` through the bridge.
 
+Update the Netplan bridge config to include the VIP address alongside the gateway address:
+
 ```bash
-# Add the VIP as a persistent alias via systemd-networkd
-sudo tee /etc/systemd/network/25-br0-vip.network <<EOF
-[Match]
-Name=br0
-
-[Address]
-Address=192.168.122.100/32
+sudo tee /etc/netplan/10-br0.yaml > /dev/null <<'EOF'
+network:
+  version: 2
+  renderer: networkd
+  bridges:
+    br0:
+      dhcp4: false
+      addresses:
+        - 192.168.122.1/24
+        - 192.168.122.100/32
+      parameters:
+        stp: false
+      optional: true
 EOF
-
-# Apply without restarting the bridge
-sudo ip addr add 192.168.122.100/32 dev br0 2>/dev/null || true
-sudo networkctl reload
+sudo chmod 600 /etc/netplan/10-br0.yaml
+sudo netplan apply
 
 # Verify
 ip addr show br0 | grep 192.168.122

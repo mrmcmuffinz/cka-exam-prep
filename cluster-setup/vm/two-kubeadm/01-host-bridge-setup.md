@@ -71,52 +71,39 @@ When `iptables-persistent` installs it will ask whether to save current rules. A
 
 ## Part 2: Create the Bridge
 
-Ubuntu 24.04 ships with `systemd-networkd`. Defining the bridge through `systemd-networkd` keeps it simple and survives reboots cleanly.
+Ubuntu 24.04 uses Netplan as the network management frontend. Add a single Netplan config file to define the bridge.
 
-### Step 1: Bridge Device
-
-Create the netdev definition:
+### Step 1: Write the Bridge Config
 
 ```bash
-sudo tee /etc/systemd/network/10-br0.netdev > /dev/null <<'EOF'
-[NetDev]
-Name=br0
-Kind=bridge
-
-[Bridge]
-STP=off
+sudo tee /etc/netplan/10-br0.yaml > /dev/null <<'EOF'
+network:
+  version: 2
+  renderer: networkd
+  bridges:
+    br0:
+      dhcp4: false
+      addresses:
+        - 192.168.122.1/24
+      parameters:
+        stp: false
+      optional: true
 EOF
+sudo chmod 600 /etc/netplan/10-br0.yaml
 ```
 
-`STP=off` is intentional. The Spanning Tree Protocol is for physical networks with potential loops. With a virtual bridge serving only TAP interfaces, there is no loop risk and STP just adds a 30-second forwarding delay every time a port goes up.
+`renderer: networkd` is explicit here because Ubuntu Desktop defaults to NetworkManager; specifying it keeps behavior consistent across Server and Desktop installs. `stp: false` removes the 30-second forwarding delay Spanning Tree Protocol adds on port events -- unnecessary for a virtual switch with only TAP interfaces. `optional: true` tells systemd-networkd not to block `network-online.target` waiting for the bridge before any TAP interfaces are attached.
 
-### Step 2: Bridge Network Configuration
-
-```bash
-sudo tee /etc/systemd/network/20-br0.network > /dev/null <<'EOF'
-[Match]
-Name=br0
-
-[Network]
-Address=192.168.122.1/24
-ConfigureWithoutCarrier=yes
-IPForward=ipv4
-EOF
-```
-
-`ConfigureWithoutCarrier=yes` tells `systemd-networkd` to bring the bridge up even when no TAP interfaces are attached yet. Without this, the bridge only comes up when the first VM connects, which causes a chicken-and-egg problem with NAT rules.
-
-### Step 3: Activate
+### Step 2: Apply
 
 ```bash
-sudo systemctl enable --now systemd-networkd
-sudo systemctl restart systemd-networkd
+sudo netplan apply
 
 # Verify
 ip addr show br0
 ```
 
-The output should show `br0` with `192.168.122.1/24`. If it does not, check `journalctl -u systemd-networkd -n 30` for parse errors.
+The output should show `br0` with `192.168.122.1/24`. If it does not, run `sudo netplan try` to see parse errors, or check `journalctl -u systemd-networkd -n 30`.
 
 ---
 
@@ -347,43 +334,43 @@ On a host with an onboard NIC (`eno1`) for management plus a quad-port card
 sudo ip addr flush dev enp6s0f3
 ```
 
-Prevent DHCP from reclaiming it by creating a networkd config that assigns it to the
-bridge instead of the network stack:
-
-```bash
-sudo tee /etc/systemd/network/15-br0-slave.network > /dev/null <<'EOF'
-[Match]
-Name=enp6s0f3
-
-[Network]
-Bridge=br0
-EOF
-```
-
-Replace `enp6s0f3` with your actual spare interface name.
+The Netplan config in Step 3 sets the NIC as a bridge slave with `dhcp4: false`, which prevents DHCP from reclaiming it after reboot.
 
 ### Step 3: Update the Bridge Network Configuration
 
-The bridge is now connected to your physical LAN via the slave NIC. Update its address
-to a static IP in your physical network range. Pick an address outside your DHCP pool
-(most home routers hand out from a mid-range like `.100`--`.199`; use `.220`+ to be safe):
+The bridge connects to your physical LAN via the slave NIC. Update `10-br0.yaml` to enslave the NIC and assign the bridge a static IP in your physical network range. Pick an address outside your DHCP pool (most home routers hand out from a mid-range like `.100`--`.199`; use `.220`+ to be safe):
 
 ```bash
 # Replace 192.168.2.1 with your router/gateway IP
 # Replace 192.168.2.200 with an unused static IP for the host bridge
-sudo tee /etc/systemd/network/20-br0.network > /dev/null <<'EOF'
-[Match]
-Name=br0
-
-[Network]
-Address=192.168.2.200/24
-Gateway=192.168.2.1
-DNS=8.8.8.8
-ConfigureWithoutCarrier=yes
-IPForward=ipv4
+# Replace enp6s0f3 with your chosen spare NIC
+sudo tee /etc/netplan/10-br0.yaml > /dev/null <<'EOF'
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp6s0f3:
+      dhcp4: false
+      optional: true
+  bridges:
+    br0:
+      dhcp4: false
+      interfaces:
+        - enp6s0f3
+      addresses:
+        - 192.168.2.200/24
+      routes:
+        - to: default
+          via: 192.168.2.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+      parameters:
+        stp: false
+      optional: true
 EOF
-
-sudo systemctl restart systemd-networkd
+sudo chmod 600 /etc/netplan/10-br0.yaml
+sudo netplan apply
 ip addr show br0
 ```
 
