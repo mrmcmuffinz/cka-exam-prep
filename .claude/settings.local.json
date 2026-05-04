@@ -40,7 +40,11 @@
       "Bash(cluster-setup/vm/single-systemd/scripts/break-cluster.sh 999)",
       "Bash(echo \"Exit code: $?\")",
       "Bash(ssh -p 2222 kube@127.0.0.1 \"echo 'SSH works'\")",
-      "Bash(echo \"SSH failed with exit code: $?\")"
+      "Bash(echo \"SSH failed with exit code: $?\")",
+      "Bash(gh pr *)",
+      "Bash(apt list *)",
+      "Bash(chmod +x *)",
+      "Bash(echo \"exit: $?\")"
     ]
   },
   "effortLevel": "xhigh"
