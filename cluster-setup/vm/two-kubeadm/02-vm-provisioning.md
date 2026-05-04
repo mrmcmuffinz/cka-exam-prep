@@ -182,6 +182,11 @@ if ! command -v qemu-system-x86_64 &>/dev/null; then
   exit 1
 fi
 
+if ! command -v qemu-img &>/dev/null; then
+  echo "ERROR: qemu-img not found. Install qemu-utils first."
+  exit 1
+fi
+
 if ! command -v genisoimage &>/dev/null; then
   echo "ERROR: genisoimage not found. Install genisoimage first."
   exit 1
@@ -230,6 +235,20 @@ else
 fi
 
 # -------------------------------------------------------------------
+# Function: create_qcow2
+# -------------------------------------------------------------------
+create_qcow2() {
+  local node_dir="$1"
+  local node_name="$2"
+  qemu-img create -f qcow2 \
+    -b "$(realpath "$IMAGE_FILE")" \
+    -F qcow2 \
+    "$node_dir/${node_name}.qcow2" \
+    "$DISK_SIZE"
+  echo "Disk created: $node_dir/${node_name}.qcow2 ($DISK_SIZE, backed by cloud image)"
+}
+
+# -------------------------------------------------------------------
 # Function: provision_node
 # -------------------------------------------------------------------
 provision_node() {
@@ -244,21 +263,19 @@ provision_node() {
   mkdir -p "$node_dir/cloud-init"
 
   # Disk
+  echo "=== Creating VM disk for $node_name ==="
   if [[ -f "$node_dir/${node_name}.qcow2" ]]; then
     echo "WARNING: Disk $node_dir/${node_name}.qcow2 already exists."
-    read -rp "Overwrite? (y/N): " confirm
-    if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
-      echo "Skipping $node_name."
-      return 0
+    confirm=""
+    read -rt 10 -p "Overwrite? (y/N, default N in 10s): " confirm || confirm=""
+    if [[ "${confirm,,}" == "y" ]]; then
+      create_qcow2 "$node_dir" "$node_name"
+    else
+      echo "Keeping existing disk. Continuing with cloud-init and script generation."
     fi
+  else
+    create_qcow2 "$node_dir" "$node_name"
   fi
-
-  qemu-img create -f qcow2 \
-    -b "$(realpath "$IMAGE_FILE")" \
-    -F qcow2 \
-    "$node_dir/${node_name}.qcow2" \
-    "$DISK_SIZE"
-  echo "Disk created: $node_dir/${node_name}.qcow2"
 
   # cloud-init metadata
   cat > "$node_dir/cloud-init/meta-data" <<EOF
