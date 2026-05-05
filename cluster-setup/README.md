@@ -84,13 +84,11 @@ These are more restrictive than kind. If you are on macOS, Windows, or a Linux h
 ### Optional: Reducing Repeated Downloads
 
 If you rebuild VMs frequently to practice the init workflow, you will re-download the
-same packages and binary archives on every run. Two optional guides address this.
-[`vm/apt-cache-proxy.md`](vm/apt-cache-proxy.md) sets up nginx as an APT caching proxy
-on the host so that Ubuntu and Kubernetes packages are served from a local cache after
-the first download (sub-second `apt-get update` on cache hits).
-[`vm/binary-cache.md`](vm/binary-cache.md) uses a QEMU 9p virtfs share to give the VM
-persistent access to a host directory where the install scripts save their binary
-archives, so `wget --timestamping` skips all downloads on subsequent rebuilds.
+same packages, binary archives, and container images on every run. Three optional guides address this:
+
+- [`vm/apt-cache-proxy.md`](vm/apt-cache-proxy.md) sets up nginx as an APT caching proxy on the host so that Ubuntu and Kubernetes packages are served from a local cache after the first download (sub-second `apt-get update` on cache hits).
+- [`vm/binary-cache.md`](vm/binary-cache.md) uses a QEMU 9p virtfs share to give the VM persistent access to a host directory where the install scripts save their binary archives, so `wget --timestamping` skips all downloads on subsequent rebuilds. Applies to systemd-based guides only.
+- [`vm/registry-cache.md`](vm/registry-cache.md) runs pull-through registry caches on the host via nerdctl so that container images (pause, kube-apiserver, etcd, coredns, calico, etc.) are served from local cache after the first pull. Applies to all guides.
 
 ## Recommended Sequence
 
