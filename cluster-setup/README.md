@@ -81,6 +81,17 @@ All guides assume:
 
 These are more restrictive than kind. If you are on macOS, Windows, or a Linux host without KVM, stick with kind.
 
+### Optional: Reducing Repeated Downloads
+
+If you rebuild VMs frequently to practice the init workflow, you will re-download the
+same packages and binary archives on every run. Two optional guides address this.
+[`vm/apt-cache-proxy.md`](vm/apt-cache-proxy.md) sets up nginx as an APT caching proxy
+on the host so that Ubuntu and Kubernetes packages are served from a local cache after
+the first download (sub-second `apt-get update` on cache hits).
+[`vm/binary-cache.md`](vm/binary-cache.md) uses a QEMU 9p virtfs share to give the VM
+persistent access to a host directory where the install scripts save their binary
+archives, so `wget --timestamping` skips all downloads on subsequent rebuilds.
+
 ## Recommended Sequence
 
 **New to Kubernetes?** Start with the main exercises in `exercises/01-pods/` using kind clusters (per `docs/cluster-setup.md`). The VM guides assume you already know what pods, services, and namespaces are.

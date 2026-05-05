@@ -1,112 +1,3 @@
-# VM Provisioning for Two-Node Cluster
-
-**Based on:** [01-qemu-vm-setup.md](../../vm/docs/01-qemu-vm-setup.md) from the single-node guide.
-
-**Adapted for:** Two VMs on a host bridge instead of one VM with QEMU user-mode networking. Cloud-init now configures a static IP per VM and writes both nodes into `/etc/hosts` so name resolution works without DNS.
-
----
-
-## What This Chapter Does
-
-Creates two headless Ubuntu 24.04 VMs (`controlplane-1` and `nodes-1`) attached to the `br0` bridge from the previous document. Each VM gets a static IP via cloud-init, your SSH key, the `kube` user with passwordless sudo, kernel modules and sysctls for Kubernetes, and is rebooted once at the end of cloud-init so all changes take effect cleanly.
-
-The single-node guide used QEMU user-mode networking and a single `create-node.sh` script. This guide uses bridge networking and a `create-cluster.sh` script that wraps `create-node.sh` to provision both VMs in a single command, plus cluster-level `start-cluster.sh` and `stop-cluster.sh`.
-
-## What Was Removed from the Original Script
-
-- **Port forwarding for SSH and component APIs.** No longer needed. With real IPs on the bridge, you SSH directly to `192.168.122.10` or `192.168.122.11`, and `kubectl` from the host points at `https://192.168.122.10:6443`.
-- **`hostfwd` flags on the QEMU command line.** Replaced with `-netdev bridge,br=br0`.
-- **`network: config: disabled`** in cloud-init. The single-node guide disabled cloud-init networking because QEMU user-mode handled DHCP. With a physical LAN bridge, cloud-init still generates `/etc/netplan/50-cloud-init.yaml` with DHCP at boot. The `runcmd` block removes that file before applying Netplan, leaving only the static config from `write_files`.
-
-## Option B Users: IP Substitution
-
-If you followed Option B in document 01 (physical NIC bridge), the defaults in this
-document use `192.168.122.x` and must be replaced. The configuration block at the top
-of the script in Part 2 is the single place to make all changes. Parts 4 and 5 also
-reference these IPs directly -- substitute accordingly.
-
-The reference mapping for a physical network at `192.168.2.0/24`:
-
-| Purpose | Option A (NAT bridge) | Option B (physical NIC bridge) |
-|---------|-----------------------|-------------------------------|
-| Gateway | `192.168.122.1` | `192.168.2.1` |
-| `controlplane-1` | `192.168.122.10` | `192.168.2.210` |
-| `nodes-1` | `192.168.122.11` | `192.168.2.211` |
-
-## Prerequisites
-
-The host bridge from document 01 must be active. Quick check:
-
-```bash
-# Option A
-ip addr show br0 | grep 'inet 192.168.122.1' && echo "bridge OK"
-
-# Option B (replace 192.168.2.200 with your bridge IP if different)
-ip addr show br0 | grep 'inet 192.168.2.200' && echo "bridge OK"
-
-ls -la /usr/lib/qemu/qemu-bridge-helper | grep '^-rws' && echo "helper OK"
-```
-
-You also need an SSH key on the host. cloud-init injects the public key into both VMs.
-
-```bash
-# Check if you have a key
-ls ~/.ssh/id_ed25519.pub 2>/dev/null || ls ~/.ssh/id_rsa.pub 2>/dev/null
-
-# If not, generate one
-ssh-keygen -t ed25519
-```
-
-The Ubuntu cloud image is reused from the single-node guide. If you do not have it cached:
-
-```bash
-mkdir -p ~/cka-lab/images
-cd ~/cka-lab/images
-wget https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-amd64.img
-```
-
----
-
-## Part 1: Directory Structure
-
-The script creates the following layout:
-
-```
-~/cka-lab/
-  images/                   # Cached cloud images (shared with single-node guide)
-    ubuntu-24.04-server-cloudimg-amd64.img
-  two-kubeadm/
-    create-cluster.sh       # Provisions both VMs
-    start-cluster.sh        # Starts both VMs
-    stop-cluster.sh         # Stops both VMs cleanly
-    destroy-cluster.sh      # Removes per-VM directories (keeps cached image)
-    controlplane-1/
-      controlplane-1.qcow2           # controlplane-1 disk (backed by cloud image)
-      seed.iso              # Cloud-init ISO
-      cloud-init/
-        user-data
-        meta-data
-      start-controlplane-1.sh
-      stop-controlplane-1.sh
-    nodes-1/
-      nodes-1.qcow2
-      seed.iso
-      cloud-init/
-        user-data
-        meta-data
-      start-nodes-1.sh
-      stop-nodes-1.sh
-```
-
-The `two-kubeadm/` parent directory keeps everything separate from the single-node `controlplane-1/` if you ever want to run both labs simultaneously.
-
----
-
-## Part 2: The create-cluster.sh Script
-
-Save the following as `~/cka-lab/two-kubeadm/create-cluster.sh` and make it executable.
-
-```bash
 #!/usr/bin/env bash
 #
 # create-cluster.sh
@@ -121,7 +12,8 @@ Save the following as `~/cka-lab/two-kubeadm/create-cluster.sh` and make it exec
 #   ./create-cluster.sh nodes-1                                      # one VM only
 #   ./create-cluster.sh --gateway 192.168.2.1 \
 #                       --cp-ip 192.168.2.210 \
-#                       --worker-ip 192.168.2.211                    # Option B IPs
+#                       --worker-ip 192.168.2.211 \
+#                       --apt-proxy-host 192.168.2.200               # Option B IPs
 
 set -euo pipefail
 
@@ -145,6 +37,7 @@ VM_PASSWORD="kubeadmin"
 
 BRIDGE="br0"
 GATEWAY="192.168.122.1"
+APT_PROXY_HOST="${GATEWAY}"  # Defaults to gateway (correct for Option A)
 
 # Per-node configuration
 declare -A NODES=(
@@ -155,15 +48,16 @@ declare -A NODES=(
 # -------------------------------------------------------------------
 # Argument overrides (override defaults without editing this file)
 # -------------------------------------------------------------------
-# Usage: ./create-cluster.sh [--gateway IP] [--cp-ip IP] [--worker-ip IP] [node-name...]
+# Usage: ./create-cluster.sh [--gateway IP] [--cp-ip IP] [--worker-ip IP] [--apt-proxy-host IP] [node-name...]
 NODE_ARGS=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --gateway)   GATEWAY="${2:?--gateway requires a value}";              shift 2 ;;
-    --cp-ip)     NODES[controlplane-1]="${2:?--cp-ip requires a value}";  shift 2 ;;
-    --worker-ip) NODES[nodes-1]="${2:?--worker-ip requires a value}";     shift 2 ;;
-    --*)         echo "ERROR: Unknown option $1"; exit 1 ;;
-    *)           NODE_ARGS+=("$1"); shift ;;
+    --gateway)       GATEWAY="${2:?--gateway requires a value}";              shift 2 ;;
+    --cp-ip)         NODES[controlplane-1]="${2:?--cp-ip requires a value}";  shift 2 ;;
+    --worker-ip)     NODES[nodes-1]="${2:?--worker-ip requires a value}";     shift 2 ;;
+    --apt-proxy-host) APT_PROXY_HOST="${2:?--apt-proxy-host requires a value}"; shift 2 ;;
+    --*)             echo "ERROR: Unknown option $1"; exit 1 ;;
+    *)               NODE_ARGS+=("$1"); shift ;;
   esac
 done
 
@@ -179,11 +73,6 @@ fi
 
 if ! command -v qemu-system-x86_64 &>/dev/null; then
   echo "ERROR: qemu-system-x86_64 not found. Install qemu-system-x86 first."
-  exit 1
-fi
-
-if ! command -v qemu-img &>/dev/null; then
-  echo "ERROR: qemu-img not found. Install qemu-utils first."
   exit 1
 fi
 
@@ -235,20 +124,6 @@ else
 fi
 
 # -------------------------------------------------------------------
-# Function: create_qcow2
-# -------------------------------------------------------------------
-create_qcow2() {
-  local node_dir="$1"
-  local node_name="$2"
-  qemu-img create -f qcow2 \
-    -b "$(realpath "$IMAGE_FILE")" \
-    -F qcow2 \
-    "$node_dir/${node_name}.qcow2" \
-    "$DISK_SIZE"
-  echo "Disk created: $node_dir/${node_name}.qcow2 ($DISK_SIZE, backed by cloud image)"
-}
-
-# -------------------------------------------------------------------
 # Function: provision_node
 # -------------------------------------------------------------------
 provision_node() {
@@ -263,19 +138,21 @@ provision_node() {
   mkdir -p "$node_dir/cloud-init"
 
   # Disk
-  echo "=== Creating VM disk for $node_name ==="
   if [[ -f "$node_dir/${node_name}.qcow2" ]]; then
     echo "WARNING: Disk $node_dir/${node_name}.qcow2 already exists."
-    confirm=""
-    read -rt 10 -p "Overwrite? (y/N, default N in 10s): " confirm || confirm=""
-    if [[ "${confirm,,}" == "y" ]]; then
-      create_qcow2 "$node_dir" "$node_name"
-    else
-      echo "Keeping existing disk. Continuing with cloud-init and script generation."
+    read -rp "Overwrite? (y/N): " confirm
+    if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+      echo "Skipping $node_name."
+      return 0
     fi
-  else
-    create_qcow2 "$node_dir" "$node_name"
   fi
+
+  qemu-img create -f qcow2 \
+    -b "$(realpath "$IMAGE_FILE")" \
+    -F qcow2 \
+    "$node_dir/${node_name}.qcow2" \
+    "$DISK_SIZE"
+  echo "Disk created: $node_dir/${node_name}.qcow2"
 
   # cloud-init metadata
   cat > "$node_dir/cloud-init/meta-data" <<EOF
@@ -302,6 +179,15 @@ users:
       - $SSH_KEY
 
 ssh_pwauth: true
+
+apt:
+  preserve_sources_list: false
+  sources_list: |
+    Types: deb
+    URIs: http://$APT_PROXY_HOST:3142/mirror.arizona.edu/ubuntu/
+    Suites: noble noble-updates noble-backports noble-security
+    Components: main restricted universe multiverse
+    Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 
 packages:
   - apt-transport-https
@@ -336,6 +222,11 @@ write_files:
                 via: $GATEWAY
             nameservers:
               addresses: [1.1.1.1, 8.8.8.8]
+  - path: /etc/modules-load.d/9p.conf
+    content: |
+      9p
+      9pnet_virtio
+    permissions: '0644'
   - path: /etc/modules-load.d/k8s.conf
     content: |
       overlay
@@ -346,9 +237,23 @@ write_files:
       net.bridge.bridge-nf-call-ip6tables = 1
       net.ipv4.ip_forward                 = 1
 
+mounts:
+  - [bincache, /mnt/bincache, 9p, "trans=virtio,version=9p2000.L,nofail,_netdev", "0", "0"]
+
 runcmd:
   - rm -f /etc/netplan/50-cloud-init.yaml
   - netplan apply
+  - mkdir -p /etc/apt/keyrings
+  - curl -fsSL http://$APT_PROXY_HOST:3142/pkgs.k8s.io/core:/stable:/v1.35/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+  - |
+    cat > /etc/apt/sources.list.d/kubernetes.sources <<'KUBE_EOF'
+    Types: deb
+    URIs: http://$APT_PROXY_HOST:3142/pkgs.k8s.io/core:/stable:/v1.35/deb/
+    Suites: /
+    Components:
+    Signed-By: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    KUBE_EOF
+  - apt-get update
   - modprobe overlay
   - modprobe br_netfilter
   - sysctl --system
@@ -397,6 +302,7 @@ qemu-system-x86_64 \\
     -serial file:"\$SCRIPT_DIR/${node_name}-console.log" \\
     -daemonize \\
     -pidfile "\$SCRIPT_DIR/${node_name}.pid" \\
+    -virtfs local,path="${HOME}/cka-lab/binary-cache",mount_tag=bincache,security_model=none,id=bincache \\
     "\$@"
 
 echo "${node_name} started (PID \$(cat "\$SCRIPT_DIR/${node_name}.pid"))."
@@ -516,138 +422,3 @@ echo ""
 echo "To stop both nodes:"
 echo "  $CLUSTER_DIR/stop-cluster.sh"
 echo "============================================="
-```
-
----
-
-## Part 3: Run the Script
-
-```bash
-mkdir -p ~/cka-lab/two-kubeadm
-cd ~/cka-lab/two-kubeadm
-
-# Save the script above as create-cluster.sh
-chmod +x create-cluster.sh
-
-# Provision both VMs
-./create-cluster.sh
-
-# Boot them
-./start-cluster.sh
-
-# Watch first boot. Cloud-init runs, reboots, then the second boot finishes.
-tail -f controlplane-1/controlplane-1-console.log
-# Ctrl-C once you see a login prompt, then check nodes-1 the same way.
-```
-
----
-
-## Part 4: Configure SSH Access
-
-Add the following to `~/.ssh/config` on the host so `ssh controlplane-1` and `ssh nodes-1` work without flags. Replace the `HostName` values with your Option B IPs if applicable.
-
-```ssh-config
-# Option A (NAT bridge)
-Host controlplane-1
-    HostName 192.168.122.10
-    User kube
-    IdentityFile ~/.ssh/id_ed25519
-    StrictHostKeyChecking accept-new
-
-Host nodes-1
-    HostName 192.168.122.11
-    User kube
-    IdentityFile ~/.ssh/id_ed25519
-    StrictHostKeyChecking accept-new
-```
-
-```ssh-config
-# Option B (physical NIC bridge) -- replace 192.168.2.210/211 with your chosen IPs
-Host controlplane-1
-    HostName 192.168.2.210
-    User kube
-    IdentityFile ~/.ssh/id_ed25519
-    StrictHostKeyChecking accept-new
-
-Host nodes-1
-    HostName 192.168.2.211
-    User kube
-    IdentityFile ~/.ssh/id_ed25519
-    StrictHostKeyChecking accept-new
-```
-
-If your SSH key is at a different path, adjust the `IdentityFile` line accordingly.
-
----
-
-## Part 5: Verify Both VMs
-
-After cloud-init completes (60 to 90 seconds for the first boot, plus the reboot), verify everything is in place. Run from the host:
-
-Replace `192.168.122.10` / `192.168.122.11` with your Option B IPs if applicable.
-
-```bash
-# Both VMs respond to ping
-ping -c 2 192.168.122.10   # Option B: 192.168.2.210
-ping -c 2 192.168.122.11   # Option B: 192.168.2.211
-
-# SSH works to both
-ssh controlplane-1 'hostname && ip -4 addr show enp0s2 | grep inet'
-ssh nodes-1 'hostname && ip -4 addr show enp0s2 | grep inet'
-
-# Each node can resolve and reach the other by name
-ssh controlplane-1 'ping -c 2 nodes-1'
-ssh nodes-1 'ping -c 2 controlplane-1'
-
-# Both have internet (Option A: via NAT on host; Option B: direct via router)
-ssh controlplane-1 'curl -sI -o /dev/null -w "%{http_code}\n" https://kubernetes.io'
-ssh nodes-1 'curl -sI -o /dev/null -w "%{http_code}\n" https://kubernetes.io'
-
-# Cloud-init reports done
-ssh controlplane-1 'cloud-init status'
-ssh nodes-1 'cloud-init status'
-```
-
-All checks should pass before moving to document 03.
-
-### What Cloud-Init Pre-Configures
-
-Same set as the single-node guide, plus the static IP. On both VMs after first boot:
-
-- Hostname set to `controlplane-1` or `nodes-1`
-- `/etc/hosts` populated with both nodes for name resolution without DNS
-- Static IP assigned via netplan, bound to interface `enp0s2`
-- `kube` user created with passwordless sudo and your SSH key authorized
-- Baseline packages installed (`socat`, `conntrack`, `ipset`, `curl`, `jq`, others)
-- `overlay` and `br_netfilter` kernel modules loaded
-- Sysctls set for bridge filtering and IPv4 forwarding
-- Swap disabled permanently
-- Reboot once after cloud-init to apply everything cleanly
-
-The cloud-init config does not install containerd, runc, kubeadm, kubelet, or kubectl. Those are installed manually in document 03.
-
----
-
-## Summary
-
-The two VMs are now provisioned and accessible:
-
-| VM | Role (assigned later) | IP (Option A) | IP (Option B) | SSH Alias |
-|----|------------------------|----|-----------|---|
-| `controlplane-1` | Control plane | `192.168.122.10` | `192.168.2.210` | `ssh controlplane-1` |
-| `nodes-1` | Worker | `192.168.122.11` | `192.168.2.211` | `ssh nodes-1` |
-
-All cluster-level lifecycle commands:
-
-| Command | Purpose |
-|---------|---------|
-| `~/cka-lab/two-kubeadm/start-cluster.sh` | Boot both VMs |
-| `~/cka-lab/two-kubeadm/stop-cluster.sh` | Graceful shutdown |
-| `~/cka-lab/two-kubeadm/destroy-cluster.sh` | Remove disks and seed ISOs (keeps cached image) |
-| `~/cka-lab/two-kubeadm/create-cluster.sh` | Re-provision (after destroy, or on first run) |
-
-The next document installs the container runtime and `kubeadm` toolchain on both nodes.
-
----
-
-← [Previous: Host Bridge Setup for Multi-Node Networking](01-host-bridge-setup.md) | [Next: Installing Container Runtime and kubeadm Toolchain →](03-node-prerequisites.md)

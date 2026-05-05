@@ -486,6 +486,14 @@ The cloud-init netplan configuration in document 02 is the most important place 
 each VM's static address, gateway (`192.168.2.1`), and remove the `network: config:
 disabled` override used in the QEMU user-mode path.
 
+### Caching Proxy Note
+
+If you have set up the optional apt caching proxy (see
+[`vm/apt-cache-proxy.md`](../apt-cache-proxy.md)), the host IP that VMs use to reach it
+is the address you assigned to `br0` in your `10-br0.yaml`, for example `192.168.2.200`.
+When running `create-cluster.sh`, pass `--apt-proxy-host 192.168.2.200` to configure the
+VMs to use your nginx proxy instead of the default gateway address.
+
 ### Step 8: Verify the Physical Bridge
 
 ```bash
