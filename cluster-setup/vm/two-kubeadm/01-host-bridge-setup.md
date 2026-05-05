@@ -21,8 +21,8 @@ internet
 | Host                                |
 |   br0 (192.168.122.1/24)            |
 |     |                               |
-|     +--- tap0 ---- node1 (.10)      |
-|     +--- tap1 ---- node2 (.11)      |
+|     +--- tap0 ---- controlplane-1 (.10)      |
+|     +--- tap1 ---- nodes-1 (.11)      |
 +-------------------------------------+
 ```
 
@@ -71,52 +71,43 @@ When `iptables-persistent` installs it will ask whether to save current rules. A
 
 ## Part 2: Create the Bridge
 
-Ubuntu 24.04 ships with `systemd-networkd`. Defining the bridge through `systemd-networkd` keeps it simple and survives reboots cleanly.
+Ubuntu 24.04 uses Netplan as the network management frontend. Add a single Netplan config file to define the bridge.
 
-### Step 1: Bridge Device
-
-Create the netdev definition:
+### Step 1: Write the Bridge Config
 
 ```bash
-sudo tee /etc/systemd/network/10-br0.netdev > /dev/null <<'EOF'
-[NetDev]
-Name=br0
-Kind=bridge
-
-[Bridge]
-STP=off
+sudo tee /etc/netplan/10-br0.yaml > /dev/null <<'EOF'
+network:
+  version: 2
+  renderer: NetworkManager
+  bridges:
+    br0:
+      dhcp4: false
+      addresses:
+        - 192.168.122.1/24
+      parameters:
+        stp: false
+      optional: true
 EOF
+sudo chmod 600 /etc/netplan/10-br0.yaml
 ```
 
-`STP=off` is intentional. The Spanning Tree Protocol is for physical networks with potential loops. With a virtual bridge serving only TAP interfaces, there is no loop risk and STP just adds a 30-second forwarding delay every time a port goes up.
+`renderer: NetworkManager` lets NM manage the bridge like any other interface -- no need to enable a second network service. `stp: false` removes the 30-second forwarding delay Spanning Tree Protocol adds on port events -- unnecessary for a virtual switch with only TAP interfaces. `optional: true` prevents the bridge from blocking boot while waiting for TAP interfaces to attach.
 
-### Step 2: Bridge Network Configuration
+If NetworkManager is not installed (Ubuntu Server minimal installs), change `renderer: NetworkManager` to `renderer: networkd` and run `sudo systemctl enable --now systemd-networkd` before applying.
 
-```bash
-sudo tee /etc/systemd/network/20-br0.network > /dev/null <<'EOF'
-[Match]
-Name=br0
-
-[Network]
-Address=192.168.122.1/24
-ConfigureWithoutCarrier=yes
-IPForward=ipv4
-EOF
-```
-
-`ConfigureWithoutCarrier=yes` tells `systemd-networkd` to bring the bridge up even when no TAP interfaces are attached yet. Without this, the bridge only comes up when the first VM connects, which causes a chicken-and-egg problem with NAT rules.
-
-### Step 3: Activate
+### Step 2: Apply
 
 ```bash
-sudo systemctl enable --now systemd-networkd
-sudo systemctl restart systemd-networkd
+sudo netplan apply
 
 # Verify
 ip addr show br0
 ```
 
-The output should show `br0` with `192.168.122.1/24`. If it does not, check `journalctl -u systemd-networkd -n 30` for parse errors.
+The output should show `br0` with `192.168.122.1/24`. If it does not, run `sudo netplan try` to see parse errors.
+
+Complete **Part 5** before attaching VMs. QEMU creates TAP interfaces dynamically and NetworkManager will try to configure them unless told not to.
 
 ---
 
@@ -127,11 +118,81 @@ The bridge has its own subnet that does not exist anywhere outside the host. For
 ### Step 1: Identify the Uplink Interface
 
 ```bash
-UPLINK=$(ip route | awk '/default/ {print $5; exit}')
-echo "Uplink interface: $UPLINK"
+ip route show default
 ```
 
-This will be something like `wlp4s0`, `eth0`, or `enp3s0` depending on your hardware.
+A single-NIC host prints one line:
+
+```
+default via 192.168.2.1 dev eno1 proto dhcp metric 100
+```
+
+**Multi-NIC hosts:** If you have multiple physical interfaces (e.g., an onboard NIC plus a multi-port PCIe card), each one with a DHCP lease gets its own default route. The kernel uses the route with the lowest `metric` value:
+
+```
+default via 192.168.2.1 dev eno1     proto dhcp metric 100
+default via 192.168.2.1 dev enp6s0f0 proto dhcp metric 101
+default via 192.168.2.1 dev enp6s0f1 proto dhcp metric 102
+...
+```
+
+Read the winning interface automatically:
+
+```bash
+UPLINK=$(ip route show default | awk 'NR==1 {print $5}')
+echo "Uplink: $UPLINK"
+```
+
+If multiple interfaces share the same metric, the kernel may route traffic out of a different NIC than the one the masquerade rule targets, causing VMs to lose internet access. The durable fix is a Netplan config file that sets explicit `route-metric` values. On Ubuntu 24.04 Desktop with NetworkManager, `nmcli connection modify` writes to `/run/NetworkManager/system-connections/`, which Netplan regenerates on every boot -- making those changes volatile. A separate Netplan file survives reboots.
+
+Create `/etc/netplan/20-wired-priority.yaml` listing every physical NIC with the metric you want. Leave out any NIC that is already declared in another Netplan file (e.g., a bridge slave in `10-br0.yaml`):
+
+```bash
+sudo tee /etc/netplan/20-wired-priority.yaml > /dev/null <<'EOF'
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    eno1:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 50
+    enp6s0f0:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 200
+    enp6s0f1:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 201
+    enp6s0f2:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 202
+EOF
+sudo chmod 600 /etc/netplan/20-wired-priority.yaml
+sudo netplan apply
+```
+
+Adjust the interface names and metric values to match your hardware. The NIC with the lowest metric wins. Then re-read the uplink:
+
+```bash
+UPLINK=$(ip route show default | awk 'NR==1 {print $5}')
+echo "Uplink: $UPLINK"
+```
+
+If the result is still not the interface you intend, override manually:
+
+```bash
+UPLINK=eno1
+```
+
+Verify the chosen interface reaches your router:
+
+```bash
+ip route show default dev "$UPLINK"
+# Expected: default via <gateway-IP> dev <UPLINK> ...
+```
 
 ### Step 2: Enable IP Forwarding
 
@@ -213,22 +274,23 @@ The `s` in `-rwsr-xr-x` is the setuid bit. Without it, the helper cannot create 
 
 ---
 
-## Part 5: NetworkManager Conflict (Desktop Installs Only)
+## Part 5: QEMU TAP Interface Exclusion
 
-On Ubuntu Server, this section does not apply. On Ubuntu Desktop, NetworkManager sometimes claims the bridge and the TAP interfaces, which causes the bridge to flap and breaks `qemu-bridge-helper`.
+QEMU creates TAP interfaces (`tap0`, `tap1`, etc.) dynamically each time a VM starts and attaches them to `br0` via the kernel. NetworkManager sees new interfaces and tries to configure them. Since the TAP interfaces have no static config, NM either assigns them a random IP or marks them as unmanaged after a few retries -- either way it interferes with the bridge until the retry backoff expires.
 
-Tell NetworkManager to leave them alone:
+`br0` itself is managed by NM (from the Netplan config above) so no exclusion is needed for it. Only the TAP interfaces need to be excluded:
 
 ```bash
-# Only run this if NetworkManager is installed
-if systemctl is-active NetworkManager > /dev/null 2>&1; then
-  sudo tee /etc/NetworkManager/conf.d/10-unmanaged-br0.conf > /dev/null <<'EOF'
+if systemctl is-active --quiet NetworkManager; then
+  sudo tee /etc/NetworkManager/conf.d/10-unmanaged-tap.conf > /dev/null <<'EOF'
 [keyfile]
-unmanaged-devices=interface-name:br0;interface-name:tap*
+unmanaged-devices=interface-name:tap*
 EOF
-  sudo systemctl restart NetworkManager
+  sudo systemctl reload NetworkManager
 fi
 ```
+
+The `if` block is a no-op on systems without NetworkManager.
 
 ---
 
@@ -266,11 +328,192 @@ The host is now configured to support bridge networking for the two VMs:
 
 | Component | Path | Purpose |
 |-----------|------|---------|
-| Bridge device | `/etc/systemd/network/10-br0.netdev` | Defines the `br0` bridge |
-| Bridge address | `/etc/systemd/network/20-br0.network` | Assigns `192.168.122.1/24` to `br0` |
+| Bridge config | `/etc/netplan/10-br0.yaml` | Defines `br0` and assigns `192.168.122.1/24` |
+| NIC priority (multi-NIC) | `/etc/netplan/20-wired-priority.yaml` | Sets per-NIC route metrics durably |
 | IP forwarding | `/etc/sysctl.d/99-bridge-forward.conf` | Enables forwarding between bridge and uplink |
 | NAT rules | `/etc/iptables/rules.v4` | Masquerades VM traffic going out the uplink |
 | QEMU helper allow-list | `/etc/qemu/bridge.conf` | Permits unprivileged attach to `br0` |
 | QEMU helper binary | `/usr/lib/qemu/qemu-bridge-helper` | setuid root, creates TAP interfaces |
 
 The next document creates the two VMs and attaches them to this bridge.
+
+---
+
+## Option B: Physical NIC Uplink (No NAT)
+
+This option requires a **spare dedicated physical NIC** that is not your primary host
+network connection. It connects `br0` directly to your physical LAN so VMs get real
+IPs and are reachable from any machine on your network without NAT or port forwarding.
+
+**When to use this:**
+- Your host has a multi-port NIC (e.g., a quad-port card) with unused ports
+- You want VMs to appear as first-class devices on your LAN
+- You want to SSH into VMs from other machines on the network, not just the host
+- You want to eliminate NAT overhead
+
+**What changes compared to Option A:**
+- One spare physical NIC joins `br0` as a bridge slave
+- VMs get static IPs in your physical network range instead of `192.168.122.x`
+- No NAT rule needed (VMs reach the internet directly through your router)
+- All `192.168.122.x` IP references in the remaining guide documents must be replaced
+  with your chosen physical network IPs
+
+### Step 1: Identify a Spare NIC
+
+```bash
+ip -brief link show
+# Look for an interface that is UP but whose IP you do not need for the host
+```
+
+On a host with an onboard NIC (`eno1`) for management plus a quad-port card
+(`enp6s0f0`--`enp6s0f3`), any unused port on the quad card works. For example, reserve
+`eno1` for SSH and host management and dedicate `enp6s0f3` to the bridge.
+
+### Step 2: Release the Spare NIC's DHCP Lease
+
+```bash
+# Replace enp6s0f3 with your chosen spare NIC
+sudo ip addr flush dev enp6s0f3
+```
+
+The Netplan config in Step 3 sets the NIC as a bridge slave with `dhcp4: false`, which prevents DHCP from reclaiming it after reboot.
+
+### Step 3: Update the Bridge Network Configuration
+
+Update `10-br0.yaml` to enslave the spare NIC and assign the bridge a static IP in your physical network range. Netplan generates an NM connection profile for both the bridge and the slave -- NM will deactivate the DHCP lease on the spare NIC and activate the bridge slave connection when `netplan apply` runs. No manual NM exclusion is needed for the slave NIC.
+
+The `ethernets:` block is required even though `enp6s0f3` is joining the bridge: the NM renderer requires every interface referenced in `interfaces:` to be explicitly declared elsewhere in the Netplan config. `dhcp4: false` prevents NM from issuing a DHCP lease on it before handing it to the bridge. Replace `enp6s0f3` in **both** the `ethernets:` key and the `interfaces:` list. Pick an address outside your DHCP pool (most home routers hand out `.100`--`.199`; use `.200`+ to be safe):
+
+```bash
+# Replace 192.168.2.1 with your router/gateway IP
+# Replace 192.168.2.200 with an unused static IP for the host bridge
+# Replace enp6s0f3 (in two places) with your chosen spare NIC
+sudo tee /etc/netplan/10-br0.yaml > /dev/null <<'EOF'
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    enp6s0f3:
+      dhcp4: false
+  bridges:
+    br0:
+      dhcp4: false
+      interfaces:
+        - enp6s0f3
+      addresses:
+        - 192.168.2.200/24
+      routes:
+        - to: default
+          via: 192.168.2.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+      parameters:
+        stp: false
+      optional: true
+EOF
+sudo chmod 600 /etc/netplan/10-br0.yaml
+sudo netplan apply
+ip addr show br0
+```
+
+**Multi-NIC hosts:** If your host has additional NICs beyond the bridge slave, set their metrics now so the right NIC wins as the primary route. Create a separate priority file that lists every NIC **except** the one enslaved to `br0` (which is already declared in `10-br0.yaml`):
+
+```bash
+# Replace interface names and metrics to match your hardware
+# Omit any NIC already declared in 10-br0.yaml (the bridge slave)
+sudo tee /etc/netplan/20-wired-priority.yaml > /dev/null <<'EOF'
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    eno1:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 50
+    enp6s0f0:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 200
+    enp6s0f1:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 201
+    enp6s0f2:
+      dhcp4: true
+      dhcp4-overrides:
+        route-metric: 202
+EOF
+sudo chmod 600 /etc/netplan/20-wired-priority.yaml
+sudo netplan apply
+```
+
+On Netplan-managed systems, `nmcli connection modify` changes write to `/run/` and are regenerated on every boot. The Netplan YAML is the only durable way to set metrics.
+
+### Step 4: Skip Part 3 (NAT)
+
+Skip Part 3 (NAT for Outbound Traffic) entirely. VMs will route through your physical
+gateway and reach the internet without any host-level NAT.
+
+### Step 5: Configure qemu-bridge-helper
+
+Follow **Part 4** exactly as written. The allow-list (`/etc/qemu/bridge.conf`) and
+setuid steps are identical for Option A and Option B -- QEMU still needs the helper to
+create TAP interfaces and attach them to `br0`.
+
+### Step 6: QEMU TAP Interface Exclusion
+
+Follow **Part 5** exactly as written. NetworkManager TAP exclusion applies regardless
+of the networking option.
+
+### Step 7: Choose VM IP Addresses
+
+Pick static IPs in your physical network range outside the DHCP pool. Example mapping
+for a network where the router is `192.168.2.1` and DHCP hands out `.100`--`.199`:
+
+| Role | Suggested Static IP |
+|------|---------------------|
+| Host bridge (`br0`) | `192.168.2.200` |
+| `controlplane-1` | `192.168.2.210` |
+| `nodes-1` | `192.168.2.211` |
+| `nodes-2` (three-node) | `192.168.2.212` |
+| `controlplane-2` (HA) | `192.168.2.213` |
+| `nodes-3` (HA) | `192.168.2.214` |
+| HAProxy VIP (HA) | `192.168.2.215` |
+
+In the remaining documents, substitute these IPs wherever `192.168.122.x` appears.
+The cloud-init netplan configuration in document 02 is the most important place -- set
+each VM's static address, gateway (`192.168.2.1`), and remove the `network: config:
+disabled` override used in the QEMU user-mode path.
+
+### Caching Proxy Note
+
+If you have set up the optional apt caching proxy (see
+[`vm/apt-cache-proxy.md`](../apt-cache-proxy.md)), the host IP that VMs use to reach it
+is the address you assigned to `br0` in your `10-br0.yaml`, for example `192.168.2.200`.
+When running `create-cluster.sh`, pass `--apt-proxy-host 192.168.2.200` to configure the
+VMs to use your nginx proxy instead of the default gateway address.
+
+### Step 8: Verify the Physical Bridge
+
+```bash
+# Slave NIC is a member of the bridge
+bridge link show
+
+# Bridge has a physical network IP
+ip addr show br0 | grep 192.168.2.200
+
+# Physical LAN is reachable from the bridge
+ping -c 2 -I br0 192.168.2.1
+```
+
+Start a VM with the updated cloud-init configuration and confirm it gets a real IP and
+is SSH-reachable directly by address:
+
+```bash
+ssh kube@192.168.2.210   # no port number, no forwarding
+```
+
+---
+
+← [Previous: Two-Node Kubernetes Cluster: Overview](00-overview.md) | [Next: VM Provisioning for Two-Node Cluster →](02-vm-provisioning.md)

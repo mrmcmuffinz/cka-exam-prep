@@ -20,7 +20,7 @@ CoreDNS is already running in `kube-system` because `kubeadm init` deployed it. 
 
 ## Prerequisites
 
-Both nodes are `Ready`. `kubectl` is configured (either on `node1` or via the kubeconfig copied to the host).
+Both nodes are `Ready`. `kubectl` is configured (either on `controlplane-1` or via the kubeconfig copied to the host).
 
 ---
 
@@ -125,7 +125,7 @@ helm uninstall hello
 ### Step 1: Install
 
 ```bash
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.7.2/components.yaml
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.8.1/components.yaml
 ```
 
 ### Step 2: Add the Insecure-TLS Flag for Lab Use
@@ -240,7 +240,7 @@ kubectl get --raw /healthz && echo
 
 | Namespace | Pods |
 |-----------|------|
-| `kube-system` | apiserver, controller-manager, scheduler, etcd (all static, on `node1`), kube-proxy (one per node), coredns (2 replicas) |
+| `kube-system` | apiserver, controller-manager, scheduler, etcd (all static, on `controlplane-1`), kube-proxy (one per node), coredns (2 replicas) |
 | `calico-system` | calico-typha, calico-node (one per node), calico-kube-controllers |
 | `calico-apiserver` | calico-apiserver |
 | `tigera-operator` | tigera-operator |
@@ -268,7 +268,7 @@ The two-node cluster is now complete:
 |-------|-----------|--------|
 | VM infrastructure | QEMU/KVM, Ubuntu 24.04, host bridge | Running |
 | Container runtime | containerd, runc | Running on both nodes |
-| Control plane | etcd, kube-apiserver, kube-controller-manager, kube-scheduler | Running on `node1` (static pods) |
+| Control plane | etcd, kube-apiserver, kube-controller-manager, kube-scheduler | Running on `controlplane-1` (static pods) |
 | Worker | kubelet, kube-proxy | Running on both nodes |
 | Cluster networking | Calico (VXLANCrossSubnet), CoreDNS | Running |
 | Storage | local-path-provisioner | Running, default StorageClass |
@@ -277,3 +277,7 @@ The two-node cluster is now complete:
 | Load balancing | MetalLB (optional) | Running, address pool configured |
 
 The cluster is ready for every Day 1 through Day 14 scenario in the Mumshad CKA course.
+
+---
+
+← [Previous: Joining the Worker Node](06-worker-join.md)
