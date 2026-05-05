@@ -12,6 +12,128 @@ nginx can act as a caching reverse proxy for apt repositories. Install it once o
 - Multi-node guides with **Option A** (software NAT bridge) assign `br0` the IP `192.168.122.1` and NAT VM traffic through the host uplink. The host bridge IP is `192.168.122.1`.
 - Multi-node guides with **Option B** (physical NIC bridge) slave a spare NIC to `br0` and assign it a static IP in your physical LAN range. The host bridge IP is whatever you set in the Netplan config, for example `192.168.2.200`. Substitute that address wherever `192.168.122.1` appears in this document.
 
+## Network Flow Architecture
+
+The following diagrams show how APT traffic flows through the nginx proxy for different package sources and networking modes.
+
+### Ubuntu Package Flow
+
+```mermaid
+sequenceDiagram
+    participant VM as VM<br/>(apt-get update)
+    participant nginx as nginx Proxy<br/>(Host:3142)
+    participant Cache as /var/cache/nginx/apt
+    participant Mirror as mirror.arizona.edu
+
+    VM->>nginx: GET http://PROXY_IP:3142/mirror.arizona.edu/ubuntu/dists/noble/InRelease
+    
+    alt Cache Hit
+        nginx->>Cache: Check cache key
+        Cache-->>nginx: Return cached file
+        nginx-->>VM: 200 OK (X-Cache-Status: HIT)
+        Note over VM,nginx: ~1-2ms response time
+    else Cache Miss
+        nginx->>Cache: Check cache key
+        Cache-->>nginx: Not found
+        nginx->>Mirror: GET http://mirror.arizona.edu/ubuntu/dists/noble/InRelease
+        Mirror-->>nginx: 200 OK + file content
+        nginx->>Cache: Store with 365d TTL
+        nginx-->>VM: 200 OK (X-Cache-Status: MISS)
+        Note over nginx,Mirror: First request: ~150-200ms<br/>Subsequent requests: cache hit
+    end
+```
+
+### Kubernetes Package Flow (with CDN Redirect)
+
+```mermaid
+sequenceDiagram
+    participant VM as VM<br/>(apt-get update)
+    participant nginx as nginx Proxy<br/>(Host:3142)
+    participant Cache as /var/cache/nginx/apt
+    participant K8s as pkgs.k8s.io
+    participant CDN as prod-cdn.packages.k8s.io
+
+    VM->>nginx: GET http://PROXY_IP:3142/pkgs.k8s.io/core:/stable:/v1.35/deb/InRelease
+    
+    nginx->>Cache: Check cache for pkgs.k8s.io path
+    alt Cache Hit
+        Cache-->>nginx: Return cached file
+        nginx-->>VM: 200 OK (X-Cache-Status: HIT)
+    else Cache Miss (First Request)
+        Cache-->>nginx: Not found
+        nginx->>K8s: GET https://pkgs.k8s.io/core:/stable:/v1.35/deb/InRelease
+        K8s-->>nginx: 302 Redirect<br/>Location: https://prod-cdn.packages.k8s.io/...
+        Note over nginx: proxy_redirect rewrites to<br/>http://PROXY_IP:3142/prod-cdn.packages.k8s.io/...
+        nginx-->>VM: 302 Redirect (rewritten location)
+        VM->>nginx: GET http://PROXY_IP:3142/prod-cdn.packages.k8s.io/...
+        nginx->>Cache: Check cache for CDN path
+        Cache-->>nginx: Not found
+        nginx->>CDN: GET https://prod-cdn.packages.k8s.io/...
+        CDN-->>nginx: 200 OK + file content
+        nginx->>Cache: Store CDN response
+        nginx-->>VM: 200 OK (X-Cache-Status: MISS)
+    else Cache Hit (Subsequent Requests)
+        Note over nginx,CDN: Both pkgs.k8s.io redirect AND<br/>prod-cdn response are cached
+        nginx-->>VM: 302 or 200 from cache<br/>(X-Cache-Status: HIT)
+    end
+```
+
+### Networking Mode Topology
+
+```mermaid
+flowchart TB
+    subgraph User["User-Mode (single-systemd, single-kubeadm)"]
+        VM1[VM: 10.0.2.15]
+        Host1[Host: 10.0.2.2]
+        VM1 -->|"apt sources point to<br/>http://10.0.2.2:3142/..."| Host1
+    end
+
+    subgraph OptA["Option A: NAT Bridge (two-kubeadm default)"]
+        VMa1[controlplane-1<br/>192.168.122.10]
+        VMa2[nodes-1<br/>192.168.122.11]
+        Br0a[br0: 192.168.122.1<br/>nginx: 192.168.122.1:3142]
+        VMa1 -->|"apt sources point to<br/>http://192.168.122.1:3142/..."| Br0a
+        VMa2 -->|"apt sources point to<br/>http://192.168.122.1:3142/..."| Br0a
+    end
+
+    subgraph OptB["Option B: Physical Bridge"]
+        VMb1[controlplane-1<br/>192.168.2.210]
+        VMb2[nodes-1<br/>192.168.2.211]
+        Br0b[br0: 192.168.2.200<br/>nginx: 192.168.2.200:3142]
+        VMb1 -->|"apt sources point to<br/>http://192.168.2.200:3142/..."| Br0b
+        VMb2 -->|"apt sources point to<br/>http://192.168.2.200:3142/..."| Br0b
+    end
+
+    Host1 -.->|nginx listens on<br/>all interfaces| nginx_daemon
+    Br0a -.->|nginx listens on<br/>all interfaces| nginx_daemon
+    Br0b -.->|nginx listens on<br/>all interfaces| nginx_daemon
+
+    nginx_daemon[nginx daemon<br/>port 3142] -->|HTTP| mirror[mirror.arizona.edu]
+    nginx_daemon -->|HTTPS + SNI| k8s[pkgs.k8s.io]
+    nginx_daemon -->|HTTPS + SNI| cdn[prod-cdn.packages.k8s.io]
+
+    style User fill:#e1f5ff
+    style OptA fill:#fff4e1
+    style OptB fill:#ffe1f5
+    style nginx_daemon fill:#90EE90
+```
+
+### Key Behaviors
+
+| Scenario | First Request | Subsequent Requests | Client Sees |
+|----------|---------------|---------------------|-------------|
+| Ubuntu packages via mirror.arizona.edu | nginx fetches from HTTP mirror, caches response | nginx serves from cache (365d TTL) | `Hit:N http://PROXY_IP:3142/mirror.arizona.edu/ubuntu` |
+| Kubernetes packages via pkgs.k8s.io | nginx fetches HTTPS, receives 302 redirect to CDN, rewrites Location header, client follows to proxied CDN URL | Both redirect and CDN response served from cache | `Hit:N http://PROXY_IP:3142/pkgs.k8s.io/core:/stable:/v1.35/deb` |
+| Cache after first boot | `apt-get update` takes 40-50 seconds | `apt-get update` takes <1 second (all cache hits) | All repositories show "Hit" status |
+
+**Critical configuration elements:**
+- `proxy_redirect` rewrites upstream redirects to keep traffic flowing through the proxy instead of bypassing it to go directly to the CDN.
+- Kubernetes GPG key must be fetched through the same proxy path as the repository metadata to ensure signature consistency.
+- `resolver` directive enables nginx to resolve HTTPS backend hostnames (required for `proxy_pass` with variables).
+- `proxy_ssl_server_name on` enables SNI for CloudFront/CDN backends that serve multiple domains on the same IP.
+
+---
+
 ## Prerequisites
 
 - Ubuntu 24.04 LTS host with one of the VM guides partially or fully completed.
